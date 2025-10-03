@@ -1,0 +1,12 @@
+# CSpell Custom Dictionary Words
+deepseek
+gemini
+genai
+mysql
+ollama
+Ollama
+pytest
+pythonpath
+streamlit
+supervisorctl
+tomli
