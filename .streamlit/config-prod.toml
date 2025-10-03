@@ -1,0 +1,25 @@
+[global]
+
+[logger]
+level = "info"
+messageFormat = "%(asctime)s	%(levelname)s	%(name)s	%(message)s"
+
+[client]
+showErrorDetails = "full"
+
+[runner]
+
+[server]
+port = 8503
+maxUploadSize = 1
+fileWatcherType = "none"
+baseUrlPath = "/korrekturleser"
+
+[browser]
+gatherUsageStats = false
+
+[mapbox]
+
+[theme]
+
+[secrets]

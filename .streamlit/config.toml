@@ -1,0 +1,31 @@
+# see https://docs.streamlit.io/develop/api-reference/configuration/config.toml
+
+[global]
+
+[logger]
+level = "info"
+messageFormat = "%(asctime)s\t%(levelname)s\t%(name)s\t%(message)s"
+
+[client]
+showErrorDetails = "full"
+
+[runner]
+
+[server]
+port = 8503
+maxUploadSize = 1 # MB
+# restrict access to localhost for dev environment
+# this is modified by deploy.sh
+address = "127.0.0.1"
+# this is modified by deploy.sh
+fileWatcherType = "watchdog"
+baseUrlPath = "/korrekturleser"
+
+[browser]
+gatherUsageStats = false
+
+[mapbox]
+
+[theme]
+
+[secrets]
