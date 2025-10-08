@@ -3,10 +3,10 @@
 
 import streamlit as st
 
-from helper_db import db_get_id_user_from_token
+from helper_db import db_select_id_user_from_geheimnis
 
 # needs to be first streamlit command, so placed before the imports
-st.set_page_config(page_title="KI Korrekturleser", page_icon=None, layout="wide")
+st.set_page_config(page_title="KI Korrekturleser", page_icon=":robot:", layout="wide")
 
 
 from helper import (
@@ -21,14 +21,18 @@ logger = get_logger_from_filename(__file__)
 
 def login() -> None:
     """Login logic."""
+    key_geheimnis = "geheimnis"
     with st.form("Login"):
         cols = st.columns((1, 1, 2), vertical_alignment="bottom")
-        input_token = cols[0].text_input("Geheimnis", type="password")
+        input_geheimnis = cols[0].text_input(
+            "Geheimnis", type="password", key=key_geheimnis
+        )
         submit = cols[1].form_submit_button(label="Login")
 
-    if submit and input_token:
+    if submit and input_geheimnis:
         # this stops if user is unknown
-        db_get_id_user_from_token(token=input_token)
+        db_select_id_user_from_geheimnis(geheimnis=input_geheimnis)
+        del st.session_state[key_geheimnis]
         st.rerun()
     st.stop()
 
@@ -64,7 +68,7 @@ def main() -> None:  # noqa: D103
         msg = (
             f"{st.session_state['USERNAME']} hat bisher"
             f" {st.session_state['cnt_requests']} Anfragen"
-            f" mit {st.session_state['cnt_tokens']} Tokens gestellt."
+            f" mit {st.session_state['cnt_tokens']} Token gestellt."
         )
         st.write(msg)
 
