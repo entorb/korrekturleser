@@ -17,16 +17,60 @@ logger = get_logger_from_filename(__file__)
 # LLM_PROVIDER, MODEL = ("Gemini", "gemini-2.5-flash")
 LLM_PROVIDER, MODEL = ("Gemini", "gemini-2.5-flash-lite")
 
-INSTRUCTION = """
-- Input: text to improve
-- Output: corrected text, in same language.
-  - No comments or thinking. Format: plain text, no markdown.
-  - Do not change the linebreaks.
-- Task1
-  - proof-reading: correct spelling, grammar, and punctuation.
-  - improve text.
+# Korrigieren
+INSTRUCTION1 = """
+Input
+- zu verbessernder Text
+Task
+- Korrekturlesen: Rechtschreibung, Grammatik und Zeichensetzung korrigieren.
+Output
+- korrigierter Text
+- in derselben Sprache!
+- keine Kommentare
+- Struktur und Zeilenumbrüche nicht ändern.
+- Format: reiner Text, keine Markdown-Formatierung.
 """
-# TODO: creativity via scale
+
+# Verbessern
+INSTRUCTION2 = """
+Input
+- zu verbessernder Text
+Task
+- Korrekturlesen: Rechtschreibung, Grammatik und Zeichensetzung korrigieren.
+- Text verbessern
+Output
+- verbesserter Text
+- in derselben Sprache!
+- keine Kommentare
+- Format: einfacher Text, keine Markdown-Formatierung.
+"""
+
+# Zusammenfassen
+INSTRUCTION3 = """
+Input
+- Text zum Zusammenfassen
+Task
+- Text in Stichpunkten zusammenfassen
+Output
+- immer Kurz-Zusammenfassung in max. 3 Stichpunkten
+- bei längerem Text zusätzlich ausführlichere Zusammenfassung in gegliederten Stichpunkten
+- in derselben Sprache!
+- keine Kommentare
+- Format: Markdown mit Abschnitten und Stichpunkten
+"""  # noqa: E501
+
+# Text aus Stichpunkten
+INSTRUCTION4 = """
+Input
+- Stichpunkte
+Tasks
+- Erstelle einen Text/Brief aus Stichpunkten
+Output
+- Text
+- in derselben Sprache!
+- keine Kommentare
+- Format: einfacher Text, keine Markdown-Formatierung.
+"""
 
 
 USER_ID = st.session_state["USER_ID"]  # shortcut
@@ -41,7 +85,10 @@ with st.form("Mein Text"):
         label_visibility="collapsed",
         key="textarea_in",
     )
-    submit = cols[1].form_submit_button("An KI senden", type="primary")
+    submit1 = cols[1].form_submit_button("Korrigieren", type="primary")
+    submit2 = cols[1].form_submit_button("Verbessern", type="primary")
+    submit3 = cols[1].form_submit_button("Zusammenfassen", type="primary")
+    submit4 = cols[1].form_submit_button("Text aus Stichpunkten", type="primary")
 
 # how to modify via JavaScript?
 # btn_test = st.button("Test")
@@ -52,35 +99,51 @@ with st.form("Mein Text"):
 #             </script>
 #             """)
 
-if st.session_state["ai_response"] != "" or submit:
+if st.session_state["ai_response"] != "" or submit1 or submit2 or submit3 or submit4:
+    if submit1:
+        instruction = INSTRUCTION1
+    elif submit2:
+        instruction = INSTRUCTION2
+    elif submit3:
+        instruction = INSTRUCTION3
+    elif submit4:
+        instruction = INSTRUCTION4
+    else:
+        st.stop()
+
     st.subheader("KI Text")
 
-    if submit and textarea_in:
-        if LLM_PROVIDER == "Gemini":
-            llm_provider = GeminiProvider(instruction=INSTRUCTION, model=MODEL)
-        else:
-            llm_provider = OllamaProvider(instruction=INSTRUCTION, model=MODEL)
-        text_response, tokens = llm_call(llm_provider, textarea_in)
-        st.session_state["ai_response"] = text_response
+    if LLM_PROVIDER == "Gemini":
+        llm_provider = GeminiProvider(instruction=instruction, model=MODEL)
+    else:
+        llm_provider = OllamaProvider(instruction=instruction, model=MODEL)
+    text_response, tokens = llm_call(llm_provider, textarea_in)
+    st.session_state["ai_response"] = text_response
 
-        if ENV == "PROD":
-            db_insert_usage(user_id=USER_ID, tokens=tokens)
+    if ENV == "PROD":
+        db_insert_usage(user_id=USER_ID, tokens=tokens)
 
-    cols = st.columns((5, 1), vertical_alignment="top")
-    textarea_ai = cols[0].text_area(
-        label="KI Text",
-        value=st.session_state["ai_response"],
-        height="content",
-        label_visibility="collapsed",
-        key="textarea_ai",
-    )
-    if textarea_ai:
+    if submit3:
+        textarea_ai = st.markdown(
+            st.session_state["ai_response"],
+        )
+
+    else:
+        textarea_ai = st.text_area(
+            label="KI Text",
+            value=st.session_state["ai_response"],
+            height="content",
+            label_visibility="collapsed",
+            key="textarea_ai",
+        )
         copy_button(
-            textarea_ai,
+            str(textarea_ai),
             tooltip="Kopieren",
             copied_label="Kopiert!",
             icon="st",
         )
+
+    st.write(f"{tokens} Token verbraucht")
 
     if ENV != "PROD":
         st.subheader("Unterschied")
@@ -92,5 +155,6 @@ if st.session_state["ai_response"] != "" or submit:
             hide_line_numbers=True,
         )
 
-    # st.subheader("Anweisung")
-    # st.code(language="markdown", body=INSTRUCTION)
+    st.subheader("Anweisung")
+
+    st.code(language="markdown", body=instruction)
