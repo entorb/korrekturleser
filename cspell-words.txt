@@ -1,12 +1,26 @@
 # CSpell Custom Dictionary Words
+checkpw
 deepseek
+fromdesc
+geheimnis
 gemini
 genai
+gensalt
+hashpw
+keepends
+mediumint
 mysql
+numlines
 ollama
 Ollama
+pyarrow
 pytest
 pythonpath
+smallint
 streamlit
 supervisorctl
+todesc
 tomli
+Uberspace
+varchar
+wrapcolumn
