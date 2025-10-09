@@ -1,5 +1,6 @@
 # CSpell Custom Dictionary Words
 deepseek
+geheimnis
 gemini
 genai
 mysql
