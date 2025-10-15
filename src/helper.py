@@ -1,11 +1,9 @@
 """Helper Functions."""
 
-from logging import Logger
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import streamlit as st
-from streamlit.logger import get_logger
 
 if TYPE_CHECKING:
     from streamlit.navigation.page import StreamlitPage
@@ -31,12 +29,6 @@ def init_dev_session_state() -> None:
     st.session_state["USERNAME"] = "Torben"
     st.session_state["cnt_requests"] = 0
     st.session_state["cnt_tokens"] = 0
-
-
-def get_logger_from_filename(file: str) -> Logger:
-    """Return logger using filename name."""
-    page = Path(file).stem
-    return get_logger(page)
 
 
 def create_navigation_menu() -> str:
