@@ -41,7 +41,6 @@ def main() -> None:  # noqa: D103
     # init env
     env = get_shared_state()["ENV"]
     if env == "PROD":
-        # init_sentry()
         pass
     else:
         # for local running I skip the login and set the session infos

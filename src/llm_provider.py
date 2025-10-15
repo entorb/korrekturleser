@@ -152,6 +152,5 @@ if __name__ == "__main__":
 
     # switch here
     llm_provider = OllamaProvider(instruction=instruction, model="llama3.2:1b")
-    # llm_provider = OpenAIProvider(instruction=instruction, model="gpt-5-nano")
     # llm_provider = GeminiProvider(instruction=instruction, model="gemini-2.5-pro")
     print(llm_call(llm_provider, prompt))
