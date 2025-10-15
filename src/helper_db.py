@@ -1,8 +1,10 @@
 """Helper: Database Access."""
 
 import datetime as dt
+import logging
 from collections.abc import Generator
 from contextlib import contextmanager
+from pathlib import Path
 
 import mysql.connector
 import pandas as pd
@@ -10,9 +12,7 @@ import streamlit as st
 from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import MySQLConnectionPool, PooledMySQLConnection
 
-from helper import get_logger_from_filename
-
-logger = get_logger_from_filename(__file__)
+logger = logging.getLogger(Path(__file__).stem)
 
 
 @st.cache_resource(ttl=3600)
