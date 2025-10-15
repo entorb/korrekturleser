@@ -8,8 +8,13 @@ from google import genai  # pip install google-genai
 from google.genai import types as genai_types
 from ollama import ChatResponse, chat  # pip install ollama
 
-# load .env file
 logger = logging.getLogger()  # get base logger
+
+
+@st.cache_resource(ttl=3600)
+def get_gemini_client() -> genai.Client:
+    """Get cached Gemini client (expires after 1 hour)."""
+    return genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
 
 class LLMProvider:
@@ -36,12 +41,19 @@ class LLMProvider:
         logger.info("LLM: %s %s", self.provider, self.model)
 
     def call(self, prompt: str) -> tuple[str, int]:
-        """Call the LLM with prompt."""
+        """
+        Call the LLM with prompt.
+
+        Returns a tuple containing the response text and the number of tokens consumed.
+        """
         raise NotImplementedError
 
 
-class OllamaProvider(LLMProvider):  # noqa: D101
-    def __init__(self, instruction: str, model: str) -> None:  # noqa: D107
+class OllamaProvider(LLMProvider):
+    """Ollama LLM provider for local models."""
+
+    def __init__(self, instruction: str, model: str) -> None:
+        """Initialize Ollama provider with instruction and model."""
         super().__init__(instruction, model)
         self.provider = "Ollama"
         self.models = {
@@ -68,8 +80,11 @@ class OllamaProvider(LLMProvider):  # noqa: D101
         return str(response.message.content), tokens
 
 
-class GeminiProvider(LLMProvider):  # noqa: D101
-    def __init__(self, instruction: str, model: str) -> None:  # noqa: D107
+class GeminiProvider(LLMProvider):
+    """Google Gemini LLM provider."""
+
+    def __init__(self, instruction: str, model: str) -> None:
+        """Initialize Gemini provider with instruction and model."""
         super().__init__(instruction, model)
         self.provider = "Gemini"
         self.models = {
@@ -81,12 +96,12 @@ class GeminiProvider(LLMProvider):  # noqa: D101
 
     def call(self, prompt: str) -> tuple[str, int]:
         """Call the LLM."""
-        client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+        client = get_gemini_client()
 
         response = None
         tokens = 0
-        retries_max = 3
-        for attempt in range(retries_max):
+        max_retries = 3
+        for attempt in range(max_retries):
             try:
                 response = client.models.generate_content(
                     model=self.model,
@@ -97,10 +112,13 @@ class GeminiProvider(LLMProvider):  # noqa: D101
                 )
                 break  # Exit retry loop if successful
             except Exception as e:
-                if attempt <= retries_max and "The model is overloaded" in str(e):
+                if attempt < max_retries - 1 and "The model is overloaded" in str(e):
                     wait_time = 2**attempt
                     logger.warning(
-                        "Model overloaded, retrying in %d seconds...", wait_time
+                        "Model overloaded, retrying in %d seconds (attempt %d/%d)...",
+                        wait_time,
+                        attempt + 1,
+                        max_retries,
                     )
                     time.sleep(wait_time)
                 else:
@@ -124,26 +142,22 @@ class GeminiProvider(LLMProvider):  # noqa: D101
         return s, tokens
 
 
-def create_llm_provider(
+@st.cache_resource(ttl=3600)
+def get_cached_llm_provider(
     provider_name: str, model: str, instruction: str
 ) -> LLMProvider:
-    """Create LLM provider, based on string name."""
+    """
+    Get cached LLM provider (expires after 1 hour).
+
+    Uses @st.cache_resource to reuse the same provider instance across requests
+    with the same parameters (provider, model, instruction).
+    """
     if provider_name == "Ollama":
-        llm_provider = OllamaProvider(instruction=instruction, model=model)
-    # elif provider_name == "OpenAI":
-    #     llm_provider = OpenAIProvider(instruction=instruction, model=model)
-    elif provider_name == "Gemini":
-        llm_provider = GeminiProvider(instruction=instruction, model=model)
-    else:
-        msg = f"Unknown LLM {provider_name}"
-        raise ValueError(msg)
-    return llm_provider
-
-
-# Example usage
-def llm_call(provider: LLMProvider, prompt: str) -> tuple[str, int]:
-    """Send prompt to LLM."""
-    return provider.call(prompt)
+        return OllamaProvider(instruction=instruction, model=model)
+    if provider_name == "Gemini":
+        return GeminiProvider(instruction=instruction, model=model)
+    msg = f"Unknown LLM provider: {provider_name}"
+    raise ValueError(msg)
 
 
 if __name__ == "__main__":
@@ -153,4 +167,4 @@ if __name__ == "__main__":
     # switch here
     llm_provider = OllamaProvider(instruction=instruction, model="llama3.2:1b")
     # llm_provider = GeminiProvider(instruction=instruction, model="gemini-2.5-pro")
-    print(llm_call(llm_provider, prompt))
+    print(llm_provider.call(prompt))
