@@ -170,69 +170,46 @@ if st.session_state["ai_response"] != "" or submit1 or submit2 or submit3 or sub
     <style>
         table.diff {{
             font-family: Courier, monospace;
-            border: 1px solid #ccc;
+            border: 1px solid #666;
             border-collapse: collapse;
             width: 100%;
-            font-size: 12px;
+            font-size: clamp(9px, 2.5vw, 12px);
             display: block;
             overflow-x: auto;
         }}
         .diff_header {{
-            background-color: #e0e0e0;
+            background-color: #404040;
+            color: #f0f0f0;
             text-align: center;
             font-weight: bold;
-            padding: 5px;
+            padding: clamp(3px, 1vw, 5px);
         }}
         .diff_next {{
-            background-color: #c0c0c0;
+            background-color: #505050;
         }}
         td.diff_header {{
+            background-color: #303030;
+            color: #d0d0d0;
             text-align: right;
             padding: 2px 5px;
-            min-width: 30px;
+            min-width: clamp(15px, 5vw, 30px);
+            font-size: clamp(8px, 2vw, 11px);
         }}
         .diff_add {{
-            background-color: #d4edda;
-            color: #155724;
+            background-color: #1a4d1a;
+            color: #90ee90;
         }}
         .diff_chg {{
-            background-color: #fff3cd;
-            color: #856404;
+            background-color: #4d4d1a;
+            color: #ffed4e;
         }}
         .diff_sub {{
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: #4d1a1a;
+            color: #ff9090;
         }}
-
-        /* Mobile optimizations */
-        @media (max-width: 768px) {{
-            table.diff {{
-                font-size: 10px;
-            }}
-            td.diff_header {{
-                padding: 1px 3px;
-                min-width: 20px;
-                font-size: 9px;
-            }}
-            .diff_header {{
-                padding: 3px;
-                font-size: 11px;
-            }}
-            table.diff td {{
-                padding: 2px;
-                word-break: break-word;
-            }}
-        }}
-
-        /* Very small screens */
-        @media (max-width: 480px) {{
-            table.diff {{
-                font-size: 9px;
-            }}
-            td.diff_header {{
-                min-width: 15px;
-                font-size: 8px;
-            }}
+        table.diff td {{
+            padding: 2px;
+            word-break: break-word;
         }}
     </style>
     {diff_html}
