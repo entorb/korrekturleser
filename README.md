@@ -21,8 +21,8 @@ Text, den ein Benutzer eingibt an Gemini AI/LLM zum Korrekturlesen senden.
   - Modus 4: Erstelle eine Text aus Stichwörtern
   - Input: Text of User
   - Output: 1. Response from LLM 2. Diff of input and LLM
-- Seite 2: Statistics
-  - Zeige die Usage Statistiken an
+- Seite 2: Nutzungs-Statistiken
+  - Zeige die Nutzungs-Statistiken an
 
 ## Tech Stack
 
@@ -30,21 +30,23 @@ Ich habe sehr gute Python/uv Kenntnisse und Grundlangen in TypeScript, Vue.js, p
 
 ## Deployment
 
-Uberspace shared web hoster.
-transfer of files via scp.
+- Uberspace shared web space
+- transfer of files via scp
 
 ## Login
 
 - nur ein Geheimnis, kein Passwort
-- Abgleich mit MySQL Datenbank
+- geprüft gegen MySQL Datenbank
 
 ## Schnittstellen
 
-Gemini LLM
+### Gemini LLM
 
 - Secret: GEMINI_API_KEY
 
-MySQL Datenbank für Login und Usage Stats
+### MySQL Datenbank
+
+für Login und Usage Stats
 
 ```sql
 CREATE TABLE `user` (
