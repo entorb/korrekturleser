@@ -1,16 +1,18 @@
 """Textverbesserung."""
 
 import difflib
+import logging
+from pathlib import Path
 
 import streamlit as st
 from st_copy import copy_button
 
-from helper import get_logger_from_filename, get_shared_state
+from helper import get_shared_state
 from helper_db import db_insert_usage
 from llm_provider import get_cached_llm_provider
 
 st.title("Textverbesserung")
-logger = get_logger_from_filename(__file__)
+logger = logging.getLogger(Path(__file__).stem)
 
 
 # LLM_PROVIDER, MODEL = ("Ollama", "llama3.2:1b")

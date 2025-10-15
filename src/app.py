@@ -1,9 +1,12 @@
 """Main file."""
+
 # ruff: noqa: E402
+import logging
+from pathlib import Path
 
 import streamlit as st
 
-from helper_db import db_select_id_user_from_geheimnis
+from helper_db import db_select_user_id_from_geheimnis_to_ses_state
 
 # needs to be first streamlit command, so placed before the imports
 st.set_page_config(page_title="KI Korrekturleser", page_icon=":robot:", layout="wide")
@@ -11,12 +14,11 @@ st.set_page_config(page_title="KI Korrekturleser", page_icon=":robot:", layout="
 
 from helper import (
     create_navigation_menu,
-    get_logger_from_filename,
     get_shared_state,
     init_dev_session_state,
 )
 
-logger = get_logger_from_filename(__file__)
+logger = logging.getLogger(Path(__file__).stem)
 
 
 def login() -> None:
@@ -31,7 +33,7 @@ def login() -> None:
 
     if submit and input_geheimnis:
         # this stops if user is unknown
-        db_select_id_user_from_geheimnis(geheimnis=input_geheimnis)
+        db_select_user_id_from_geheimnis_to_ses_state(geheimnis=input_geheimnis)
         del st.session_state[key_geheimnis]
         st.rerun()
     st.stop()
