@@ -7,7 +7,7 @@ from st_copy import copy_button
 
 from helper import get_logger_from_filename, get_shared_state
 from helper_db import db_insert_usage
-from llm_provider import GeminiProvider, OllamaProvider, llm_call
+from llm_provider import get_cached_llm_provider, llm_call
 
 st.title("Textverbesserung")
 logger = get_logger_from_filename(__file__)
@@ -114,10 +114,9 @@ if st.session_state["ai_response"] != "" or submit1 or submit2 or submit3 or sub
 
     st.subheader("KI Text")
 
-    if LLM_PROVIDER == "Gemini":
-        llm_provider = GeminiProvider(instruction=instruction, model=MODEL)
-    else:
-        llm_provider = OllamaProvider(instruction=instruction, model=MODEL)
+    llm_provider = get_cached_llm_provider(
+        provider_name=LLM_PROVIDER, model=MODEL, instruction=instruction
+    )
     text_response, tokens = llm_call(llm_provider, textarea_in)
     st.session_state["ai_response"] = text_response
 
@@ -144,7 +143,7 @@ if st.session_state["ai_response"] != "" or submit1 or submit2 or submit3 or sub
             icon="st",
         )
 
-    st.write(f"{tokens} Token verbraucht")
+    st.write(f"{tokens} Token verbraucht für {MODEL}")
 
     st.subheader("Anweisung")
 
