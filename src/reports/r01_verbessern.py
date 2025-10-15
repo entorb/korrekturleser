@@ -1,8 +1,9 @@
 """Textverbesserung."""
 
+import difflib
+
 import streamlit as st
 from st_copy import copy_button
-from st_diff_viewer import diff_viewer
 
 from helper import get_logger_from_filename, get_shared_state
 from helper_db import db_insert_usage
@@ -145,16 +146,96 @@ if st.session_state["ai_response"] != "" or submit1 or submit2 or submit3 or sub
 
     st.write(f"{tokens} Token verbraucht")
 
-    if ENV != "PROD":
-        st.subheader("Unterschied")
-        diff_viewer(
-            textarea_in,
-            str(textarea_ai),
-            split_view=False,
-            use_dark_theme=False,
-            hide_line_numbers=True,
-        )
-
     st.subheader("Anweisung")
 
     st.code(language="markdown", body=instruction)
+
+    st.subheader("Unterschied")
+
+    # Create HTML diff
+    text_in_lines = textarea_in.splitlines(keepends=True)
+    text_ai_lines = st.session_state["ai_response"].splitlines(keepends=True)
+
+    diff_html = difflib.HtmlDiff(wrapcolumn=80).make_table(
+        text_in_lines,
+        text_ai_lines,
+        fromdesc="Original",
+        todesc="KI Text",
+        context=True,
+        numlines=0,
+    )
+
+    # Add CSS styling for better diff visualization with mobile optimization
+    diff_styled = f"""
+    <style>
+        table.diff {{
+            font-family: Courier, monospace;
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 12px;
+            display: block;
+            overflow-x: auto;
+        }}
+        .diff_header {{
+            background-color: #e0e0e0;
+            text-align: center;
+            font-weight: bold;
+            padding: 5px;
+        }}
+        .diff_next {{
+            background-color: #c0c0c0;
+        }}
+        td.diff_header {{
+            text-align: right;
+            padding: 2px 5px;
+            min-width: 30px;
+        }}
+        .diff_add {{
+            background-color: #d4edda;
+            color: #155724;
+        }}
+        .diff_chg {{
+            background-color: #fff3cd;
+            color: #856404;
+        }}
+        .diff_sub {{
+            background-color: #f8d7da;
+            color: #721c24;
+        }}
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {{
+            table.diff {{
+                font-size: 10px;
+            }}
+            td.diff_header {{
+                padding: 1px 3px;
+                min-width: 20px;
+                font-size: 9px;
+            }}
+            .diff_header {{
+                padding: 3px;
+                font-size: 11px;
+            }}
+            table.diff td {{
+                padding: 2px;
+                word-break: break-word;
+            }}
+        }}
+
+        /* Very small screens */
+        @media (max-width: 480px) {{
+            table.diff {{
+                font-size: 9px;
+            }}
+            td.diff_header {{
+                min-width: 15px;
+                font-size: 8px;
+            }}
+        }}
+    </style>
+    {diff_html}
+    """
+
+    st.html(diff_styled)
