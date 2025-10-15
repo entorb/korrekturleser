@@ -11,13 +11,13 @@ cd $(dirname $0)/..
 # uv add -r requirements.txt
 # pyenv global 3.13
 
-uv remove google-genai mysql-connector-python ollama st_copy st-diff-viewer streamlit
+uv remove pandas pyarrow google-genai mysql-connector-python ollama st_copy streamlit
 uv remove --dev ruff pre-commit pytest pytest-cov tomli-w watchdog
 
 uv lock --upgrade
 uv sync --upgrade
 
-uv add streamlit google-genai mysql-connector-python ollama st_copy st-diff-viewer streamlit
+uv add pandas==2.2.3 pyarrow==20.0.0 google-genai mysql-connector-python ollama st_copy streamlit
 uv add --dev ruff pre-commit pytest pytest-cov tomli-w watchdog
 
 uv lock --upgrade
