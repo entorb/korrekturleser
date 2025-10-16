@@ -3,6 +3,7 @@
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import bcrypt
 import streamlit as st
 
 if TYPE_CHECKING:
@@ -47,3 +48,8 @@ def create_navigation_menu() -> str:
     pg = st.navigation(lst)
     pg.run()
     return pg.url_path
+
+
+def verify_geheimnis(geheimnis: str, hashed_geheimnis: str) -> bool:
+    """Verify a plain text secret against a hashed secret."""
+    return bcrypt.checkpw(geheimnis.encode("utf-8"), hashed_geheimnis.encode("utf-8"))
