@@ -55,10 +55,6 @@ def main() -> None:  # noqa: D103
     if "ai_response" not in st.session_state:
         st.session_state["ai_response"] = ""
 
-    st.markdown(
-        "***Achtung***: *Die KI wird deine Eingaben zum Trainieren verwenden."
-        " Nur für Dinge verwenden, die nicht streng geheim sind.*"
-    )
     # run the page
     _ = create_navigation_menu()
 
