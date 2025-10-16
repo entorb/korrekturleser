@@ -7,7 +7,7 @@ from st_copy import copy_button
 
 from helper import get_logger_from_filename, get_shared_state
 from helper_db import db_insert_usage
-from llm_provider import get_cached_llm_provider, llm_call
+from llm_provider import get_cached_llm_provider
 
 st.title("Textverbesserung")
 logger = get_logger_from_filename(__file__)
@@ -77,6 +77,13 @@ Output
 USER_ID = st.session_state["USER_ID"]  # shortcut
 ENV = get_shared_state()["ENV"]
 
+
+st.markdown(
+    "***Achtung***: *Die Google KI wird deine Eingaben zum Trainieren verwenden."
+    " Nur für Dinge verwenden, die nicht streng geheim sind.*"
+)
+
+
 st.subheader("Mein Text")
 with st.form("Mein Text"):
     cols = st.columns((5, 1), vertical_alignment="top")
@@ -117,7 +124,7 @@ if st.session_state["ai_response"] != "" or submit1 or submit2 or submit3 or sub
     llm_provider = get_cached_llm_provider(
         provider_name=LLM_PROVIDER, model=MODEL, instruction=instruction
     )
-    text_response, tokens = llm_call(llm_provider, textarea_in)
+    text_response, tokens = llm_provider.call(textarea_in)
     st.session_state["ai_response"] = text_response
 
     if ENV == "PROD":
@@ -145,10 +152,6 @@ if st.session_state["ai_response"] != "" or submit1 or submit2 or submit3 or sub
 
     st.write(f"{tokens} Token verbraucht für {MODEL}")
 
-    st.subheader("Anweisung")
-
-    st.code(language="markdown", body=instruction)
-
     st.subheader("Unterschied")
 
     # Create HTML diff
@@ -164,54 +167,10 @@ if st.session_state["ai_response"] != "" or submit1 or submit2 or submit3 or sub
         numlines=0,
     )
 
-    # Add CSS styling for better diff visualization with mobile optimization
-    diff_styled = f"""
-    <style>
-        table.diff {{
-            font-family: Courier, monospace;
-            border: 1px solid #666;
-            border-collapse: collapse;
-            width: 100%;
-            font-size: clamp(9px, 2.5vw, 12px);
-            display: block;
-            overflow-x: auto;
-        }}
-        .diff_header {{
-            background-color: #404040;
-            color: #f0f0f0;
-            text-align: center;
-            font-weight: bold;
-            padding: clamp(3px, 1vw, 5px);
-        }}
-        .diff_next {{
-            background-color: #505050;
-        }}
-        td.diff_header {{
-            background-color: #303030;
-            color: #d0d0d0;
-            text-align: right;
-            padding: 2px 5px;
-            min-width: clamp(15px, 5vw, 30px);
-            font-size: clamp(8px, 2vw, 11px);
-        }}
-        .diff_add {{
-            background-color: #1a4d1a;
-            color: #90ee90;
-        }}
-        .diff_chg {{
-            background-color: #4d4d1a;
-            color: #ffed4e;
-        }}
-        .diff_sub {{
-            background-color: #4d1a1a;
-            color: #ff9090;
-        }}
-        table.diff td {{
-            padding: 2px;
-            word-break: break-word;
-        }}
-    </style>
-    {diff_html}
-    """
+    # CSS styling for better diff visualization with mobile optimization
+    st.html(
+        f'<link rel="stylesheet" href="https://entorb.net/korrekturleser/table_diff.css">{diff_html}'
+    )
 
-    st.html(diff_styled)
+    st.subheader("Anweisung")
+    st.code(language="markdown", body=instruction)
