@@ -75,6 +75,16 @@ Output
 - Format: einfacher Text, keine Markdown-Formatierung.
 """
 
+# Übersetzen
+INSTRUCTION5 = """
+Input
+- Text
+Tasks
+- Übersetzen den Text in die Sprache: <LANG>
+Output
+- Text
+- Format: einfacher Text, keine Markdown-Formatierung.
+"""
 
 USER_ID = st.session_state["USER_ID"]  # shortcut
 ENV = get_shared_state()["ENV"]
@@ -99,6 +109,8 @@ with st.form("Mein Text"):
     submit2 = cols[1].form_submit_button("Verbessern", type="primary")
     submit3 = cols[1].form_submit_button("Zusammenfassen", type="primary")
     submit4 = cols[1].form_submit_button("Text aus Stichpunkten", type="primary")
+    submit5a = cols[1].form_submit_button("Übersetzen -> DE", type="primary")
+    submit5b = cols[1].form_submit_button("Übersetzen -> EN", type="primary")
 
 # how to modify via JavaScript?
 # btn_test = st.button("Test")
@@ -109,7 +121,15 @@ with st.form("Mein Text"):
 #             </script>
 #             """)
 
-if st.session_state["ai_response"] != "" or submit1 or submit2 or submit3 or submit4:
+if (
+    st.session_state["ai_response"] != ""
+    or submit1
+    or submit2
+    or submit3
+    or submit4
+    or submit5a
+    or submit5b
+):
     if submit1:
         instruction = INSTRUCTION1
     elif submit2:
@@ -118,6 +138,10 @@ if st.session_state["ai_response"] != "" or submit1 or submit2 or submit3 or sub
         instruction = INSTRUCTION3
     elif submit4:
         instruction = INSTRUCTION4
+    elif submit5a:
+        instruction = INSTRUCTION5.replace("<LANG>", "Deutsch", 1)
+    elif submit5b:
+        instruction = INSTRUCTION5.replace("<LANG>", "Englisch", 1)
     else:
         st.stop()
 
@@ -171,9 +195,8 @@ if st.session_state["ai_response"] != "" or submit1 or submit2 or submit3 or sub
         )
 
         # CSS styling for better diff visualization with mobile optimization
-        st.html(
-            f'<link rel="stylesheet" href="https://entorb.net/korrekturleser/table_diff.css">{diff_html}'
-        )
+        st.html(Path("src/table_diff.css"))
+        st.html(diff_html)
 
     st.subheader("Anweisung")
     st.code(language="markdown", body=instruction)
