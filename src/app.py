@@ -6,7 +6,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from helper_db import db_select_user_id_from_geheimnis_to_ses_state
+from helper_db import db_select_usage_of_user, db_select_user_from_geheimnis
 
 # needs to be first streamlit command, so placed before the imports
 st.set_page_config(page_title="KI Korrekturleser", page_icon=":robot:", layout="wide")
@@ -32,8 +32,19 @@ def login() -> None:
         submit = cols[1].form_submit_button(label="Login")
 
     if submit and input_geheimnis:
-        # this stops if user is unknown
-        db_select_user_id_from_geheimnis_to_ses_state(geheimnis=input_geheimnis)
+        # Verify credentials and get user info
+        user_id, username = db_select_user_from_geheimnis(geheimnis=input_geheimnis)
+        if user_id == 0:
+            st.error("So nicht!")
+            st.stop()
+        st.session_state["USER_ID"] = user_id
+        st.session_state["USERNAME"] = username
+
+        # Get and store usage stats
+        st.session_state["cnt_requests"], st.session_state["cnt_tokens"] = (
+            db_select_usage_of_user(user_id=user_id)
+        )
+
         del st.session_state[key_geheimnis]
         st.rerun()
     st.stop()
