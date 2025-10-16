@@ -28,7 +28,7 @@ Task
 - Korrekturlesen: Rechtschreibung, Grammatik und Zeichensetzung korrigieren.
 Output
 - korrigierter Text
-- in derselben Sprache!
+- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc.
 - keine Kommentare
 - Struktur und Zeilenumbrüche nicht ändern.
 - Format: reiner Text, keine Markdown-Formatierung.
@@ -43,7 +43,7 @@ Task
 - Text verbessern
 Output
 - verbesserter Text
-- in derselben Sprache!
+- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc.
 - keine Kommentare
 - Format: einfacher Text, keine Markdown-Formatierung.
 """
@@ -57,7 +57,7 @@ Task
 Output
 - immer Kurz-Zusammenfassung in max. 3 Stichpunkten
 - bei längerem Text zusätzlich ausführlichere Zusammenfassung in gegliederten Stichpunkten
-- in derselben Sprache!
+- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc.
 - keine Kommentare
 - Format: Markdown mit Abschnitten und Stichpunkten
 """  # noqa: E501
@@ -70,7 +70,7 @@ Tasks
 - Erstelle einen Text/Brief aus Stichpunkten
 Output
 - Text
-- in derselben Sprache!
+- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc.
 - keine Kommentare
 - Format: einfacher Text, keine Markdown-Formatierung.
 """
@@ -154,25 +154,26 @@ if st.session_state["ai_response"] != "" or submit1 or submit2 or submit3 or sub
 
     st.write(f"{tokens} Token verbraucht für {MODEL}")
 
-    st.subheader("Unterschied")
+    if submit1 or submit2:
+        st.subheader("Unterschied")
 
-    # Create HTML diff
-    text_in_lines = textarea_in.splitlines(keepends=True)
-    text_ai_lines = st.session_state["ai_response"].splitlines(keepends=True)
+        # Create HTML diff
+        text_in_lines = textarea_in.splitlines(keepends=True)
+        text_ai_lines = st.session_state["ai_response"].splitlines(keepends=True)
 
-    diff_html = difflib.HtmlDiff(wrapcolumn=80).make_table(
-        text_in_lines,
-        text_ai_lines,
-        fromdesc="Original",
-        todesc="KI Text",
-        context=True,
-        numlines=0,
-    )
+        diff_html = difflib.HtmlDiff(wrapcolumn=80).make_table(
+            text_in_lines,
+            text_ai_lines,
+            fromdesc="Original",
+            todesc="KI Text",
+            context=True,
+            numlines=0,
+        )
 
-    # CSS styling for better diff visualization with mobile optimization
-    st.html(
-        f'<link rel="stylesheet" href="https://entorb.net/korrekturleser/table_diff.css">{diff_html}'
-    )
+        # CSS styling for better diff visualization with mobile optimization
+        st.html(
+            f'<link rel="stylesheet" href="https://entorb.net/korrekturleser/table_diff.css">{diff_html}'
+        )
 
     st.subheader("Anweisung")
     st.code(language="markdown", body=instruction)
