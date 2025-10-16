@@ -6,9 +6,12 @@ import time
 import streamlit as st
 from google import genai  # pip install google-genai
 from google.genai import types as genai_types
-from ollama import ChatResponse, chat  # pip install ollama
+
+from helper import get_shared_state
 
 logger = logging.getLogger()  # get base logger
+
+env = get_shared_state()["ENV"]
 
 
 @st.cache_resource(ttl=3600)
@@ -47,37 +50,6 @@ class LLMProvider:
         Returns a tuple containing the response text and the number of tokens consumed.
         """
         raise NotImplementedError
-
-
-class OllamaProvider(LLMProvider):
-    """Ollama LLM provider for local models."""
-
-    def __init__(self, instruction: str, model: str) -> None:
-        """Initialize Ollama provider with instruction and model."""
-        super().__init__(instruction, model)
-        self.provider = "Ollama"
-        self.models = {
-            "llama3.2:1b",
-            "llama3.2:3b",
-            "deepseek-r1:1.5b",
-            "deepseek-r1:8b",
-            "deepseek-r1:7b",
-        }
-        self.check_model_valid(model)
-
-    def call(self, prompt: str) -> tuple[str, int]:
-        """Call the LLM."""
-        response: ChatResponse = chat(
-            model=self.model,
-            stream=False,
-            # think=True,
-            messages=[
-                {"role": "system", "content": self.instruction},
-                {"role": "user", "content": prompt},
-            ],
-        )
-        tokens = 0  # not returned by ollama
-        return str(response.message.content), tokens
 
 
 class GeminiProvider(LLMProvider):
@@ -142,6 +114,41 @@ class GeminiProvider(LLMProvider):
         return s, tokens
 
 
+# Ollama available only locally, not on webserver
+if env != "PROD":
+    from ollama import ChatResponse, chat  # pip install ollama
+
+    class OllamaProvider(LLMProvider):
+        """Ollama LLM provider for local models."""
+
+        def __init__(self, instruction: str, model: str) -> None:
+            """Initialize Ollama provider with instruction and model."""
+            super().__init__(instruction, model)
+            self.provider = "Ollama"
+            self.models = {
+                "llama3.2:1b",
+                "llama3.2:3b",
+                "deepseek-r1:1.5b",
+                "deepseek-r1:8b",
+                "deepseek-r1:7b",
+            }
+            self.check_model_valid(model)
+
+        def call(self, prompt: str) -> tuple[str, int]:
+            """Call the LLM."""
+            response: ChatResponse = chat(
+                model=self.model,
+                stream=False,
+                # think=True,
+                messages=[
+                    {"role": "system", "content": self.instruction},
+                    {"role": "user", "content": prompt},
+                ],
+            )
+            tokens = 0  # not returned by ollama
+            return str(response.message.content), tokens
+
+
 @st.cache_resource(ttl=3600)
 def get_cached_llm_provider(
     provider_name: str, model: str, instruction: str
@@ -152,8 +159,8 @@ def get_cached_llm_provider(
     Uses @st.cache_resource to reuse the same provider instance across requests
     with the same parameters (provider, model, instruction).
     """
-    if provider_name == "Ollama":
-        return OllamaProvider(instruction=instruction, model=model)
+    # if provider_name == "Ollama":
+    #     return OllamaProvider(instruction=instruction, model=model)
     if provider_name == "Gemini":
         return GeminiProvider(instruction=instruction, model=model)
     msg = f"Unknown LLM provider: {provider_name}"
@@ -165,6 +172,7 @@ if __name__ == "__main__":
     prompt = "What is the capital of Germany?"
 
     # switch here
-    llm_provider = OllamaProvider(instruction=instruction, model="llama3.2:1b")
-    # llm_provider = GeminiProvider(instruction=instruction, model="gemini-2.5-pro")
-    print(llm_provider.call(prompt))
+    if env != "PROD":
+        llm_provider = OllamaProvider(instruction=instruction, model="llama3.2:1b")  # type: ignore
+        # llm_provider = GeminiProvider(instruction=instruction, model="gemini-2.5-pro")
+        print(llm_provider.call(prompt))
