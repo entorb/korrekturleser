@@ -4,29 +4,41 @@ import datetime as dt
 import logging
 from collections.abc import Generator
 from contextlib import contextmanager
+from functools import lru_cache
 from pathlib import Path
 
 import mysql.connector
 import pandas as pd
-import streamlit as st
+from dotenv import load_dotenv
 from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import MySQLConnectionPool, PooledMySQLConnection
 
-from helper import verify_geheimnis
+from shared.helper import my_get_env, verify_geheimnis, where_am_i
+
+# Load environment variables from .env file in project root
+load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
 logger = logging.getLogger(Path(__file__).stem)
 
+# Mock data for local development (when database is not available)
+# Password: "test" -> bcrypt hash
+MOCK_USER_SECRET_HASH = "$2b$12$YDgoJlHlpKxHRpum1b1rt.c06YscNeMhcMVaxH2wWNbsCsDouY2/a"  # noqa: S105
+MOCK_USERS = [
+    (1, "Torben", MOCK_USER_SECRET_HASH),
+]
+ENV = where_am_i()
 
-@st.cache_resource(ttl=3600)
+
+@lru_cache(maxsize=1)
 def get_db_pool() -> MySQLConnectionPool:
-    """Get cached database connection pool (expires after 1 hour of inactivity)."""
+    """Get cached database connection pool."""
     return MySQLConnectionPool(
         pool_name="korrekturleser_pool",
-        pool_size=1,
-        host=st.secrets["DB_HOST"],
-        user=st.secrets["DB_USER"],
-        passwd=st.secrets["DB_PASS"],
-        database=st.secrets["DB_DATABASE"],
+        pool_size=3,
+        host=my_get_env("DB_HOST"),
+        user=my_get_env("DB_USER"),
+        passwd=my_get_env("DB_PASS"),
+        database=my_get_env("DB_DATABASE"),
     )
 
 
@@ -94,6 +106,14 @@ def db_select_user_from_geheimnis(geheimnis: str) -> tuple[int, str]:
     Performance: O(n) where n is number of users. Bcrypt verification is
     intentionally slow (to prevent brute force), adding ~100ms per user.
     """
+    # Mock mode for local development
+    if ENV != "PROD":
+        logger.debug("Mock mode: Using mock user data")
+        for user_id, username, secret_hashed in MOCK_USERS:
+            if verify_geheimnis(geheimnis, secret_hashed):
+                return user_id, username
+        return 0, ""
+
     # Fetch id, name, and hashed secrets in a single query
     query = "SELECT id, name, secret_hashed FROM user ORDER BY id"
     rows = db_select_rows(query=query, param=())
@@ -111,6 +131,10 @@ def db_select_user_from_geheimnis(geheimnis: str) -> tuple[int, str]:
 
 def db_select_usage_of_user(user_id: int) -> tuple[int, int]:
     """Get total count of requests and tokens for a user."""
+    if ENV != "PROD":
+        logger.debug("Mock mode: Returning mock usage stats")
+        return 0, 0
+
     query = "SELECT SUM(cnt_requests), SUM(cnt_tokens) FROM history WHERE user_id = %s"
     row = db_select_1row(query=query, param=(user_id,))
     if row and len(row) == 2 and row[0] is not None and row[1] is not None:  # noqa: PLR2004
@@ -122,7 +146,11 @@ def db_select_usage_of_user(user_id: int) -> tuple[int, int]:
 
 
 def db_insert_usage(user_id: int, tokens: int) -> None:
-    """Insert/update usage stats in table history and session_state."""
+    """Insert/update usage stats in table history."""
+    if ENV != "PROD":
+        logger.debug("Mock mode: Skipping usage insert")
+        return
+
     today = dt.date.today()  # noqa: DTZ011
 
     # Note: This requires a UNIQUE constraint on (date, user_id)
@@ -142,16 +170,18 @@ ON DUPLICATE KEY UPDATE
         logger.exception("Database error during insert\n%s", query)
         raise
 
-    st.session_state["cnt_requests"] += 1
-    st.session_state["cnt_tokens"] += tokens
-
 
 # queries for stats page
 
 
-@st.cache_data(ttl=3600)
 def db_select_usage_stats_daily() -> pd.DataFrame:
     """SELECT date, user_name, cnt_requests, cnt_tokens."""
+    col_names = ["date", "user_name", "cnt_requests", "cnt_tokens"]
+
+    if ENV != "PROD":
+        logger.debug("Mock mode: Returning empty stats")
+        return pd.DataFrame(columns=col_names)
+
     sql = """
 SELECT h.date, u.name, h.cnt_requests, h.cnt_tokens
 FROM history h
@@ -159,15 +189,19 @@ JOIN user u on h.user_id = u.id
 ORDER BY h.date DESC, u.name ASC
 """
     res = db_select_rows(sql, param=())
-    col_names = ["Datum", "Wer", "Wie oft", "Wie viele"]
     if not res:
         return pd.DataFrame(columns=col_names)
     return pd.DataFrame(res, columns=col_names)
 
 
-@st.cache_data(ttl=3600)
 def db_select_usage_stats_total() -> pd.DataFrame:
     """SELECT user_name, sum(cnt_requests), sum(cnt_tokens)."""
+    col_names = ["Wer", "Wie oft", "Wie viele"]
+
+    if ENV != "PROD":
+        logger.debug("Mock mode: Returning empty stats")
+        return pd.DataFrame(columns=col_names)
+
     sql = """
 SELECT u.name, SUM(h.cnt_requests), SUM(h.cnt_tokens)
 FROM history h
@@ -176,7 +210,6 @@ GROUP BY u.name
 ORDER BY u.name ASC
 """
     res = db_select_rows(sql, param=())
-    col_names = ["Wer", "Wie oft", "Wie viele"]
 
     if not res:
         return pd.DataFrame(columns=col_names)

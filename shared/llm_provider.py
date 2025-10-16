@@ -2,22 +2,22 @@
 
 import logging
 import time
+from functools import lru_cache
 
-import streamlit as st
 from google import genai  # pip install google-genai
 from google.genai import types as genai_types
 
-from helper import get_shared_state
+from shared.helper import my_get_env, where_am_i
 
 logger = logging.getLogger()  # get base logger
+ENV = where_am_i()
 
-env = get_shared_state()["ENV"]
 
-
-@st.cache_resource(ttl=3600)
+@lru_cache(maxsize=1)
 def get_gemini_client() -> genai.Client:
-    """Get cached Gemini client (expires after 1 hour)."""
-    return genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+    """Get cached Gemini client."""
+    api_key = my_get_env("GEMINI_API_KEY")
+    return genai.Client(api_key=api_key)
 
 
 class LLMProvider:
@@ -115,7 +115,7 @@ class GeminiProvider(LLMProvider):
 
 
 # Ollama available only locally, not on webserver
-if env != "PROD":
+if ENV != "PROD":
     from ollama import ChatResponse, chat  # pip install ollama
 
     class OllamaProvider(LLMProvider):
@@ -149,14 +149,14 @@ if env != "PROD":
             return str(response.message.content), tokens
 
 
-@st.cache_resource(ttl=3600)
+@lru_cache(maxsize=10)
 def get_cached_llm_provider(
     provider_name: str, model: str, instruction: str
 ) -> LLMProvider:
     """
-    Get cached LLM provider (expires after 1 hour).
+    Get cached LLM provider.
 
-    Uses @st.cache_resource to reuse the same provider instance across requests
+    Uses @lru_cache to reuse the same provider instance across requests
     with the same parameters (provider, model, instruction).
     """
     # if provider_name == "Ollama":
@@ -172,7 +172,7 @@ if __name__ == "__main__":
     prompt = "What is the capital of Germany?"
 
     # switch here
-    if env != "PROD":
+    if ENV != "PROD":
         llm_provider = OllamaProvider(instruction=instruction, model="llama3.2:1b")  # type: ignore
         # llm_provider = GeminiProvider(instruction=instruction, model="gemini-2.5-pro")
         print(llm_provider.call(prompt))

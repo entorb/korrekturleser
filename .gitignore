@@ -1,4 +1,4 @@
-# python
+# Python
 __pycache__/
 .coverage
 .DS_Store
@@ -6,12 +6,12 @@ __pycache__/
 .pytest_cache/
 coverage_report/
 
-# project dirs
+# Javascript
+node_modules
 
 # files
-download.sh
-requirements-all.txt
+.env
 requirements.txt
-secrets.toml
-src/reports/r99_playground.py
 coverage.xml
+GEMINI.md
+CLAUDE.md

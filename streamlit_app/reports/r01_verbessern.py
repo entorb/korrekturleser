@@ -5,79 +5,28 @@ import logging
 from pathlib import Path
 
 import streamlit as st
+from helper import where_am_i
 from st_copy import copy_button
 
-from helper import get_shared_state
-from helper_db import db_insert_usage
-from llm_provider import get_cached_llm_provider
+from shared.config import (
+    INSTRUCTION_CORRECT,
+    INSTRUCTION_EXPAND,
+    INSTRUCTION_IMPROVE,
+    INSTRUCTION_SUMMARIZE,
+    INSTRUCTION_TRANSLATE_DE,
+    INSTRUCTION_TRANSLATE_EN,
+    LLM_MODEL,
+    LLM_PROVIDER,
+)
+from shared.helper_db import db_insert_usage
+from shared.llm_provider import get_cached_llm_provider
 
 st.title("Textverbesserung")
 logger = logging.getLogger(Path(__file__).stem)
 
-
-# LLM_PROVIDER, MODEL = ("Ollama", "llama3.2:1b")
-# LLM_PROVIDER, MODEL = ("Gemini", "gemini-2.5-flash-pro")
-# LLM_PROVIDER, MODEL = ("Gemini", "gemini-2.5-flash")
-LLM_PROVIDER, MODEL = ("Gemini", "gemini-2.5-flash-lite")
-
-# Korrigieren
-INSTRUCTION1 = """
-Input
-- zu verbessernder Text
-Task
-- Korrekturlesen: Rechtschreibung, Grammatik und Zeichensetzung korrigieren.
-Output
-- korrigierter Text
-- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc.
-- keine Kommentare
-- Struktur und Zeilenumbrüche nicht ändern.
-- Format: reiner Text, keine Markdown-Formatierung.
-"""
-
-# Verbessern
-INSTRUCTION2 = """
-Input
-- zu verbessernder Text
-Task
-- Korrekturlesen: Rechtschreibung, Grammatik und Zeichensetzung korrigieren.
-- Text verbessern
-Output
-- verbesserter Text
-- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc.
-- keine Kommentare
-- Format: einfacher Text, keine Markdown-Formatierung.
-"""
-
-# Zusammenfassen
-INSTRUCTION3 = """
-Input
-- Text zum Zusammenfassen
-Task
-- Text in Stichpunkten zusammenfassen
-Output
-- immer Kurz-Zusammenfassung in max. 3 Stichpunkten
-- bei längerem Text zusätzlich ausführlichere Zusammenfassung in gegliederten Stichpunkten
-- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc.
-- keine Kommentare
-- Format: Markdown mit Abschnitten und Stichpunkten
-"""  # noqa: E501
-
-# Text aus Stichpunkten
-INSTRUCTION4 = """
-Input
-- Stichpunkte
-Tasks
-- Erstelle einen Text/Brief aus Stichpunkten
-Output
-- Text
-- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc.
-- keine Kommentare
-- Format: einfacher Text, keine Markdown-Formatierung.
-"""
-
+ENV = where_am_i()
 
 USER_ID = st.session_state["USER_ID"]  # shortcut
-ENV = get_shared_state()["ENV"]
 
 
 st.markdown(
@@ -99,6 +48,8 @@ with st.form("Mein Text"):
     submit2 = cols[1].form_submit_button("Verbessern", type="primary")
     submit3 = cols[1].form_submit_button("Zusammenfassen", type="primary")
     submit4 = cols[1].form_submit_button("Text aus Stichpunkten", type="primary")
+    submit5a = cols[1].form_submit_button("Übersetzen -> DE", type="primary")
+    submit5b = cols[1].form_submit_button("Übersetzen -> EN", type="primary")
 
 # how to modify via JavaScript?
 # btn_test = st.button("Test")
@@ -109,22 +60,34 @@ with st.form("Mein Text"):
 #             </script>
 #             """)
 
-if st.session_state["ai_response"] != "" or submit1 or submit2 or submit3 or submit4:
+if (
+    st.session_state["ai_response"] != ""
+    or submit1
+    or submit2
+    or submit3
+    or submit4
+    or submit5a
+    or submit5b
+):
     if submit1:
-        instruction = INSTRUCTION1
+        instruction = INSTRUCTION_CORRECT
     elif submit2:
-        instruction = INSTRUCTION2
+        instruction = INSTRUCTION_IMPROVE
     elif submit3:
-        instruction = INSTRUCTION3
+        instruction = INSTRUCTION_SUMMARIZE
     elif submit4:
-        instruction = INSTRUCTION4
+        instruction = INSTRUCTION_EXPAND
+    elif submit5a:
+        instruction = INSTRUCTION_TRANSLATE_DE
+    elif submit5b:
+        instruction = INSTRUCTION_TRANSLATE_EN
     else:
         st.stop()
 
     st.subheader("KI Text")
 
     llm_provider = get_cached_llm_provider(
-        provider_name=LLM_PROVIDER, model=MODEL, instruction=instruction
+        provider_name=LLM_PROVIDER, model=LLM_MODEL, instruction=instruction
     )
     text_response, tokens = llm_provider.call(textarea_in)
     st.session_state["ai_response"] = text_response
@@ -152,7 +115,7 @@ if st.session_state["ai_response"] != "" or submit1 or submit2 or submit3 or sub
             icon="st",
         )
 
-    st.write(f"{tokens} Token verbraucht für {MODEL}")
+    st.write(f"{tokens} Token verbraucht für {LLM_MODEL}")
 
     if submit1 or submit2:
         st.subheader("Unterschied")
@@ -171,9 +134,8 @@ if st.session_state["ai_response"] != "" or submit1 or submit2 or submit3 or sub
         )
 
         # CSS styling for better diff visualization with mobile optimization
-        st.html(
-            f'<link rel="stylesheet" href="https://entorb.net/korrekturleser/table_diff.css">{diff_html}'
-        )
+        st.html(Path("streamlit_app/table_diff.css"))
+        st.html(diff_html)
 
     st.subheader("Anweisung")
     st.code(language="markdown", body=instruction)

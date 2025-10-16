@@ -6,19 +6,19 @@ from pathlib import Path
 
 import streamlit as st
 
-from helper_db import db_select_usage_of_user, db_select_user_from_geheimnis
-
 # needs to be first streamlit command, so placed before the imports
 st.set_page_config(page_title="KI Korrekturleser", page_icon=":robot:", layout="wide")
 
-
-from helper import (
+from shared.helper import where_am_i
+from shared.helper_db import db_select_usage_of_user, db_select_user_from_geheimnis
+from streamlit_app.helper_streamlit import (
     create_navigation_menu,
-    get_shared_state,
     init_dev_session_state,
 )
 
 logger = logging.getLogger(Path(__file__).stem)
+
+ENV = where_am_i()
 
 
 def login() -> None:
@@ -38,7 +38,7 @@ def login() -> None:
             st.error("So nicht!")
             st.stop()
         st.session_state["USER_ID"] = user_id
-        st.session_state["USERNAME"] = username
+        st.session_state["USER_NAME"] = username
 
         # Get and store usage stats
         st.session_state["cnt_requests"], st.session_state["cnt_tokens"] = (
@@ -51,9 +51,7 @@ def login() -> None:
 
 
 def main() -> None:  # noqa: D103
-    # init env
-    env = get_shared_state()["ENV"]
-    if env == "PROD":
+    if ENV == "PROD":
         pass
     else:
         # for local running I skip the login and set the session infos
@@ -72,9 +70,9 @@ def main() -> None:  # noqa: D103
     _ = create_navigation_menu()
 
     # footer
-    if env == "PROD" and "USER_ID" in st.session_state:
+    if ENV == "PROD" and "USER_ID" in st.session_state:
         msg = (
-            f"{st.session_state['USERNAME']} hat bisher"
+            f"{st.session_state['USER_NAME']} hat bisher"
             f" {st.session_state['cnt_requests']} Anfragen"
             f" mit {st.session_state['cnt_tokens']} Token gestellt."
         )

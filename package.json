@@ -1,0 +1,8 @@
+{
+  "name": "korrekturleser",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "@cspell/dict-de-de": "^4.1.2"
+  }
+}

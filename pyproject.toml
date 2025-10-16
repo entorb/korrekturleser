@@ -1,10 +1,16 @@
 [project]
 dependencies = [
     "bcrypt>=4.2.0",
+    "fastapi>=0.115.0",
     "google-genai>=1.44.0",
     "mysql-connector-python>=9.4.0",
+    "pydantic>=2.10.0",
+    "pyjwt>=2.10.0",
+    "python-multipart>=0.0.20",
+    "slowapi>=0.1.9",
     "st-copy>=1.1.2",
     "streamlit==1.49.1",
+    "uvicorn[standard]>=0.34.0",
 ]
 name = "korrekturleser"
 version = "0.1.0"
@@ -13,7 +19,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 
 [tool.pytest.ini_options]
-pythonpath = "src"
+pythonpath = ["shared", "streamlit_app", "fastapi_app"]
 
 [dependency-groups]
 dev = [

@@ -1,15 +1,17 @@
-"""Helper Functions."""
+"""Helper Functions for Streamlit app."""
 
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import bcrypt
 import streamlit as st
+
+from shared.config import USER_ID_LOCAL, USER_NAME_LOCAL
+from shared.helper import where_am_i
 
 if TYPE_CHECKING:
     from streamlit.navigation.page import StreamlitPage
 
-PATH_ON_WEBSERVER = "/home/entorb/korrekturleser"
+ENV = where_am_i()
 
 
 @st.cache_resource
@@ -20,14 +22,14 @@ def get_shared_state() -> dict[str, str]:
     Prefilled with ENV (= where the app is running).
     """
     d: dict[str, str] = {}
-    d["ENV"] = "PROD" if Path(PATH_ON_WEBSERVER).is_dir() else "Local"
+    d["ENV"] = ENV
     return d
 
 
 def init_dev_session_state() -> None:
     """Set session variables needed for local dev without login."""
-    st.session_state["USER_ID"] = 1
-    st.session_state["USERNAME"] = "Torben"
+    st.session_state["USER_ID"] = USER_ID_LOCAL
+    st.session_state["USER_NAME"] = USER_NAME_LOCAL
     st.session_state["cnt_requests"] = 0
     st.session_state["cnt_tokens"] = 0
 
@@ -35,7 +37,7 @@ def init_dev_session_state() -> None:
 def create_navigation_menu() -> str:
     """Create and populate navigation menu."""
     lst: list[StreamlitPage] = []
-    for p in sorted(Path("src/reports").glob("*.py")):
+    for p in sorted(Path("streamlit_app/reports").glob("*.py")):
         f = p.stem
         if f.startswith("_"):
             continue
@@ -48,8 +50,3 @@ def create_navigation_menu() -> str:
     pg = st.navigation(lst)
     pg.run()
     return pg.url_path
-
-
-def verify_geheimnis(geheimnis: str, hashed_geheimnis: str) -> bool:
-    """Verify a plain text secret against a hashed secret."""
-    return bcrypt.checkpw(geheimnis.encode("utf-8"), hashed_geheimnis.encode("utf-8"))

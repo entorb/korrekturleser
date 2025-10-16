@@ -81,8 +81,8 @@ repos:
       - id: markdownlint
         args: ["--disable", "MD013"]
 
-  # # code spell check via cspell
-  # - repo: https://github.com/streetsidesoftware/cspell-cli
-  #   rev: v9.2.0
-  #   hooks:
-  #     - id: cspell
+  # code spell check via cspell
+  - repo: https://github.com/streetsidesoftware/cspell-cli
+    rev: v9.2.0
+    hooks:
+      - id: cspell
