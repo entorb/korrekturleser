@@ -81,11 +81,11 @@ def db_select_rows(query: str, param: tuple) -> list[tuple]:
 # for login
 
 
-def db_select_user_id_from_geheimnis_to_ses_state(geheimnis: str) -> None:
+def db_select_user_from_geheimnis(geheimnis: str) -> tuple[int, str]:
     """
-    Login: check if hashed token matches DB and stores id, name to session_state.
+    Login: check if hashed token matches DB and return user id and name.
 
-    stops if user unknown.
+    Returns (user_id, username) if credentials match, None otherwise.
 
     Note: Due to bcrypt's salted hashing, we cannot directly query for a
     matching hash. We must fetch all hashes and verify each one.
@@ -103,29 +103,19 @@ def db_select_user_id_from_geheimnis_to_ses_state(geheimnis: str) -> None:
         if len(row) == 3:  # noqa: PLR2004
             user_id, username, secret_hashed = row[0], row[1], row[2]
             if verify_geheimnis(geheimnis, str(secret_hashed)):
-                # Store user info in session state
-                st.session_state["USER_ID"] = int(user_id)
-                st.session_state["USERNAME"] = str(username)
-                db_select_usage_of_user_to_ses_state(
-                    user_id=st.session_state["USER_ID"]
-                )
-                return
+                return int(user_id), str(username)
 
     # No matching user found
-    st.error("So nicht!")
-    st.stop()
+    return 0, ""
 
 
-def db_select_usage_of_user_to_ses_state(user_id: int) -> None:
-    """Update count of requests and tokens into session_state."""
+def db_select_usage_of_user(user_id: int) -> tuple[int, int]:
+    """Get total count of requests and tokens for a user."""
     query = "SELECT SUM(cnt_requests), SUM(cnt_tokens) FROM history WHERE user_id = %s"
     row = db_select_1row(query=query, param=(user_id,))
-    if row and len(row) >= 2 and row[0] is not None and row[1] is not None:  # noqa: PLR2004
-        st.session_state["cnt_requests"] = int(row[0])
-        st.session_state["cnt_tokens"] = int(row[1])
-    else:
-        st.session_state["cnt_requests"] = 0
-        st.session_state["cnt_tokens"] = 0
+    if row and len(row) == 2 and row[0] is not None and row[1] is not None:  # noqa: PLR2004
+        return int(row[0]), int(row[1])
+    return 0, 0
 
 
 # update AI usage
