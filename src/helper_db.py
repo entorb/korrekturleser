@@ -12,6 +12,8 @@ import streamlit as st
 from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import MySQLConnectionPool, PooledMySQLConnection
 
+from helper import verify_geheimnis
+
 logger = logging.getLogger(Path(__file__).stem)
 
 
@@ -81,20 +83,37 @@ def db_select_rows(query: str, param: tuple) -> list[tuple]:
 
 def db_select_user_id_from_geheimnis_to_ses_state(geheimnis: str) -> None:
     """
-    Login: check if token is in DB and stores id, name to session_state.
+    Login: check if hashed token matches DB and stores id, name to session_state.
 
     stops if user unknown.
+
+    Note: Due to bcrypt's salted hashing, we cannot directly query for a
+    matching hash. We must fetch all hashes and verify each one.
+    For small user bases (<10 users), this is acceptable.
+
+    Performance: O(n) where n is number of users. Bcrypt verification is
+    intentionally slow (to prevent brute force), adding ~100ms per user.
     """
-    query = "SELECT id, name FROM user WHERE geheimnis = %s"
-    row = db_select_1row(query=query, param=(geheimnis,))
-    if row and len(row) == 2:  # noqa: PLR2004
-        user_id, username = row[0], row[1]
-        st.session_state["USER_ID"] = int(user_id)
-        st.session_state["USERNAME"] = str(username)
-        db_select_usage_of_user_to_ses_state(user_id=st.session_state["USER_ID"])
-    else:
-        st.error("So nicht!")
-        st.stop()
+    # Fetch id, name, and hashed secrets in a single query
+    query = "SELECT id, name, secret_hashed FROM user ORDER BY id"
+    rows = db_select_rows(query=query, param=())
+
+    # Verify the provided secret against each user's hashed secret
+    for row in rows:
+        if len(row) == 3:  # noqa: PLR2004
+            user_id, username, secret_hashed = row[0], row[1], row[2]
+            if verify_geheimnis(geheimnis, str(secret_hashed)):
+                # Store user info in session state
+                st.session_state["USER_ID"] = int(user_id)
+                st.session_state["USERNAME"] = str(username)
+                db_select_usage_of_user_to_ses_state(
+                    user_id=st.session_state["USER_ID"]
+                )
+                return
+
+    # No matching user found
+    st.error("So nicht!")
+    st.stop()
 
 
 def db_select_usage_of_user_to_ses_state(user_id: int) -> None:
