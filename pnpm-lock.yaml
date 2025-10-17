@@ -1,0 +1,22 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    devDependencies:
+      '@cspell/dict-de-de':
+        specifier: ^4.1.2
+        version: 4.1.2
+
+packages:
+
+  '@cspell/dict-de-de@4.1.2':
+    resolution: {integrity: sha512-pRb5bIQc2pJU6bVEsSfhMkB+XXJauaXg3KS+KjO38HBHAe2vg611keKYSkry90Rbn2KVMOLAVjN0hN/qiy5X0A==}
+
+snapshots:
+
+  '@cspell/dict-de-de@4.1.2': {}
