@@ -1,13 +1,6 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-
-const authStore = useAuthStore()
-
-onMounted(() => {
-  // Try to restore user session if token exists
-  authStore.fetchUserInfo()
-})
+// App component - root component for the application
+// Authentication state is restored by the router guard
 </script>
 
 <template>
