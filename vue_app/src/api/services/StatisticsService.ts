@@ -8,10 +8,11 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class StatisticsService {
     /**
-     * Get Usage Stats
-     * Get usage statistics (daily and total).
+     * Get All Users Stats
+     * Get usage statistics for all users (daily and total).
      *
-     * Only available in PROD environment and only for user_id=1 (admin).
+     * Only available for user_id=1 (admin).
+     * In PROD environment, returns data structure but with all values set to 0.
      *
      * Args:
      * current_user: Authenticated user (injected by dependency)
@@ -20,14 +21,14 @@ export class StatisticsService {
      * UsageStatsResponse: Daily and total usage statistics
      *
      * Raises:
-     * HTTPException: If not in PROD or user is not admin
+     * HTTPException: If user is not admin
      * @returns UsageStatsResponse Successful Response
      * @throws ApiError
      */
-    public static getUsageStatsApiStatsGet(): CancelablePromise<UsageStatsResponse> {
+    public static getAllUsersStatsApiStatsAllUsersGet(): CancelablePromise<UsageStatsResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/stats/',
+            url: '/api/stats/all-users',
         });
     }
     /**
