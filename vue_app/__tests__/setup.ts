@@ -12,7 +12,7 @@ vi.stubGlobal('localStorage', localStorageMock)
 // Mock import.meta.env for tests
 vi.stubGlobal('import.meta', {
   env: {
-    VITE_API_BASE_URL: 'http://localhost:8504',
+    VITE_API_BASE_URL: 'http://localhost:9002',
     DEV: true,
     PROD: false,
     BASE_URL: '/korrekturleser2/'

@@ -12,7 +12,8 @@ export class StatisticsService {
      * Get usage statistics for all users (daily and total).
      *
      * Only available for user_id=1 (admin).
-     * In PROD environment, returns data structure but with all values set to 0.
+     * - PROD: Queries database and returns data with all values set to 0
+     * - Local: Returns mock data for user Torben with all values set to 0
      *
      * Args:
      * current_user: Authenticated user (injected by dependency)

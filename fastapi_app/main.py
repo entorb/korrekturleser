@@ -27,6 +27,8 @@ app = FastAPI(
     title="KI Korrekturleser API",
     description="AI-powered text correction and improvement API",
     version="0.1.0",
+    # same root for prod and def to make debugging easier
+    root_path="/be/korrekturleser-fastapi",
 )
 
 # Add rate limiter to app state
