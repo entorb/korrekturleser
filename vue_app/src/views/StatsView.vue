@@ -36,7 +36,7 @@ async function loadStats() {
     myUsage.value = await api.stats.getMyUsageApiStatsMyUsageGet()
 
     try {
-      allStats.value = await api.stats.getUsageStatsApiStatsGet()
+      allStats.value = await api.stats.getAllUsersStatsApiStatsAllUsersGet()
     } catch {
       console.log('All stats not available (admin only)')
     }
@@ -69,16 +69,16 @@ function formatDate(dateStr: string): string {
 }
 
 const dailyHeaders = [
-  { title: 'Datum', key: 'date' },
-  { title: 'Nutzer', key: 'user_name' },
-  { title: 'Anfragen', key: 'cnt_requests' },
-  { title: 'Token', key: 'cnt_tokens' }
+  { title: '', key: 'date' },
+  { title: '', key: 'user_name' },
+  { title: '', key: 'cnt_requests' },
+  { title: '', key: 'cnt_tokens' }
 ]
 
 const totalHeaders = [
-  { title: 'Nutzer', key: 'user_name' },
-  { title: 'Anfragen gesamt', key: 'total_requests' },
-  { title: 'Token gesamt', key: 'total_tokens' }
+  { title: '', key: 'user_name' },
+  { title: '', key: 'total_requests' },
+  { title: '', key: 'total_tokens' }
 ]
 </script>
 
@@ -174,13 +174,6 @@ const totalHeaders = [
 
               <!-- Admin Statistics -->
               <div v-if="allStats">
-                <v-card
-                  variant="outlined"
-                  class="mb-4"
-                >
-                  <v-card-title>Statistiken aller Nutzer</v-card-title>
-                </v-card>
-
                 <!-- Total Usage Table -->
                 <v-card
                   variant="outlined"
@@ -193,6 +186,15 @@ const totalHeaders = [
                     :items-per-page="-1"
                     hide-default-footer
                   >
+                    <template #[`header.user_name`]>
+                      <v-icon title="Nutzer">mdi-account-outline</v-icon>
+                    </template>
+                    <template #[`header.total_requests`]>
+                      <v-icon title="Anfragen">mdi-send</v-icon>
+                    </template>
+                    <template #[`header.total_tokens`]>
+                      <v-icon title="Token">mdi-pound</v-icon>
+                    </template>
                     <template #[`item.total_requests`]="{ item }">
                       {{ formatNumber(item.total_requests) }}
                     </template>
@@ -210,6 +212,18 @@ const totalHeaders = [
                     :items="allStats.daily"
                     :items-per-page="10"
                   >
+                    <template #[`header.date`]>
+                      <v-icon title="Datum">mdi-calendar</v-icon>
+                    </template>
+                    <template #[`header.user_name`]>
+                      <v-icon title="Nutzer">mdi-account-outline</v-icon>
+                    </template>
+                    <template #[`header.cnt_requests`]>
+                      <v-icon title="Anfragen">mdi-send</v-icon>
+                    </template>
+                    <template #[`header.cnt_tokens`]>
+                      <v-icon title="Token">mdi-pound</v-icon>
+                    </template>
                     <template #[`item.date`]="{ item }">
                       {{ formatDate(item.date) }}
                     </template>
