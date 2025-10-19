@@ -1,12 +1,14 @@
+"""Config file for Gunicorn for prod deployment on entorb.net."""
+
 # apply changes via
 # supervisorctl restart korrekturleser-fastapi
 
 import os
 
-app_path = os.environ["HOME"] + "/korrekturleser/fastapi_app"
+app_path = os.environ["HOME"] + "/korrekturleser/"
 
 # Gunicorn configuration
-wsgi_app = "main:api"
+wsgi_app = "fastapi_app:main:api"
 bind = ":9002"
 chdir = app_path
 workers = 1
