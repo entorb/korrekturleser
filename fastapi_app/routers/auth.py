@@ -76,13 +76,20 @@ async def get_me(
     current_user: Annotated[UserInfoInternal, Depends(get_current_user)],
 ) -> UserInfoResponse:
     """
-    Get current authenticated user information.
+    Get current authenticated user information including usage statistics.
 
     Args:
         current_user: Injected by dependency
 
     Returns:
-        UserInfoResponse: Current user information (without user_id)
+        UserInfoResponse: Current user information with usage stats (without user_id)
 
     """
-    return UserInfoResponse(user_name=current_user.user_name)
+    # Get usage statistics
+    cnt_requests, cnt_tokens = db_select_usage_of_user(user_id=current_user.user_id)
+
+    return UserInfoResponse(
+        user_name=current_user.user_name,
+        cnt_requests=cnt_requests,
+        cnt_tokens=cnt_tokens,
+    )
