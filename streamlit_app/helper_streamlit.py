@@ -42,7 +42,7 @@ def create_navigation_menu() -> str:
         if f.startswith("_"):
             continue
         t = f[4:].replace("_", " ").title()
-        # stats page for debugging only visible for me
+        # playground only visible for me
         if f.startswith("r99") and st.session_state["USER_ID"] != 1:
             continue
 

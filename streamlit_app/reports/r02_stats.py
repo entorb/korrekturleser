@@ -16,9 +16,18 @@ ENV = where_am_i()
 
 st.title(Path(__file__).stem[4:].replace("_", " ").title())
 
-# double check, that this file is only access-able by me
-if st.session_state["USER_ID"] != 1:
-    st.stop()
+
+if ENV == "PROD":
+    cols = st.columns(2)
+
+    cols[0].subheader("Daily Usage")
+    df = db_select_usage_stats_daily(user_id=st.session_state["USER_ID"])
+    cols[0].dataframe(df, hide_index=True)
+
+    df = db_select_usage_stats_total(user_id=st.session_state["USER_ID"])
+    cols[1].subheader("Sum")
+    cols[1].dataframe(df, hide_index=True)
+
 
 cols = st.columns(2)
 
@@ -34,15 +43,3 @@ d = get_shared_state()
 shared_items = sorted([(k, str(v)) for k, v in d.items()])
 df = pd.DataFrame(shared_items, columns=["key", "value"])
 cols[1].dataframe(df, hide_index=True)
-
-
-if ENV == "PROD":
-    cols = st.columns(2)
-
-    cols[0].subheader("Daily Usage")
-    df = db_select_usage_stats_daily()
-    cols[0].dataframe(df, hide_index=True)
-
-    df = db_select_usage_stats_total()
-    cols[1].subheader("Sum")
-    cols[1].dataframe(df, hide_index=True)

@@ -15,7 +15,9 @@ from fastapi_app.schemas import (
     UserInfoResponse,
 )
 from shared.helper import where_am_i
-from shared.helper_db import db_select_usage_of_user, db_select_user_from_geheimnis
+from shared.helper_db import (
+    db_select_user_from_geheimnis,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -54,9 +56,6 @@ async def login(request: Request, login_request: LoginRequest) -> TokenResponse:
             detail="Invalid credentials",
         )
 
-    # Get usage statistics
-    cnt_requests, cnt_tokens = db_select_usage_of_user(user_id=user_id)
-
     # Create JWT token (includes user_id and username)
     token_data = {"user_id": user_id, "username": user_name}
     access_token = create_access_token(data=token_data)
@@ -65,9 +64,6 @@ async def login(request: Request, login_request: LoginRequest) -> TokenResponse:
 
     return TokenResponse(
         access_token=access_token,
-        user_name=user_name,
-        cnt_requests=cnt_requests,
-        cnt_tokens=cnt_tokens,
     )
 
 
@@ -76,20 +72,15 @@ async def get_me(
     current_user: Annotated[UserInfoInternal, Depends(get_current_user)],
 ) -> UserInfoResponse:
     """
-    Get current authenticated user information including usage statistics.
+    Get current authenticated user information.
 
     Args:
         current_user: Injected by dependency
 
     Returns:
-        UserInfoResponse: Current user information with usage stats (without user_id)
+        UserInfoResponse: Current user information
 
     """
-    # Get usage statistics
-    cnt_requests, cnt_tokens = db_select_usage_of_user(user_id=current_user.user_id)
-
     return UserInfoResponse(
         user_name=current_user.user_name,
-        cnt_requests=cnt_requests,
-        cnt_tokens=cnt_tokens,
     )

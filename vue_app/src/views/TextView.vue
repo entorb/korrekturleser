@@ -109,8 +109,6 @@ async function handleProcessText() {
       const diffHtml = generateDiff(textStore.inputText, result.text_ai)
       textStore.setDiffHtml(diffHtml)
     }
-
-    authStore.updateUsage(authStore.totalRequests + 1, authStore.totalTokens + result.tokens_used)
   } catch (err) {
     textStore.setError(err instanceof Error ? err.message : 'Fehler bei der Textverarbeitung')
     console.error('Text processing error:', err)
@@ -144,10 +142,6 @@ function handleLogout() {
   authStore.logout()
   router.push({ name: 'login' })
 }
-
-function formatNumber(num: number): string {
-  return num.toLocaleString()
-}
 </script>
 
 <template>
@@ -161,9 +155,6 @@ function formatNumber(num: number): string {
       <v-spacer />
 
       <span class="mr-4">{{ authStore.user?.user_name }}</span>
-      <span class="mr-4 text-caption">
-        Anfragen: {{ authStore.totalRequests }} | Token: {{ formatNumber(authStore.totalTokens) }}
-      </span>
 
       <v-btn
         icon

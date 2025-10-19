@@ -24,19 +24,9 @@ class TestAuthEndpoints:
         # Verify response structure
         assert "access_token" in data
         assert "token_type" in data
-        assert "user_name" in data
-        assert "cnt_requests" in data
-        assert "cnt_tokens" in data
 
         # Verify token type
         assert data["token_type"] == "bearer"  # noqa: S105
-
-        # Verify user data (mock mode)
-        assert data["user_name"] == "Torben"
-
-        # Verify usage stats (mock mode returns 0)
-        assert data["cnt_requests"] == 0
-        assert data["cnt_tokens"] == 0
 
         # Verify token is not empty
         assert len(data["access_token"]) > 0

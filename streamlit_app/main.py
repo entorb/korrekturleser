@@ -14,7 +14,9 @@ st.set_page_config(page_title="KI Korrekturleser", page_icon=":robot:", layout="
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from shared.helper import init_logging, where_am_i
-from shared.helper_db import db_select_usage_of_user, db_select_user_from_geheimnis
+from shared.helper_db import (
+    db_select_user_from_geheimnis,
+)
 from streamlit_app.helper_streamlit import (
     create_navigation_menu,
     init_dev_session_state,
@@ -45,10 +47,8 @@ def login() -> None:
         st.session_state["USER_ID"] = user_id
         st.session_state["USER_NAME"] = username
 
-        # Get and store usage stats
-        st.session_state["cnt_requests"], st.session_state["cnt_tokens"] = (
-            db_select_usage_of_user(user_id=user_id)
-        )
+        # init and store usage stats
+        st.session_state["cnt_requests"], st.session_state["cnt_tokens"] = (0, 0)
 
         del st.session_state[key_geheimnis]
         st.rerun()
