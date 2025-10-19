@@ -1,6 +1,7 @@
 """Statistics router for usage tracking and reporting."""
 
 import logging
+from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -25,14 +26,16 @@ router = APIRouter()
 ENV = where_am_i()
 
 
-@router.get("/")
-async def get_usage_stats(
+@router.get("/all-users")
+async def get_all_users_stats(
     current_user: Annotated[UserInfoInternal, Depends(get_current_user)],
 ) -> UsageStatsResponse:
     """
-    Get usage statistics (daily and total).
+    Get usage statistics for all users (daily and total).
 
-    Only available in PROD environment and only for user_id=1 (admin).
+    Only available for user_id=1 (admin).
+    - PROD: Queries database and returns data with all values set to 0
+    - Local: Returns mock data for user Torben with all values set to 0
 
     Args:
         current_user: Authenticated user (injected by dependency)
@@ -41,7 +44,7 @@ async def get_usage_stats(
         UsageStatsResponse: Daily and total usage statistics
 
     Raises:
-        HTTPException: If not in PROD or user is not admin
+        HTTPException: If user is not admin
 
     """
     # Restrict to admin user (same as Streamlit app)
@@ -51,46 +54,65 @@ async def get_usage_stats(
             detail="Access denied. Statistics only available for admin user.",
         )
 
-    if ENV != "PROD":
-        raise HTTPException(
-            status_code=503,
-            detail="Statistics only available in production environment",
-        )
+    if ENV == "PROD":
+        try:
+            # Get daily statistics as list of rows
+            daily_df = db_select_usage_stats_daily()
+            daily_stats = [
+                DailyUsage(
+                    date=row["date"],
+                    user_name=row["user_name"],
+                    cnt_requests=0,
+                    cnt_tokens=0,
+                )
+                for _, row in daily_df.iterrows()
+            ]
 
-    try:
-        # Get daily statistics as list of rows
-        daily_df = db_select_usage_stats_daily()
+            # Get total statistics as list of rows
+            total_df = db_select_usage_stats_total()
+            total_stats = [
+                TotalUsage(
+                    user_name=row["user_name"],
+                    total_requests=0,
+                    total_tokens=0,
+                )
+                for _, row in total_df.iterrows()
+            ]
+
+            logger.debug("User %s accessed usage statistics", current_user.user_name)
+
+            return UsageStatsResponse(daily=daily_stats, total=total_stats)
+
+        except Exception as e:
+            logger.exception("Error fetching usage stats")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to fetch usage statistics: {e!s}",
+            ) from e
+    else:
+        # Local mode: return mock data
+        today = datetime.now(UTC).date()
         daily_stats = [
             DailyUsage(
-                date=row["date"],
-                user_name=row["user_name"],
-                cnt_requests=row["cnt_requests"],
-                cnt_tokens=row["cnt_tokens"],
+                date=today,
+                user_name="Torben",
+                cnt_requests=0,
+                cnt_tokens=0,
             )
-            for _, row in daily_df.iterrows()
         ]
-
-        # Get total statistics as list of rows
-        total_df = db_select_usage_stats_total()
         total_stats = [
             TotalUsage(
-                user_name=row["user_name"],
-                total_requests=row["cnt_requests"],
-                total_tokens=row["cnt_tokens"],
+                user_name="Torben",
+                total_requests=0,
+                total_tokens=0,
             )
-            for _, row in total_df.iterrows()
         ]
 
-        logger.debug("User %s accessed usage statistics", current_user.user_name)
+        logger.debug(
+            "User %s accessed usage statistics (local mock)", current_user.user_name
+        )
 
         return UsageStatsResponse(daily=daily_stats, total=total_stats)
-
-    except Exception as e:
-        logger.exception("Error fetching usage stats")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to fetch usage statistics: {e!s}",
-        ) from e
 
 
 @router.get("/my-usage")
