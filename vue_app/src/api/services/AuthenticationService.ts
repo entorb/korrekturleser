@@ -43,13 +43,13 @@ export class AuthenticationService {
     }
     /**
      * Get Me
-     * Get current authenticated user information including usage statistics.
+     * Get current authenticated user information.
      *
      * Args:
      * current_user: Injected by dependency
      *
      * Returns:
-     * UserInfoResponse: Current user information with usage stats (without user_id)
+     * UserInfoResponse: Current user information
      * @returns UserInfoResponse Successful Response
      * @throws ApiError
      */

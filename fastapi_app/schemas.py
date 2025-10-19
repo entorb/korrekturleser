@@ -1,6 +1,6 @@
 """Pydantic schemas for request and response validation."""
 
-from datetime import datetime
+import datetime as dt
 from enum import Enum
 
 from pydantic import BaseModel, Field
@@ -18,9 +18,6 @@ class TokenResponse(BaseModel):
 
     access_token: str
     token_type: str = "bearer"  # noqa: S105
-    user_name: str
-    cnt_requests: int
-    cnt_tokens: int
 
 
 class UserInfoInternal(BaseModel):
@@ -31,11 +28,9 @@ class UserInfoInternal(BaseModel):
 
 
 class UserInfoResponse(BaseModel):
-    """User information response (external use - no user_id)."""
+    """User information response."""
 
     user_name: str
-    cnt_requests: int
-    cnt_tokens: int
 
 
 # Text improvement schemas
@@ -78,7 +73,7 @@ class ModesResponse(BaseModel):
 class DailyUsage(BaseModel):
     """Daily usage statistics."""
 
-    date: datetime
+    date: dt.date
     user_name: str
     cnt_requests: int
     cnt_tokens: int
@@ -88,8 +83,8 @@ class TotalUsage(BaseModel):
     """Total usage statistics."""
 
     user_name: str
-    total_requests: int
-    total_tokens: int
+    cnt_requests: int
+    cnt_tokens: int
 
 
 class UsageStatsResponse(BaseModel):

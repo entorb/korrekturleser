@@ -37,7 +37,7 @@ export const tokenManager = {
 export const api = {
   auth: AuthenticationService,
   text: TextImprovementService,
-  stats: StatisticsService
+  statistics: StatisticsService
 }
 
 // Re-export useful types and errors
