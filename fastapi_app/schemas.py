@@ -34,6 +34,8 @@ class UserInfoResponse(BaseModel):
     """User information response (external use - no user_id)."""
 
     user_name: str
+    cnt_requests: int
+    cnt_tokens: int
 
 
 # Text improvement schemas
