@@ -63,25 +63,25 @@ class TestMyUsage:
 
 
 class TestUsageStats:
-    """Test /api/stats/ endpoint (admin only)."""
+    """Test /api/stats/all-users endpoint (admin only)."""
 
     def test_stats_without_authentication(self, client: TestClient) -> None:
         """Test that stats require authentication."""
-        response = client.get("/api/stats/")
+        response = client.get("/api/stats/all-users")
 
         assert response.status_code == 403
 
     def test_stats_with_valid_admin_token_in_local_mode(
         self, client: TestClient, auth_headers: dict[str, str]
     ) -> None:
-        """Test stats endpoint fails in local mode (not PROD)."""
-        # User ID 1 is admin, but in local mode stats should not be available
-        response = client.get("/api/stats/", headers=auth_headers)
+        """Test stats endpoint returns data in local mode (with actual values)."""
+        # User ID 1 is admin, in local mode stats should show actual values
+        response = client.get("/api/stats/all-users", headers=auth_headers)
 
-        assert response.status_code == 503
+        assert response.status_code == 200
         data = response.json()
-        assert "detail" in data
-        assert "only available in production" in data["detail"]
+        assert "daily" in data
+        assert "total" in data
 
     @patch("fastapi_app.routers.stats.ENV", "PROD")
     @patch("fastapi_app.routers.stats.db_select_usage_stats_daily")
@@ -125,7 +125,7 @@ class TestUsageStats:
         )
         mock_total.return_value = total_data
 
-        response = client.get("/api/stats/", headers=auth_headers)
+        response = client.get("/api/stats/all-users", headers=auth_headers)
 
         assert response.status_code == 200
         data = response.json()
@@ -134,17 +134,17 @@ class TestUsageStats:
         assert "daily" in data
         assert "total" in data
 
-        # Verify daily stats
+        # Verify daily stats - in PROD mode, values should be 0
         assert len(data["daily"]) == 2
         assert data["daily"][0]["user_name"] == "Torben"
-        assert data["daily"][0]["cnt_requests"] == 10
-        assert data["daily"][0]["cnt_tokens"] == 1000
+        assert data["daily"][0]["cnt_requests"] == 0
+        assert data["daily"][0]["cnt_tokens"] == 0
 
-        # Verify total stats
+        # Verify total stats - in PROD mode, values should be 0
         assert len(data["total"]) == 1
         assert data["total"][0]["user_name"] == "Torben"
-        assert data["total"][0]["total_requests"] == 15
-        assert data["total"][0]["total_tokens"] == 1500
+        assert data["total"][0]["total_requests"] == 0
+        assert data["total"][0]["total_tokens"] == 0
 
     @patch("fastapi_app.routers.stats.ENV", "PROD")
     def test_stats_non_admin_user_denied_in_prod(self, client: TestClient) -> None:
@@ -162,7 +162,7 @@ class TestUsageStats:
         fake_token = jwt.encode(token_data, secret_key, algorithm="HS256")
 
         response = client.get(
-            "/api/stats/", headers={"Authorization": f"Bearer {fake_token}"}
+            "/api/stats/all-users", headers={"Authorization": f"Bearer {fake_token}"}
         )
 
         assert response.status_code == 403
@@ -181,7 +181,7 @@ class TestUsageStats:
         """Test error handling when database fails."""
         mock_daily.side_effect = Exception("Database error")
 
-        response = client.get("/api/stats/", headers=auth_headers)
+        response = client.get("/api/stats/all-users", headers=auth_headers)
 
         assert response.status_code == 500
         data = response.json()
@@ -207,7 +207,7 @@ class TestUsageStats:
             columns=["user_name", "cnt_requests", "cnt_tokens"]
         )
 
-        response = client.get("/api/stats/", headers=auth_headers)
+        response = client.get("/api/stats/all-users", headers=auth_headers)
 
         assert response.status_code == 200
         data = response.json()
