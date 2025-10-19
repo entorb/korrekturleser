@@ -8,8 +8,7 @@ import type { UsageStatsResponse } from '@/api'
 const router = useRouter()
 const authStore = useAuthStore()
 
-const myUsage = ref<Record<string, number | string> | null>(null)
-const allStats = ref<UsageStatsResponse | null>(null)
+const stats = ref<UsageStatsResponse | null>(null)
 const isLoading = ref(false)
 const error = ref<string | null>(null)
 
@@ -33,13 +32,7 @@ async function loadStats() {
   error.value = null
 
   try {
-    myUsage.value = await api.stats.getMyUsageApiStatsMyUsageGet()
-
-    try {
-      allStats.value = await api.stats.getAllUsersStatsApiStatsAllUsersGet()
-    } catch {
-      console.log('All stats not available (admin only)')
-    }
+    stats.value = await api.statistics.getAllStatsApiStatsGet()
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : 'Fehler beim Laden der Statistiken'
     console.error('Stats error:', err)
@@ -65,7 +58,7 @@ function formatNumber(num: number | string | undefined): string {
 
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr)
-  return date.toLocaleDateString()
+  return date.toLocaleDateString('de-DE')
 }
 
 const dailyHeaders = [
@@ -77,8 +70,8 @@ const dailyHeaders = [
 
 const totalHeaders = [
   { title: '', key: 'user_name' },
-  { title: '', key: 'total_requests' },
-  { title: '', key: 'total_tokens' }
+  { title: '', key: 'cnt_requests' },
+  { title: '', key: 'cnt_tokens' }
 ]
 </script>
 
@@ -133,109 +126,68 @@ const totalHeaders = [
             </v-alert>
 
             <!-- Stats Content -->
-            <div v-else-if="myUsage">
-              <!-- My Usage Section -->
+            <div v-else-if="stats">
+              <!-- Total Usage Table -->
               <v-card
                 variant="outlined"
                 class="mb-4"
               >
-                <v-card-text>
-                  <v-table density="compact">
-                    <thead>
-                      <tr>
-                        <th class="text-center" />
-                        <th class="text-center">
-                          <v-icon title="Anfragen">mdi-send</v-icon>
-                        </th>
-                        <th class="text-center">
-                          <v-icon title="Token">mdi-pound</v-icon>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td class="text-center">
-                          <v-icon title="Diese Sitzung">mdi-clock-outline</v-icon>
-                        </td>
-                        <td class="text-center">{{ formatNumber(authStore.totalRequests) }}</td>
-                        <td class="text-center">{{ formatNumber(authStore.totalTokens) }}</td>
-                      </tr>
-                      <tr>
-                        <td class="text-center">
-                          <v-icon title="Gesamt">mdi-chart-bar</v-icon>
-                        </td>
-                        <td class="text-center">{{ formatNumber(myUsage.total_requests) }}</td>
-                        <td class="text-center">{{ formatNumber(myUsage.total_tokens) }}</td>
-                      </tr>
-                    </tbody>
-                  </v-table>
-                </v-card-text>
+                <v-card-title class="text-h6">Gesamt</v-card-title>
+                <v-data-table
+                  :headers="totalHeaders"
+                  :items="stats.total"
+                  :items-per-page="-1"
+                  hide-default-footer
+                >
+                  <template #[`header.user_name`]>
+                    <v-icon title="Nutzer">mdi-account-outline</v-icon>
+                  </template>
+                  <template #[`header.cnt_requests`]>
+                    <v-icon title="Anfragen">mdi-send</v-icon>
+                  </template>
+                  <template #[`header.cnt_tokens`]>
+                    <v-icon title="Token">mdi-pound</v-icon>
+                  </template>
+                  <template #[`item.cnt_requests`]="{ item }">
+                    {{ formatNumber(item.cnt_requests) }}
+                  </template>
+                  <template #[`item.cnt_tokens`]="{ item }">
+                    {{ formatNumber(item.cnt_tokens) }}
+                  </template>
+                </v-data-table>
               </v-card>
 
-              <!-- Admin Statistics -->
-              <div v-if="allStats">
-                <!-- Total Usage Table -->
-                <v-card
-                  variant="outlined"
-                  class="mb-4"
+              <!-- Daily Usage Table -->
+              <v-card variant="outlined">
+                <v-card-title class="text-h6">Täglich</v-card-title>
+                <v-data-table
+                  :headers="dailyHeaders"
+                  :items="stats.daily"
+                  :items-per-page="10"
                 >
-                  <v-card-title class="text-h6">Gesamtnutzung pro Nutzer</v-card-title>
-                  <v-data-table
-                    :headers="totalHeaders"
-                    :items="allStats.total"
-                    :items-per-page="-1"
-                    hide-default-footer
-                  >
-                    <template #[`header.user_name`]>
-                      <v-icon title="Nutzer">mdi-account-outline</v-icon>
-                    </template>
-                    <template #[`header.total_requests`]>
-                      <v-icon title="Anfragen">mdi-send</v-icon>
-                    </template>
-                    <template #[`header.total_tokens`]>
-                      <v-icon title="Token">mdi-pound</v-icon>
-                    </template>
-                    <template #[`item.total_requests`]="{ item }">
-                      {{ formatNumber(item.total_requests) }}
-                    </template>
-                    <template #[`item.total_tokens`]="{ item }">
-                      {{ formatNumber(item.total_tokens) }}
-                    </template>
-                  </v-data-table>
-                </v-card>
-
-                <!-- Daily Usage Table -->
-                <v-card variant="outlined">
-                  <v-card-title class="text-h6">Tägliche Nutzung</v-card-title>
-                  <v-data-table
-                    :headers="dailyHeaders"
-                    :items="allStats.daily"
-                    :items-per-page="10"
-                  >
-                    <template #[`header.date`]>
-                      <v-icon title="Datum">mdi-calendar</v-icon>
-                    </template>
-                    <template #[`header.user_name`]>
-                      <v-icon title="Nutzer">mdi-account-outline</v-icon>
-                    </template>
-                    <template #[`header.cnt_requests`]>
-                      <v-icon title="Anfragen">mdi-send</v-icon>
-                    </template>
-                    <template #[`header.cnt_tokens`]>
-                      <v-icon title="Token">mdi-pound</v-icon>
-                    </template>
-                    <template #[`item.date`]="{ item }">
-                      {{ formatDate(item.date) }}
-                    </template>
-                    <template #[`item.cnt_requests`]="{ item }">
-                      {{ formatNumber(item.cnt_requests) }}
-                    </template>
-                    <template #[`item.cnt_tokens`]="{ item }">
-                      {{ formatNumber(item.cnt_tokens) }}
-                    </template>
-                  </v-data-table>
-                </v-card>
-              </div>
+                  <template #[`header.date`]>
+                    <v-icon title="Datum">mdi-calendar</v-icon>
+                  </template>
+                  <template #[`header.user_name`]>
+                    <v-icon title="Nutzer">mdi-account-outline</v-icon>
+                  </template>
+                  <template #[`header.cnt_requests`]>
+                    <v-icon title="Anfragen">mdi-send</v-icon>
+                  </template>
+                  <template #[`header.cnt_tokens`]>
+                    <v-icon title="Token">mdi-pound</v-icon>
+                  </template>
+                  <template #[`item.date`]="{ item }">
+                    {{ formatDate(item.date) }}
+                  </template>
+                  <template #[`item.cnt_requests`]="{ item }">
+                    {{ formatNumber(item.cnt_requests) }}
+                  </template>
+                  <template #[`item.cnt_tokens`]="{ item }">
+                    {{ formatNumber(item.cnt_tokens) }}
+                  </template>
+                </v-data-table>
+              </v-card>
             </div>
           </v-card-text>
         </v-card>

@@ -129,19 +129,6 @@ def db_select_user_from_geheimnis(geheimnis: str) -> tuple[int, str]:
     return 0, ""
 
 
-def db_select_usage_of_user(user_id: int) -> tuple[int, int]:
-    """Get total count of requests and tokens for a user."""
-    if ENV != "PROD":
-        logger.debug("Mock mode: Returning mock usage stats")
-        return 0, 0
-
-    query = "SELECT SUM(cnt_requests), SUM(cnt_tokens) FROM history WHERE user_id = %s"
-    row = db_select_1row(query=query, param=(user_id,))
-    if row and len(row) == 2 and row[0] is not None and row[1] is not None:  # noqa: PLR2004
-        return int(row[0]), int(row[1])
-    return 0, 0
-
-
 # update AI usage
 
 
@@ -174,48 +161,56 @@ ON DUPLICATE KEY UPDATE
 # queries for stats page
 
 
-def db_select_usage_stats_daily() -> pd.DataFrame:
-    """SELECT date, user_name, cnt_requests, cnt_tokens."""
-    col_names = ["date", "user_name", "cnt_requests", "cnt_tokens"]
+def db_select_usage_stats_total(user_id: int) -> pd.DataFrame:
+    """SELECT user_name, sum(cnt_requests), sum(cnt_tokens)."""
+    col_names = ["user_name", "cnt_requests", "cnt_tokens"]
 
     if ENV != "PROD":
         logger.debug("Mock mode: Returning empty stats")
         return pd.DataFrame(columns=col_names)
 
     sql = """
-SELECT h.date, u.name, h.cnt_requests, h.cnt_tokens
-FROM history h
-JOIN user u on h.user_id = u.id
-ORDER BY h.date DESC, u.name ASC
+SELECT u.name, SUM(h.cnt_requests) AS cnt_requests, SUM(h.cnt_tokens) AS cnt_tokens
+FROM user u
+JOIN history h on h.user_id = u.id
+WHERE i.id = %s
+GROUP BY u.name
+ORDER BY cnt_tokens DESC, u.name ASC
 """
-    res = db_select_rows(sql, param=())
+    # user 1 (admin get's to see all users usages)
+    if user_id == 1:
+        sql = sql.replace("WHERE", "-- WHERE", 1)
+    res = db_select_rows(sql, param=(user_id,))
+
     if not res:
         return pd.DataFrame(columns=col_names)
     return pd.DataFrame(res, columns=col_names)
 
 
-def db_select_usage_stats_total() -> pd.DataFrame:
-    """SELECT user_name, sum(cnt_requests), sum(cnt_tokens)."""
-    col_names = ["Wer", "Wie oft", "Wie viele"]
+def db_select_usage_stats_daily(user_id: int) -> pd.DataFrame:
+    """SELECT date, user_name, cnt_requests, cnt_tokens."""
+    col_names = ["date", "user_name", "cnt_requests", "cnt_tokens"]
 
     if ENV != "PROD":
-        logger.debug("Mock mode: Returning empty stats")
+        logger.info("Mock mode: Returning empty stats")
         return pd.DataFrame(columns=col_names)
 
     sql = """
-SELECT u.name, SUM(h.cnt_requests), SUM(h.cnt_tokens)
-FROM history h
-JOIN user u on h.user_id = u.id
-GROUP BY u.name
-ORDER BY u.name ASC
+SELECT h.date, u.name, h.cnt_requests, h.cnt_tokens
+FROM user u
+JOIN history h ON h.user_id = u.id
+WHERE i.id = %s
+ORDER BY h.date DESC, u.name ASC
 """
-    res = db_select_rows(sql, param=())
-
+    # user 1 (admin get's to see all users usages)
+    if user_id == 1:
+        sql = sql.replace("WHERE", "-- WHERE", 1)
+    res = db_select_rows(sql, param=(user_id,))
     if not res:
         return pd.DataFrame(columns=col_names)
     return pd.DataFrame(res, columns=col_names)
 
 
 if __name__ == "__main__":
-    res = db_select_usage_stats_total()
+    res = db_select_usage_stats_total(1)
     print(res.to_csv())
