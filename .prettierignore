@@ -1,0 +1,18 @@
+# Build outputs
+coverage
+dist
+
+# Dependencies
+.venv
+.vite
+node_modules
+pnpm-lock.yaml
+public
+
+# Generated files
+*.d.ts
+vue_app/src/api/*
+
+# Cache
+.cspellcache
+.eslintcache

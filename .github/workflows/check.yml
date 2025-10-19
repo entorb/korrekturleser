@@ -1,0 +1,83 @@
+name: Check
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          fetch-depth: 1 # 0 if you want to push to repo
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Python set up
+        uses: actions/setup-python@v6
+        with:
+          python-version-file: '.python-version'
+
+      # --cov --cov-report=xml:coverage.xml
+      - name: Run pytest unittests
+        run: |
+          cp .env.example .env
+          uv run --frozen pytest tests/
+      - name: Run pre-commit hooks
+        uses: pre-commit/action@v3.0.1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+          run_install: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run type check
+        run: pnpm run type-check
+
+      - name: Run code formatter
+        run: pnpm run format
+
+      - name: Run linter
+        run: pnpm run lint
+
+      - name: Run spell checker
+        run: pnpm run spell
+
+      - name: Run unit tests
+        run: pnpm run test-cov
+
+      # pre-commit after at the end
+      - name: Run pre-commit hooks
+        uses: pre-commit/action@v3.0.1
+
+      # for SonarQube coverage report
+      # - name: SonarQube Scan
+      #   uses: SonarSource/sonarqube-scan-action@v6
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # - name: Minimize uv cache
+      #   run: uv cache prune --ci
