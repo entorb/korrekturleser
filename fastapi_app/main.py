@@ -10,15 +10,14 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from fastapi_app.routers import auth, stats, text
-from shared.helper import where_am_i
+from shared.helper import init_logging, where_am_i
 
 ENV = where_am_i()
+
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
+init_logging()
 logger = logging.getLogger(__name__)
+
 
 # Create rate limiter (disabled during testing)
 limiter = Limiter(key_func=get_remote_address, enabled=os.getenv("TESTING") != "1")
