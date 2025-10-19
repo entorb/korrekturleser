@@ -1,5 +1,6 @@
 """Shared helper functions for both Streamlit and FastAPI apps."""
 
+import logging
 import os
 from pathlib import Path
 
@@ -12,6 +13,16 @@ PATH_ON_WEBSERVER = "/home/entorb/korrekturleser"
 
 # Load environment variables from .env file in project root
 load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
+
+
+def init_logging() -> None:
+    """Initialize and and configure the logging."""
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("google_genai").setLevel(logging.WARNING)
 
 
 def my_get_env(key: str) -> str:

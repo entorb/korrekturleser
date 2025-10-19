@@ -3,13 +3,14 @@
 import logging
 import time
 from functools import lru_cache
+from pathlib import Path
 
 from google import genai  # pip install google-genai
 from google.genai import types as genai_types
 
 from shared.helper import my_get_env, where_am_i
 
-logger = logging.getLogger()  # get base logger
+logger = logging.getLogger(Path(__file__).stem)
 ENV = where_am_i()
 
 
@@ -101,7 +102,7 @@ class GeminiProvider(LLMProvider):
             and response.usage_metadata
             and response.usage_metadata.total_token_count
         ):
-            logger.info(
+            logger.debug(
                 "tokens: %d prompt + %d candidates = %d",
                 response.usage_metadata.prompt_token_count,
                 response.usage_metadata.candidates_token_count,
