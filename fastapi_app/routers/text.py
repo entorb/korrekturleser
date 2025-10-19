@@ -67,7 +67,7 @@ async def improve_text(
     if not instruction:
         raise HTTPException(status_code=400, detail=f"Invalid mode: {request.mode}")
 
-    logger.info(
+    logger.debug(
         "User %s requested %s for text length %d",
         current_user.user_name,
         request.mode,
@@ -89,7 +89,7 @@ async def improve_text(
         if ENV == "PROD":
             db_insert_usage(user_id=current_user.user_id, tokens=tokens_used)
 
-        logger.info(
+        logger.debug(
             "Successfully improved text for %s, used %d tokens",
             current_user.user_name,
             tokens_used,
