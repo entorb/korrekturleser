@@ -13,13 +13,14 @@ st.set_page_config(page_title="KI Korrekturleser", page_icon=":robot:", layout="
 # Add parent directory to path, required when deploying without uv
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from shared.helper import where_am_i
+from shared.helper import init_logging, where_am_i
 from shared.helper_db import db_select_usage_of_user, db_select_user_from_geheimnis
 from streamlit_app.helper_streamlit import (
     create_navigation_menu,
     init_dev_session_state,
 )
 
+init_logging()
 logger = logging.getLogger(Path(__file__).stem)
 
 ENV = where_am_i()
