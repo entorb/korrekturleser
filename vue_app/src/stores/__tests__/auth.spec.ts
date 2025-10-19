@@ -50,7 +50,11 @@ describe('Auth Store', () => {
     await store.login('test-secret')
 
     expect(tokenManager.set).toHaveBeenCalledWith('test-token')
-    expect(store.user).toEqual({ user_name: 'TestUser' })
+    expect(store.user).toEqual({
+      user_name: 'TestUser',
+      cnt_requests: 10,
+      cnt_tokens: 1000
+    })
     expect(store.totalRequests).toBe(10)
     expect(store.totalTokens).toBe(1000)
     expect(store.isAuthenticated).toBe(true)
@@ -60,7 +64,7 @@ describe('Auth Store', () => {
     const store = useAuthStore()
 
     // Set some initial state
-    store.user = { user_name: 'TestUser' }
+    store.user = { user_name: 'TestUser', cnt_requests: 10, cnt_tokens: 1000 }
     store.totalRequests = 10
     store.totalTokens = 1000
 

@@ -23,7 +23,11 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response: TokenResponse = await api.auth.loginApiAuthLoginPost({ secret })
       tokenManager.set(response.access_token)
-      user.value = { user_name: response.user_name }
+      user.value = {
+        user_name: response.user_name,
+        cnt_requests: response.cnt_requests,
+        cnt_tokens: response.cnt_tokens
+      }
       totalRequests.value = response.cnt_requests
       totalTokens.value = response.cnt_tokens
     } catch (err) {
@@ -40,7 +44,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     try {
-      user.value = await api.auth.getMeApiAuthMeGet()
+      const userInfo = await api.auth.getMeApiAuthMeGet()
+      user.value = {
+        user_name: userInfo.user_name,
+        cnt_requests: userInfo.cnt_requests,
+        cnt_tokens: userInfo.cnt_tokens
+      }
+      totalRequests.value = userInfo.cnt_requests
+      totalTokens.value = userInfo.cnt_tokens
     } catch {
       // Token might be invalid, logout
       logout()
