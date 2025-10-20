@@ -10,20 +10,14 @@ from fastapi_app.schemas import (
     ImproveRequest,
     ImproveResponse,
     ModesResponse,
-    TextMode,
     UserInfoInternal,
 )
 from shared.config import (
-    INSTRUCTION_CORRECT,
-    INSTRUCTION_EXPAND,
-    INSTRUCTION_IMPROVE,
-    INSTRUCTION_SUMMARIZE,
-    INSTRUCTION_TRANSLATE_DE,
-    INSTRUCTION_TRANSLATE_EN,
     LLM_MODEL,
     LLM_PROVIDER,
 )
 from shared.helper import where_am_i
+from shared.helper_ai import MODE_CONFIGS
 from shared.helper_db import db_insert_usage
 from shared.llm_provider import get_cached_llm_provider
 
@@ -31,16 +25,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 ENV = where_am_i()
-
-# Map modes to instructions
-MODE_INSTRUCTIONS = {
-    TextMode.CORRECT: INSTRUCTION_CORRECT,
-    TextMode.IMPROVE: INSTRUCTION_IMPROVE,
-    TextMode.SUMMARIZE: INSTRUCTION_SUMMARIZE,
-    TextMode.EXPAND: INSTRUCTION_EXPAND,
-    TextMode.TRANSLATE_DE: INSTRUCTION_TRANSLATE_DE,
-    TextMode.TRANSLATE_EN: INSTRUCTION_TRANSLATE_EN,
-}
 
 
 @router.post("/")
@@ -63,9 +47,11 @@ async def improve_text(
 
     """
     # Get instruction for mode
-    instruction = MODE_INSTRUCTIONS.get(request.mode)
-    if not instruction:
+    mode_config = MODE_CONFIGS.get(request.mode)
+    if not mode_config:
         raise HTTPException(status_code=400, detail=f"Invalid mode: {request.mode}")
+
+    instruction = mode_config.instruction
 
     logger.debug(
         "User %s requested %s for text length %d",
@@ -121,13 +107,8 @@ async def get_modes() -> ModesResponse:
 
     """
     return ModesResponse(
-        modes=[mode.value for mode in TextMode],
+        modes=list(MODE_CONFIGS.keys()),
         descriptions={
-            "correct": "Korrigiere Grammatik und Rechtschreibung",
-            "improve": "Verbessere den Text",
-            "summarize": "Fasse den Text zu Stichwörtern zusammen",
-            "expand": "Erstelle einen Text aus Stichwörtern",
-            "translate_de": "Übersetzen -> DE",
-            "translate_en": "Übersetzen -> EN",
+            mode: config.description for mode, config in MODE_CONFIGS.items()
         },
     )

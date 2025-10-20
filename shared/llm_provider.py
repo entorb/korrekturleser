@@ -117,7 +117,25 @@ class GeminiProvider(LLMProvider):
 
 # Ollama available only locally, not on webserver
 if ENV != "PROD":
-    from ollama import ChatResponse, chat  # pip install ollama
+    import random
+
+    from ollama import ChatResponse, chat  # uv add --dev ollama
+
+    class MockProvider(LLMProvider):
+        """Mocking LLM provider for local models."""
+
+        def __init__(self, instruction: str, model: str) -> None:
+            """Initialize Mock provider with instruction and model."""
+            super().__init__(instruction, model)
+            self.provider = "Mocked"
+            self.models = {"random"}
+            self.check_model_valid(model)
+
+        def call(self, prompt: str) -> tuple[str, int]:
+            """Call the LLM."""
+            tokens = random.randint(50, 200)  # noqa: S311
+            response = f"Mocked {prompt} response"
+            return response, tokens
 
     class OllamaProvider(LLMProvider):
         """Ollama LLM provider for local models."""
@@ -160,8 +178,9 @@ def get_cached_llm_provider(
     Uses @lru_cache to reuse the same provider instance across requests
     with the same parameters (provider, model, instruction).
     """
-    # if provider_name == "Ollama":
-    #     return OllamaProvider(instruction=instruction, model=model)
+    if ENV != "PROD":
+        return MockProvider(instruction=instruction, model="random")
+
     if provider_name == "Gemini":
         return GeminiProvider(instruction=instruction, model=model)
     msg = f"Unknown LLM provider: {provider_name}"
@@ -174,6 +193,7 @@ if __name__ == "__main__":
 
     # switch here
     if ENV != "PROD":
-        llm_provider = OllamaProvider(instruction=instruction, model="llama3.2:1b")  # type: ignore
+        llm_provider = MockProvider(instruction=instruction, model="random")  # type: ignore
+        # llm_provider = OllamaProvider(instruction=instruction, model="llama3.2:1b")
         # llm_provider = GeminiProvider(instruction=instruction, model="gemini-2.5-pro")
         print(llm_provider.call(prompt))

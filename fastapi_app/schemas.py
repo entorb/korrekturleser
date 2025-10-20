@@ -1,9 +1,14 @@
 """Pydantic schemas for request and response validation."""
 
 import datetime as dt
-from enum import Enum
+from typing import Literal
 
 from pydantic import BaseModel, Field
+
+# Define valid mode types
+TextMode = Literal[
+    "correct", "improve", "summarize", "expand", "translate_de", "translate_en"
+]
 
 
 # Authentication schemas
@@ -34,17 +39,6 @@ class UserInfoResponse(BaseModel):
 
 
 # Text improvement schemas
-class TextMode(str, Enum):
-    """Available improvement modes."""
-
-    CORRECT = "correct"  # Korrigieren
-    IMPROVE = "improve"  # Verbessern
-    SUMMARIZE = "summarize"  # Zusammenfassen
-    EXPAND = "expand"  # Text aus Stichpunkten
-    TRANSLATE_DE = "translate_de"  # Übersetzen -> DE
-    TRANSLATE_EN = "translate_en"  # Übersetzen -> EN
-
-
 class ImproveRequest(BaseModel):
     """Text improvement request schema."""
 
