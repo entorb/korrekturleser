@@ -54,49 +54,6 @@ class TestAuthEndpoints:
         # Pydantic validation should fail (required field)
         assert response.status_code == 422
 
-    def test_get_me_without_token(self, client: TestClient) -> None:
-        """Test /me endpoint without authentication token."""
-        response = client.get("/api/auth/me")
-
-        # Should require authentication
-        assert response.status_code == 403
-
-    def test_get_me_with_valid_token(self, client: TestClient) -> None:
-        """Test /me endpoint with valid authentication token."""
-        # First login to get token
-        login_response = client.post("/api/auth/login", json={"secret": "test"})
-        assert login_response.status_code == 200
-        token = login_response.json()["access_token"]
-
-        # Use token to access /me endpoint
-        response = client.get(
-            "/api/auth/me", headers={"Authorization": f"Bearer {token}"}
-        )
-
-        assert response.status_code == 200
-        data = response.json()
-
-        # Verify user info (user_id not included in response)
-        assert "user_id" not in data
-        assert data["user_name"] == "Torben"
-
-    def test_get_me_with_invalid_token(self, client: TestClient) -> None:
-        """Test /me endpoint with invalid authentication token."""
-        response = client.get(
-            "/api/auth/me", headers={"Authorization": "Bearer invalid_token"}
-        )
-
-        assert response.status_code == 401
-        data = response.json()
-        assert "detail" in data
-
-    def test_get_me_with_malformed_header(self, client: TestClient) -> None:
-        """Test /me endpoint with malformed authorization header."""
-        response = client.get("/api/auth/me", headers={"Authorization": "invalid"})
-
-        # Should fail due to malformed header
-        assert response.status_code == 403
-
     def test_login_rate_limiting_configuration(self) -> None:
         """
         Verify that login endpoint has rate limiting configured.

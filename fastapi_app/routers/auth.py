@@ -1,18 +1,15 @@
 """Authentication router for login and user management."""
 
 import logging
-from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, HTTPException, Request, status
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from fastapi_app.helper_fastapi import create_access_token, get_current_user
+from fastapi_app.helper_fastapi import create_access_token
 from fastapi_app.schemas import (
     LoginRequest,
     TokenResponse,
-    UserInfoInternal,
-    UserInfoResponse,
 )
 from shared.helper import where_am_i
 from shared.helper_db import (
@@ -64,14 +61,4 @@ async def login(request: Request, login_request: LoginRequest) -> TokenResponse:
 
     return TokenResponse(
         access_token=access_token,
-    )
-
-
-@router.get("/me")
-async def get_me(
-    current_user: Annotated[UserInfoInternal, Depends(get_current_user)],
-) -> UserInfoResponse:
-    """Get current authenticated user name."""
-    return UserInfoResponse(
-        user_name=current_user.user_name,
     )

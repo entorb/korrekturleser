@@ -13,8 +13,7 @@ export class StatisticsService {
      *
      * - Admin (user_id=1): Returns stats for all users
      * - Non-admin: Returns stats only for the current user (single row)
-     * - PROD: Queries database and returns data with all values set to 0
-     * - Local: Returns mock data with all values set to 0
+     * - PROD: Queries database, Local: Returns mock data with all values set to 0
      *
      * Args:
      * current_user: Authenticated user (injected by dependency)
