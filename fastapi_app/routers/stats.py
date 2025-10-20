@@ -33,8 +33,7 @@ async def get_all_stats(
 
     - Admin (user_id=1): Returns stats for all users
     - Non-admin: Returns stats only for the current user (single row)
-    - PROD: Queries database and returns data with all values set to 0
-    - Local: Returns mock data with all values set to 0
+    - PROD: Queries database, Local: Returns mock data with all values set to 0
 
     Args:
         current_user: Authenticated user (injected by dependency)
@@ -110,9 +109,5 @@ async def get_all_stats(
                 cnt_tokens=0,
             )
         ]
-
-        logger.debug(
-            "User %s accessed usage statistics (local mock)", current_user.user_name
-        )
 
         return UsageStatsResponse(daily=daily_stats, total=total_stats)

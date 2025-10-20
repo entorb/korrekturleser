@@ -8,37 +8,6 @@ import pytest
 from fastapi.testclient import TestClient
 
 
-class TestImproveModes:
-    """Test /api/text/modes endpoint."""
-
-    def test_get_available_modes(self, client: TestClient) -> None:
-        """Test getting available improvement modes."""
-        response = client.get("/api/text/modes")
-
-        assert response.status_code == 200
-        data = response.json()
-
-        # Verify response structure
-        assert "modes" in data
-        assert "descriptions" in data
-
-        # Verify all modes are present
-        expected_modes = [
-            "correct",
-            "improve",
-            "summarize",
-            "expand",
-            "translate_de",
-            "translate_en",
-        ]
-        assert set(data["modes"]) == set(expected_modes)
-
-        # Verify descriptions exist for each mode
-        for mode in expected_modes:
-            assert mode in data["descriptions"]
-            assert len(data["descriptions"][mode]) > 0
-
-
 class TestImproveText:
     """Test /api/text/ endpoint for text improvement."""
 

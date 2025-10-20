@@ -1,6 +1,7 @@
 """Helper: AI - Consolidated mode configuration."""
 
 from dataclasses import dataclass
+from typing import Literal
 
 
 @dataclass(frozen=True)
@@ -107,3 +108,9 @@ Output
         instruction=_INSTRUCTION_TRANSLATE.replace("<LANG>", "Englisch", 1),
     ),
 }
+
+
+# Type alias for valid text modes (for use in schemas and type hints)
+TextMode = Literal[
+    "correct", "improve", "summarize", "expand", "translate_de", "translate_en"
+]
