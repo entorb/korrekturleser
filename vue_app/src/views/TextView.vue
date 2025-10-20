@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useTextStore } from '@/stores/text'
 import { api } from '@/services/apiClient'
-import { TextMode } from '@/api'
+import { ImproveRequest } from '@/api'
 import { html } from 'diff2html'
 import { createTwoFilesPatch } from 'diff'
 import { marked } from 'marked'
@@ -23,13 +23,14 @@ const modeDescriptions = ref<Record<string, string>>({})
 const showDiff = computed(() => {
   return (
     textStore.outputText &&
-    (textStore.selectedMode === TextMode.CORRECT || textStore.selectedMode === TextMode.IMPROVE)
+    (textStore.selectedMode === ImproveRequest.mode.CORRECT ||
+      textStore.selectedMode === ImproveRequest.mode.IMPROVE)
   )
 })
 
 // Show markdown rendering for summarize mode
 const showMarkdown = computed(() => {
-  return textStore.outputText && textStore.selectedMode === TextMode.SUMMARIZE
+  return textStore.outputText && textStore.selectedMode === ImproveRequest.mode.SUMMARIZE
 })
 
 // Convert markdown to HTML
@@ -103,10 +104,10 @@ async function handleProcessText() {
     textStore.setLastResult(result)
 
     if (
-      textStore.selectedMode === TextMode.CORRECT ||
-      textStore.selectedMode === TextMode.IMPROVE
+      textStore.selectedMode === ImproveRequest.mode.CORRECT ||
+      textStore.selectedMode === ImproveRequest.mode.IMPROVE
     ) {
-      const diffHtml = generateDiff(textStore.inputText, result.text_ai)
+      const diffHtml = generateDiff(textStore.inputText + '\n\n', result.text_ai + '\n\n')
       textStore.setDiffHtml(diffHtml)
     }
   } catch (err) {

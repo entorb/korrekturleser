@@ -4,10 +4,10 @@
 
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { TextMode, type ImproveResponse } from '@/api'
+import { ImproveRequest, type ImproveResponse } from '@/api'
 
 export const useTextStore = defineStore('text', () => {
-  const selectedMode = ref<TextMode>(TextMode.CORRECT)
+  const selectedMode = ref<ImproveRequest.mode>(ImproveRequest.mode.CORRECT)
   const inputText = ref('')
   const outputText = ref('')
   const diffHtml = ref('')
@@ -22,7 +22,7 @@ export const useTextStore = defineStore('text', () => {
     outputText.value = text
   }
 
-  function setMode(mode: TextMode) {
+  function setMode(mode: ImproveRequest.mode) {
     selectedMode.value = mode
   }
 
@@ -51,7 +51,7 @@ export const useTextStore = defineStore('text', () => {
     diffHtml.value = ''
     lastResult.value = null
     error.value = null
-    selectedMode.value = TextMode.CORRECT
+    selectedMode.value = ImproveRequest.mode.CORRECT
   }
 
   return {

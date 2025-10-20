@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { TextMode } from './TextMode';
 /**
  * Text improvement request schema.
  */
@@ -14,6 +13,19 @@ export type ImproveRequest = {
     /**
      * Improvement mode
      */
-    mode: TextMode;
+    mode: ImproveRequest.mode;
 };
+export namespace ImproveRequest {
+    /**
+     * Improvement mode
+     */
+    export enum mode {
+        CORRECT = 'correct',
+        IMPROVE = 'improve',
+        SUMMARIZE = 'summarize',
+        EXPAND = 'expand',
+        TRANSLATE_DE = 'translate_de',
+        TRANSLATE_EN = 'translate_en',
+    }
+}
 
