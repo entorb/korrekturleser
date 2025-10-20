@@ -1,14 +1,10 @@
 """Pydantic schemas for request and response validation."""
 
 import datetime as dt
-from typing import Literal
 
 from pydantic import BaseModel, Field
 
-# Define valid mode types
-TextMode = Literal[
-    "correct", "improve", "summarize", "expand", "translate_de", "translate_en"
-]
+from shared.helper_ai import TextMode
 
 
 # Authentication schemas
@@ -43,7 +39,7 @@ class ImproveRequest(BaseModel):
     """Text improvement request schema."""
 
     text: str = Field(..., min_length=1, description="Text to improve")
-    mode: TextMode = Field(..., description="Improvement mode")
+    mode: TextMode = Field(..., description="Improvement mode")  # pyright: ignore[reportInvalidTypeForm]
 
 
 class ImproveResponse(BaseModel):
@@ -51,16 +47,9 @@ class ImproveResponse(BaseModel):
 
     text_original: str
     text_ai: str
-    mode: TextMode
+    mode: TextMode  # pyright: ignore[reportInvalidTypeForm]
     tokens_used: int
     model: str
-
-
-class ModesResponse(BaseModel):
-    """Available improvement modes response schema."""
-
-    modes: list[str] = Field(..., description="List of available mode identifiers")
-    descriptions: dict[str, str] = Field(..., description="Descriptions for each mode")
 
 
 # Statistics schemas

@@ -33,14 +33,14 @@ async def login(request: Request, login_request: LoginRequest) -> TokenResponse:
     """
     Authenticate user with secret and return JWT token.
 
-    Rate limit: 5 login attempts per minute per IP address.
+    Rate limited
 
     Args:
         request: FastAPI request object (for rate limiting)
         login_request: Login credentials containing secret
 
     Returns:
-        TokenResponse: JWT token and user information
+        TokenResponse: JWT token
 
     Raises:
         HTTPException: If credentials are invalid or rate limit exceeded
@@ -71,16 +71,7 @@ async def login(request: Request, login_request: LoginRequest) -> TokenResponse:
 async def get_me(
     current_user: Annotated[UserInfoInternal, Depends(get_current_user)],
 ) -> UserInfoResponse:
-    """
-    Get current authenticated user information.
-
-    Args:
-        current_user: Injected by dependency
-
-    Returns:
-        UserInfoResponse: Current user information
-
-    """
+    """Get current authenticated user name."""
     return UserInfoResponse(
         user_name=current_user.user_name,
     )

@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useTextStore } from '@/stores/text'
 import { api } from '@/services/apiClient'
 import { ImproveRequest } from '@/api'
+import { getAvailableModes, getModeDescriptions } from '@/config/modes'
 import { html } from 'diff2html'
 import { createTwoFilesPatch } from 'diff'
 import { marked } from 'marked'
@@ -16,8 +17,9 @@ const textStore = useTextStore()
 
 const isProcessing = ref(false)
 
-const modes = ref<string[]>([])
-const modeDescriptions = ref<Record<string, string>>({})
+// Auto-generated from ImproveRequest.mode enum
+const modes = getAvailableModes()
+const modeDescriptions = getModeDescriptions()
 
 // Show diff for correct and improve modes only
 const showDiff = computed(() => {
@@ -69,16 +71,7 @@ function generateDiff(original: string, improved: string): string {
   return diffHtml
 }
 
-onMounted(async () => {
-  try {
-    const modesData = await api.text.getModesApiTextModesGet()
-    modes.value = modesData.modes
-    modeDescriptions.value = modesData.descriptions
-  } catch (err) {
-    console.error('Failed to load modes:', err)
-    textStore.setError('Fehler beim Laden der Modi')
-  }
-
+onMounted(() => {
   window.addEventListener('keydown', handleKeyPress)
 })
 
