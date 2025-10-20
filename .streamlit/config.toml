@@ -10,6 +10,8 @@ messageFormat = "%(asctime)s\t%(levelname)s\t%(name)s\t%(message)s"
 showErrorDetails = "full"
 
 [runner]
+# Faster reruns for better mobile experience
+fastReruns = true
 
 [server]
 port = 8503
