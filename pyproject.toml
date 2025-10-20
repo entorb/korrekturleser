@@ -1,10 +1,12 @@
 [project]
 dependencies = [
     "bcrypt>=4.2.0",
+    "diff-match-patch>=20241021",
     "dotenv>=0.9.9",
     "fastapi>=0.115.0",
     "google-genai>=1.44.0",
     "mysql-connector-python>=9.4.0",
+    "nicegui>=3.0.4",
     "pydantic>=2.10.0",
     "pyjwt>=2.10.0",
     "slowapi>=0.1.9",
