@@ -4,6 +4,7 @@ import Vue from '@vitejs/plugin-vue'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import VueRouter from 'unplugin-vue-router/vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import legacy from '@vitejs/plugin-legacy'
 
 // Utilities
 import { defineConfig } from 'vite'
@@ -21,8 +22,8 @@ export default defineConfig({
     chunkSizeWarningLimit: 500,
     cssCodeSplit: true,
     minify: 'esbuild',
-    sourcemap: false,
-    target: 'esnext'
+    sourcemap: false
+    // target is handled by @vitejs/plugin-legacy below
   },
 
   optimizeDeps: {
@@ -96,6 +97,12 @@ export default defineConfig({
           }
         ]
       }
+    }),
+    // Support older browsers including iPhone 7 Safari
+    legacy({
+      targets: ['iOS >= 10', 'Safari >= 10'],
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+      modernPolyfills: true
     })
   ],
   define: { 'process.env': {} },
