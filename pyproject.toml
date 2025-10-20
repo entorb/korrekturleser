@@ -11,7 +11,7 @@ dependencies = [
     "pyjwt>=2.10.0",
     "slowapi>=0.1.9",
     "st-copy>=1.1.2",
-    "streamlit==1.49.1",
+    "streamlit==1.50.0",
 ]
 name = "korrekturleser"
 version = "0.1.0"
