@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useTextStore } from '../text'
-import { TextMode } from '@/api'
+import { ImproveRequest } from '@/api'
 
 describe('Text Store', () => {
   beforeEach(() => {
@@ -11,7 +11,7 @@ describe('Text Store', () => {
   it('initializes with default values', () => {
     const store = useTextStore()
 
-    expect(store.selectedMode).toBe(TextMode.CORRECT)
+    expect(store.selectedMode).toBe(ImproveRequest.mode.CORRECT)
     expect(store.inputText).toBe('')
     expect(store.outputText).toBe('')
     expect(store.diffHtml).toBe('')
@@ -38,9 +38,9 @@ describe('Text Store', () => {
   it('changes mode', () => {
     const store = useTextStore()
 
-    store.setMode(TextMode.IMPROVE)
+    store.setMode(ImproveRequest.mode.IMPROVE)
 
-    expect(store.selectedMode).toBe(TextMode.IMPROVE)
+    expect(store.selectedMode).toBe(ImproveRequest.mode.IMPROVE)
   })
 
   it('sets diff HTML', () => {
@@ -75,7 +75,7 @@ describe('Text Store', () => {
     // Set some data
     store.setInputText('Input text')
     store.setOutputText('Output text')
-    store.setMode(TextMode.SUMMARIZE)
+    store.setMode(ImproveRequest.mode.SUMMARIZE)
     store.setDiffHtml('<div>diff</div>')
 
     store.clearAll()
@@ -85,7 +85,7 @@ describe('Text Store', () => {
     expect(store.diffHtml).toBe('')
     expect(store.lastResult).toBeNull()
     expect(store.error).toBeNull()
-    expect(store.selectedMode).toBe(TextMode.CORRECT) // Reset to default
+    expect(store.selectedMode).toBe(ImproveRequest.mode.CORRECT) // Reset to default
   })
 
   it('sets last result', () => {
@@ -93,7 +93,7 @@ describe('Text Store', () => {
     const mockResult = {
       text_original: 'Original',
       text_ai: 'Improved',
-      mode: TextMode.IMPROVE,
+      mode: ImproveRequest.mode.IMPROVE,
       tokens_used: 100,
       model: 'gemini-2.5-flash'
     }

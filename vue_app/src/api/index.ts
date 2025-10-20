@@ -9,11 +9,10 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { DailyUsage } from './models/DailyUsage';
 export type { HTTPValidationError } from './models/HTTPValidationError';
-export type { ImproveRequest } from './models/ImproveRequest';
-export type { ImproveResponse } from './models/ImproveResponse';
+export { ImproveRequest } from './models/ImproveRequest';
+export { ImproveResponse } from './models/ImproveResponse';
 export type { LoginRequest } from './models/LoginRequest';
 export type { ModesResponse } from './models/ModesResponse';
-export { TextMode } from './models/TextMode';
 export type { TokenResponse } from './models/TokenResponse';
 export type { TotalUsage } from './models/TotalUsage';
 export type { UsageStatsResponse } from './models/UsageStatsResponse';
