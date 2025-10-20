@@ -29,6 +29,7 @@ MOCK_USERS = [
 ENV = where_am_i()
 
 
+# 1. MySQL functions
 @lru_cache(maxsize=1)
 def get_db_pool() -> MySQLConnectionPool:
     """Get cached database connection pool."""
@@ -90,21 +91,22 @@ def db_select_rows(query: str, param: tuple) -> list[tuple]:
         raise
 
 
-# for login
+# 2. Selects
 
 
 def db_select_user_from_geheimnis(geheimnis: str) -> tuple[int, str]:
     """
-    Login: check if hashed token matches DB and return user id and name.
+    Authenticate user by verifying secret against bcrypt-hashed passwords.
 
-    Returns (user_id, username) if credentials match, None otherwise.
+    Args:
+        geheimnis: The user's plaintext secret (password)
 
-    Note: Due to bcrypt's salted hashing, we cannot directly query for a
-    matching hash. We must fetch all hashes and verify each one.
-    For small user bases (<10 users), this is acceptable.
+    Returns:
+        (user_id, username) if authentication succeeds, (0, "") otherwise
 
-    Performance: O(n) where n is number of users. Bcrypt verification is
-    intentionally slow (to prevent brute force), adding ~100ms per user.
+    Note: Uses O(n) verification as bcrypt's salted hashing prevents direct
+    database queries. Acceptable for small user bases (<10 users).
+
     """
     # Mock mode for local development
     if ENV != "PROD":
