@@ -35,13 +35,13 @@ const router = createRouter({
 })
 
 // Navigation guard to check authentication
-router.beforeEach(async (to, _from, next) => {
+router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore()
   const requiresAuth = to.meta.requiresAuth !== false
 
   // Try to restore session if token exists but user is not authenticated
   if (!authStore.isAuthenticated && tokenManager.exists()) {
-    await authStore.fetchUserInfo()
+    authStore.loadUserFromToken()
   }
 
   if (requiresAuth && !authStore.isAuthenticated) {

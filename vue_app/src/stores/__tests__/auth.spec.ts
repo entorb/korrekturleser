@@ -2,12 +2,17 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useAuthStore } from '../auth'
 
+// Mock the JWT utilities
+vi.mock('@/utils/jwt', () => ({
+  decodeJwt: vi.fn(),
+  isTokenExpired: vi.fn()
+}))
+
 // Mock the API client
 vi.mock('@/services/apiClient', () => ({
   api: {
     auth: {
-      loginApiAuthLoginPost: vi.fn(),
-      getMeApiAuthMeGet: vi.fn()
+      loginApiAuthLoginPost: vi.fn()
     }
   },
   tokenManager: {
@@ -34,17 +39,22 @@ describe('Auth Store', () => {
 
   it('sets user as authenticated after successful login', async () => {
     const { api, tokenManager } = await import('@/services/apiClient')
+    const { decodeJwt, isTokenExpired } = await import('@/utils/jwt')
+
     const mockLoginResponse = {
       access_token: 'test-token',
       token_type: 'bearer'
     }
-    const mockUserInfo = {
-      user_name: 'TestUser'
+    const mockPayload = {
+      user_id: 1,
+      username: 'TestUser',
+      exp: Math.floor(Date.now() / 1000) + 3600
     }
 
     vi.mocked(api.auth.loginApiAuthLoginPost).mockResolvedValue(mockLoginResponse)
-    vi.mocked(api.auth.getMeApiAuthMeGet).mockResolvedValue(mockUserInfo)
-    vi.mocked(tokenManager.exists).mockReturnValue(true)
+    vi.mocked(tokenManager.get).mockReturnValue('test-token')
+    vi.mocked(isTokenExpired).mockReturnValue(false)
+    vi.mocked(decodeJwt).mockReturnValue(mockPayload)
 
     const store = useAuthStore()
     await store.login('test-secret')

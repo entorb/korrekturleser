@@ -15,7 +15,6 @@ export type { LoginRequest } from './models/LoginRequest';
 export type { TokenResponse } from './models/TokenResponse';
 export type { TotalUsage } from './models/TotalUsage';
 export type { UsageStatsResponse } from './models/UsageStatsResponse';
-export type { UserInfoResponse } from './models/UserInfoResponse';
 export type { ValidationError } from './models/ValidationError';
 
 export { AuthenticationService } from './services/AuthenticationService';

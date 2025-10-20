@@ -5,10 +5,15 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { api, tokenManager } from '@/services/apiClient'
-import type { TokenResponse, UserInfoResponse } from '@/api'
+import type { TokenResponse } from '@/api'
+import { decodeJwt, isTokenExpired } from '@/utils/jwt'
+
+interface UserInfo {
+  user_name: string
+}
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<UserInfoResponse | null>(null)
+  const user = ref<UserInfo | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -22,8 +27,8 @@ export const useAuthStore = defineStore('auth', () => {
       const response: TokenResponse = await api.auth.loginApiAuthLoginPost({ secret })
       tokenManager.set(response.access_token)
 
-      // Fetch user info after successful login
-      await fetchUserInfo()
+      // Extract user info from JWT token
+      loadUserFromToken()
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Login failed'
       throw err
@@ -32,16 +37,25 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  async function fetchUserInfo(): Promise<void> {
-    if (!tokenManager.exists()) {
+  function loadUserFromToken(): void {
+    const token = tokenManager.get()
+    if (!token) {
       return
     }
 
-    try {
-      const userInfo = await api.auth.getMeApiAuthMeGet()
-      user.value = userInfo
-    } catch {
-      // Token might be invalid, logout
+    // Check if token is expired
+    if (isTokenExpired(token)) {
+      logout()
+      return
+    }
+
+    // Decode JWT to get user info
+    const payload = decodeJwt(token)
+    if (payload) {
+      user.value = {
+        user_name: payload.username
+      }
+    } else {
       logout()
     }
   }
@@ -59,6 +73,6 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     login,
     logout,
-    fetchUserInfo
+    loadUserFromToken
   }
 })

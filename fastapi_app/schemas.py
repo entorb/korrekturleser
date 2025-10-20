@@ -28,12 +28,6 @@ class UserInfoInternal(BaseModel):
     user_name: str
 
 
-class UserInfoResponse(BaseModel):
-    """User information response."""
-
-    user_name: str
-
-
 # Text improvement schemas
 class ImproveRequest(BaseModel):
     """Text improvement request schema."""
