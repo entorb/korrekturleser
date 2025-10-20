@@ -2,10 +2,18 @@
 
 # ruff: noqa: PLR2004
 
+import os
+
 import pytest
 from fastapi.testclient import TestClient
 
 from fastapi_app.main import app
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _setup_test_env() -> None:
+    """Set up test environment variables before any tests run."""
+    os.environ["LLM_LOCAL"] = "Mock"
 
 
 @pytest.fixture(scope="session")
