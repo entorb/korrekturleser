@@ -9,7 +9,6 @@ from fastapi_app.helper_fastapi import get_current_user
 from fastapi_app.schemas import (
     ImproveRequest,
     ImproveResponse,
-    ModesResponse,
     UserInfoInternal,
 )
 from shared.config import (
@@ -95,20 +94,3 @@ async def improve_text(
             status_code=500,
             detail=f"Failed to improve text: {e!s}",
         ) from e
-
-
-@router.get("/modes")
-async def get_modes() -> ModesResponse:
-    """
-    Get available improvement modes.
-
-    Returns:
-        ModesResponse with available modes and descriptions
-
-    """
-    return ModesResponse(
-        modes=list(MODE_CONFIGS.keys()),
-        descriptions={
-            mode: config.description for mode, config in MODE_CONFIGS.items()
-        },
-    )
