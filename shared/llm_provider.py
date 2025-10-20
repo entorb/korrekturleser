@@ -1,6 +1,7 @@
 """Classes for different LLM providers."""
 
 import logging
+import random
 import time
 from functools import lru_cache
 from pathlib import Path
@@ -12,6 +13,8 @@ from shared.helper import my_get_env, where_am_i
 
 logger = logging.getLogger(Path(__file__).stem)
 ENV = where_am_i()
+LLM_PROD = my_get_env("LLM_PROD")
+LLM_LOCAL = my_get_env("LLM_LOCAL")
 
 
 @lru_cache(maxsize=1)
@@ -51,6 +54,23 @@ class LLMProvider:
         Returns a tuple containing the response text and the number of tokens consumed.
         """
         raise NotImplementedError
+
+
+class MockProvider(LLMProvider):
+    """Mocking LLM provider for local dev and tests."""
+
+    def __init__(self, instruction: str, model: str) -> None:
+        """Initialize Mock provider with instruction and model."""
+        super().__init__(instruction, model)
+        self.provider = "Mocked"
+        self.models = {"random"}
+        self.check_model_valid(model)
+
+    def call(self, prompt: str) -> tuple[str, int]:
+        """Call the LLM."""
+        tokens = random.randint(50, 200)  # noqa: S311
+        response = f"Mocked {prompt} response"
+        return response, tokens
 
 
 class GeminiProvider(LLMProvider):
@@ -116,26 +136,8 @@ class GeminiProvider(LLMProvider):
 
 
 # Ollama available only locally, not on webserver
-if ENV != "PROD":
-    import random
-
+if ENV != "PROD" and LLM_LOCAL == "Ollama":
     from ollama import ChatResponse, chat  # uv add --dev ollama
-
-    class MockProvider(LLMProvider):
-        """Mocking LLM provider for local models."""
-
-        def __init__(self, instruction: str, model: str) -> None:
-            """Initialize Mock provider with instruction and model."""
-            super().__init__(instruction, model)
-            self.provider = "Mocked"
-            self.models = {"random"}
-            self.check_model_valid(model)
-
-        def call(self, prompt: str) -> tuple[str, int]:
-            """Call the LLM."""
-            tokens = random.randint(50, 200)  # noqa: S311
-            response = f"Mocked {prompt} response"
-            return response, tokens
 
     class OllamaProvider(LLMProvider):
         """Ollama LLM provider for local models."""
@@ -170,7 +172,7 @@ if ENV != "PROD":
 
 @lru_cache(maxsize=10)
 def get_cached_llm_provider(
-    provider_name: str, model: str, instruction: str
+    provider_name: str = LLM_PROD, model: str = "", instruction: str = ""
 ) -> LLMProvider:
     """
     Get cached LLM provider.
@@ -178,11 +180,19 @@ def get_cached_llm_provider(
     Uses @lru_cache to reuse the same provider instance across requests
     with the same parameters (provider, model, instruction).
     """
-    if ENV != "PROD":
+    if ENV == "PROD":
+        if provider_name == "Gemini":
+            return GeminiProvider(instruction=instruction, model=model)
+        msg = f"Unknown LLM provider: {provider_name}"
+        raise ValueError(msg)
+
+    # ENV != "PROD":
+    if LLM_LOCAL == "Mock":
         return MockProvider(instruction=instruction, model="random")
 
-    if provider_name == "Gemini":
-        return GeminiProvider(instruction=instruction, model=model)
+    if LLM_LOCAL == "Ollama":
+        return OllamaProvider(instruction=instruction, model="llama3.2:1b")
+
     msg = f"Unknown LLM provider: {provider_name}"
     raise ValueError(msg)
 
@@ -193,7 +203,7 @@ if __name__ == "__main__":
 
     # switch here
     if ENV != "PROD":
-        llm_provider = MockProvider(instruction=instruction, model="random")  # type: ignore
-        # llm_provider = OllamaProvider(instruction=instruction, model="llama3.2:1b")
-        # llm_provider = GeminiProvider(instruction=instruction, model="gemini-2.5-pro")
+        llm_provider = get_cached_llm_provider(
+            provider_name="Mock", model="random", instruction=instruction
+        )
         print(llm_provider.call(prompt))
