@@ -14,7 +14,7 @@ fastReruns = true
 port = 8503
 maxUploadSize = 1
 fileWatcherType = "none"
-baseUrlPath = "/korrekturleser"
+baseUrlPath = "/korrekturleser-streamlit"
 
 [browser]
 gatherUsageStats = false
