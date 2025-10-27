@@ -15,6 +15,6 @@ vi.stubGlobal('import.meta', {
     VITE_API_BASE_URL: 'http://localhost:9002',
     DEV: true,
     PROD: false,
-    BASE_URL: '/korrekturleser2/'
+    BASE_URL: '/korrekturleser-vue/'
   }
 })

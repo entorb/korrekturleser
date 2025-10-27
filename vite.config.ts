@@ -16,7 +16,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 export default defineConfig({
   // TM: important when deploying not into the webserver root dir
   // error message "was blocked due to MIME type (“text/html”) mismatch"
-  base: '/korrekturleser2/',
+  base: '/korrekturleser-vue/',
   build: {
     assetsInlineLimit: 4096,
     chunkSizeWarningLimit: 500,
@@ -61,21 +61,21 @@ export default defineConfig({
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
-        scope: '/korrekturleser2/',
-        start_url: '/korrekturleser2/',
+        scope: '/korrekturleser-vue/',
+        start_url: '/korrekturleser-vue/',
         icons: [
           {
-            src: '/korrekturleser2/android-chrome-192x192.png',
+            src: '/korrekturleser-vue/android-chrome-192x192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: '/korrekturleser2/android-chrome-512x512.png',
+            src: '/korrekturleser-vue/android-chrome-512x512.png',
             sizes: '512x512',
             type: 'image/png'
           },
           {
-            src: '/korrekturleser2/apple-touch-icon.png',
+            src: '/korrekturleser-vue/apple-touch-icon.png',
             sizes: '180x180',
             type: 'image/png'
           }

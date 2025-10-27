@@ -21,7 +21,7 @@ maxUploadSize = 1 # MB
 address = "localhost"
 # this is modified by deploy.sh
 fileWatcherType = "watchdog"
-baseUrlPath = "/korrekturleser"
+baseUrlPath = "/korrekturleser-streamlit"
 
 [browser]
 gatherUsageStats = false
