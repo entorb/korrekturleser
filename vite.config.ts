@@ -52,11 +52,19 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'android-chrome-192x192.png'],
+      includeAssets: [
+        'favicon.svg',
+        'favicon.ico',
+        'favicon-16x16.png',
+        'favicon-32x32.png',
+        'apple-touch-icon.png',
+        'android-chrome-192x192.png',
+        'android-chrome-512x512.png'
+      ],
       manifest: {
-        name: 'Korrekturleser',
+        name: 'KI Korrekturleser - AI Text Correction',
         short_name: 'Korrekturleser',
-        description: 'Korrekturleser',
+        description: 'AI-powered text proofreading and improvement with Gemini',
         theme_color: '#1976d2',
         background_color: '#ffffff',
         display: 'standalone',
@@ -65,19 +73,40 @@ export default defineConfig({
         start_url: '/korrekturleser-vue/',
         icons: [
           {
+            src: '/korrekturleser-vue/favicon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any maskable'
+          },
+          {
+            src: '/korrekturleser-vue/favicon-32x32.png',
+            sizes: '32x32',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/korrekturleser-vue/favicon-16x16.png',
+            sizes: '16x16',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
             src: '/korrekturleser-vue/android-chrome-192x192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
           },
           {
             src: '/korrekturleser-vue/android-chrome-512x512.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
           },
           {
             src: '/korrekturleser-vue/apple-touch-icon.png',
             sizes: '180x180',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
           }
         ]
       },
