@@ -223,7 +223,6 @@ function handleLogout() {
                   v-model="textStore.outputText"
                   placeholder="KI-verbesserter Text erscheint hier..."
                   variant="outlined"
-                  readonly
                   rows="15"
                 />
                 <v-card
