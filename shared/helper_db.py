@@ -175,7 +175,7 @@ def db_select_usage_stats_total(user_id: int) -> pd.DataFrame:
 SELECT u.name, SUM(h.cnt_requests) AS cnt_requests, SUM(h.cnt_tokens) AS cnt_tokens
 FROM user u
 JOIN history h on h.user_id = u.id
-WHERE i.id = %s
+WHERE u.id = %s
 GROUP BY u.name
 ORDER BY cnt_tokens DESC, u.name ASC
 """
@@ -201,7 +201,7 @@ def db_select_usage_stats_daily(user_id: int) -> pd.DataFrame:
 SELECT h.date, u.name, h.cnt_requests, h.cnt_tokens
 FROM user u
 JOIN history h ON h.user_id = u.id
-WHERE i.id = %s
+WHERE u.id = %s
 ORDER BY h.date DESC, u.name ASC
 """
     # user 1 (admin get's to see all users usages)
