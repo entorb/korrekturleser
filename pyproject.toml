@@ -1,0 +1,35 @@
+[project]
+dependencies = [
+    "bcrypt>=4.2.0",
+    "diff-match-patch>=20241021",
+    "dotenv>=0.9.9",
+    "fastapi>=0.115.0",
+    "google-genai>=1.44.0",
+    "mysql-connector-python>=9.4.0",
+    "nicegui>=3.0.4",
+    "pydantic>=2.10.0",
+    "pyjwt>=2.10.0",
+    "slowapi>=0.1.9",
+    "st-copy>=1.1.2",
+    "streamlit==1.49.1",
+]
+name = "korrekturleser"
+version = "0.1.0"
+description = "KI Korrekturleser"
+readme = "README.md"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["shared", "streamlit_app", "fastapi_app"]
+
+[dependency-groups]
+dev = [
+    "ollama>=0.6.0",
+    "pre-commit>=4.3.0",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.14.0",
+    "tomli-w>=1.2.0",
+    "uvicorn[standard]>=0.34.0",
+    "watchdog>=6.0.0",
+]
