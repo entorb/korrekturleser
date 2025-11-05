@@ -48,7 +48,10 @@ function handleKeyPress(event: KeyboardEvent) {
 }
 
 function handleTextareaKeydown(event: KeyboardEvent) {
-  if (event.key === 'Enter' && event.shiftKey) {
+  if (
+    event.key === 'Enter' &&
+    (event.ctrlKey || event.metaKey) // ctrl+enter or command+enter
+  ) {
     event.preventDefault()
     if (textStore.inputText && !isProcessing.value) {
       handleProcessText()
