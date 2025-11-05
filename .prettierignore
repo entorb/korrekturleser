@@ -16,3 +16,6 @@ vue_app/src/api/*
 # Cache
 .cspellcache
 .eslintcache
+
+CLAUDE.md
+GEMINI.md
