@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { useAuthStore } from '../auth'
+import { useAuthStore } from './auth'
 
 // Mock the JWT utilities
 vi.mock('@/utils/jwt', () => ({
