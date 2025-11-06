@@ -118,10 +118,9 @@ export default defineConfig({
         ]
       }
     }),
-    // Support older browsers including iPhone 7 Safari
+    // Support iPhone 7+ with iOS 15+ (Safari 15+)
     legacy({
-      targets: ['iOS >= 10', 'Safari >= 10'],
-      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+      targets: ['iOS >= 15', 'Safari >= 15'],
       modernPolyfills: true
     })
   ],
