@@ -9,6 +9,7 @@ import { getAvailableModes, getModeDescriptions } from '@/config/modes'
 import { html } from 'diff2html'
 import { createTwoFilesPatch } from 'diff'
 import { marked } from 'marked'
+import { copyToClipboard as copyText, readFromClipboard } from '@/utils/clipboard'
 import 'diff2html/bundles/css/diff2html.min.css'
 
 const router = useRouter()
@@ -114,9 +115,9 @@ async function handleProcessText() {
   }
 }
 
-async function copyToClipboard() {
+async function handleCopyToClipboard() {
   try {
-    await navigator.clipboard.writeText(textStore.outputText)
+    await copyText(textStore.outputText)
   } catch (err) {
     console.error('Failed to copy:', err)
   }
@@ -124,7 +125,7 @@ async function copyToClipboard() {
 
 async function pasteFromClipboard() {
   try {
-    const text = await navigator.clipboard.readText()
+    const text = await readFromClipboard()
     textStore.setInputText(text)
   } catch (err) {
     console.error('Failed to paste:', err)
@@ -215,7 +216,7 @@ function handleLogout() {
                   <v-btn
                     icon
                     size="small"
-                    @click="copyToClipboard"
+                    @click="handleCopyToClipboard"
                     title="Kopieren"
                   >
                     <v-icon>mdi-content-copy</v-icon>
