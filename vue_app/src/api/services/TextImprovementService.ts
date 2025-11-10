@@ -25,12 +25,12 @@ export class TextImprovementService {
      * @returns ImproveResponse Successful Response
      * @throws ApiError
      */
-    public static improveTextApiTextPost(
+    public static improveTextApiPost(
         requestBody: ImproveRequest,
     ): CancelablePromise<ImproveResponse> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/text/',
+            url: '/api/',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
