@@ -55,7 +55,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
-app.include_router(text.router, prefix="/api/text", tags=["Text Improvement"])
+app.include_router(text.router, prefix="/api", tags=["Text Improvement"])
 app.include_router(stats.router, prefix="/api/stats", tags=["Statistics"])
 
 

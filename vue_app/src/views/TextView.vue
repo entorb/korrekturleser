@@ -92,7 +92,7 @@ async function handleProcessText() {
   textStore.setDiffHtml('')
 
   try {
-    const result = await api.text.improveTextApiTextPost({
+    const result = await api.text.improveTextApiPost({
       text: textStore.inputText,
       mode: textStore.selectedMode
     })
