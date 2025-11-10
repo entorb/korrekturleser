@@ -13,7 +13,7 @@
     "cy:open": "cypress open --e2e",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --cache --fix --ignore-pattern .gitignore",
-    "format": "prettier --cache --write vue_app/ cypress/ *.html *.ts *.json",
+    "format": "prettier --cache --write vue_app/ cypress/ *.html *.ts *.json --log-level silent",
     "spell": "cspell --cache --quiet \"vue_app/**/*.{txt,md,html,js,ts,vue,json,yml,py}\" \"docs/*\"",
     "spell-store": "cspell --cache --quiet --words-only --unique \"vue_app/**/*.{txt,md,html,js,ts,vue,json,yml,py}\" > cspell-unknown-words.txt",
     "check": "run-p format lint type-check spell test",
