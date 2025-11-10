@@ -7,12 +7,12 @@ from fastapi.testclient import TestClient
 
 
 class TestImproveText:
-    """Test /api/text/ endpoint for text improvement."""
+    """Test /api/ endpoint for text improvement."""
 
     def test_improve_without_authentication(self, client: TestClient) -> None:
         """Test that improvement requires authentication."""
         response = client.post(
-            "/api/text/",
+            "/api/",
             json={"text": "Hello world", "mode": "correct"},
         )
 
@@ -23,7 +23,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with CORRECT mode."""
         response = client.post(
-            "/api/text/",
+            "/api/",
             json={"text": "Hello World", "mode": "correct"},
             headers=auth_headers,
         )
@@ -43,7 +43,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with IMPROVE mode."""
         response = client.post(
-            "/api/text/",
+            "/api/",
             json={"text": "Simple text", "mode": "improve"},
             headers=auth_headers,
         )
@@ -62,7 +62,7 @@ class TestImproveText:
         long_text = "This is a very long text that needs to be summarized. " * 10
 
         response = client.post(
-            "/api/text/",
+            "/api/",
             json={"text": long_text, "mode": "summarize"},
             headers=auth_headers,
         )
@@ -79,7 +79,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with EXPAND mode."""
         response = client.post(
-            "/api/text/",
+            "/api/",
             json={"text": "- Point 1\n- Point 2", "mode": "expand"},
             headers=auth_headers,
         )
@@ -97,7 +97,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with TRANSLATE_DE mode."""
         response = client.post(
-            "/api/text/",
+            "/api/",
             json={"text": "Hello world", "mode": "translate_de"},
             headers=auth_headers,
         )
@@ -114,7 +114,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with TRANSLATE_EN mode."""
         response = client.post(
-            "/api/text/",
+            "/api/",
             json={"text": "Hallo Welt", "mode": "translate_en"},
             headers=auth_headers,
         )
@@ -131,7 +131,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with invalid mode."""
         response = client.post(
-            "/api/text/",
+            "/api/",
             json={"text": "Test text", "mode": "invalid_mode"},
             headers=auth_headers,
         )
@@ -144,7 +144,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with empty text."""
         response = client.post(
-            "/api/text/",
+            "/api/",
             json={"text": "", "mode": "correct"},
             headers=auth_headers,
         )
@@ -157,7 +157,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with missing text field."""
         response = client.post(
-            "/api/text/",
+            "/api/",
             json={"mode": "correct"},
             headers=auth_headers,
         )
@@ -170,7 +170,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with missing mode field."""
         response = client.post(
-            "/api/text/",
+            "/api/",
             json={"text": "Test text"},
             headers=auth_headers,
         )
@@ -183,7 +183,7 @@ class TestImproveText:
     ) -> None:
         """Test that text improvement works in local mode."""
         response = client.post(
-            "/api/text/",
+            "/api/",
             json={"text": "Test text", "mode": "correct"},
             headers=auth_headers,
         )
@@ -217,7 +217,7 @@ class TestInputValidation:
     ) -> None:
         """Test that all improvement modes work correctly."""
         response = client.post(
-            "/api/text/",
+            "/api/",
             json={"text": "Test text", "mode": mode},
             headers=auth_headers,
         )
