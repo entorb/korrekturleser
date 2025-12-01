@@ -1,7 +1,7 @@
 // Plugins
 import Components from 'unplugin-vue-components/vite'
 import Vue from '@vitejs/plugin-vue'
-import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 import VueRouter from 'unplugin-vue-router/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import legacy from '@vitejs/plugin-legacy'
@@ -32,15 +32,14 @@ export default defineConfig({
       'unplugin-vue-router/data-loaders',
       'unplugin-vue-router/data-loaders/basic'
     ],
-    include: ['vue', 'vue-router', 'vuetify']
+    include: ['vue', 'vue-router', 'quasar']
   },
   plugins: [
     Vue({
       template: { transformAssetUrls }
     }),
-    Vuetify({
-      autoImport: true,
-      styles: 'sass'
+    quasar({
+      sassVariables: 'vue_app/styles/quasar-variables.sass'
     }),
     vueDevTools(),
     VueRouter({
