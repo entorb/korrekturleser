@@ -15,6 +15,7 @@ from shared.helper import where_am_i
 from shared.helper_ai import MODE_CONFIGS
 from shared.helper_db import db_insert_usage
 from shared.llm_provider import get_cached_llm_provider
+from shared.texts import GOOGLE_DISCLAIMER
 
 st.title("Textverbesserung")
 logger = logging.getLogger(Path(__file__).stem)
@@ -23,11 +24,8 @@ ENV = where_am_i()
 
 USER_ID = st.session_state["USER_ID"]  # shortcut
 
-
-st.markdown(
-    "***Achtung***: *Die Google KI wird deine Eingaben zum Trainieren verwenden."
-    " Nur für Dinge verwenden, die nicht streng geheim sind.*"
-)
+if LLM_PROVIDER == "Gemini":
+    st.markdown(GOOGLE_DISCLAIMER)
 
 
 st.subheader("Mein Text")
@@ -65,9 +63,7 @@ if selected_mode:
 
     st.subheader("KI Text")
 
-    llm_provider = get_cached_llm_provider(
-        provider_name=LLM_PROVIDER, model=LLM_MODEL, instruction=instruction
-    )
+    llm_provider = get_cached_llm_provider(instruction=instruction)
     text_response, tokens = llm_provider.call(textarea_in)
     st.session_state["ai_response"] = text_response
 
