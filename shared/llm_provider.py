@@ -11,12 +11,11 @@ from google import genai  # pip install google-genai
 from google.genai import types as genai_types
 from openai import AzureOpenAI
 
+from .config import LLM_MODEL, LLM_PROVIDER
 from .helper import my_get_env, where_am_i
 
 logger = logging.getLogger(Path(__file__).stem)
 ENV = where_am_i()
-LLM_PROD = my_get_env("LLM_PROD")
-LLM_LOCAL = my_get_env("LLM_LOCAL")
 
 
 @lru_cache(maxsize=1)
@@ -193,7 +192,7 @@ class AzureOpenAIProvider(LLMProvider):
 
 
 # Ollama available only locally, not on webserver
-if ENV != "PROD" and LLM_LOCAL == "Ollama":
+if ENV != "PROD" and LLM_PROVIDER == "Ollama":
     from ollama import ChatResponse, chat  # uv add --dev ollama
 
     class OllamaProvider(LLMProvider):
@@ -229,7 +228,7 @@ if ENV != "PROD" and LLM_LOCAL == "Ollama":
 
 @lru_cache(maxsize=10)
 def get_cached_llm_provider(
-    provider_name: str = LLM_PROD, model: str = "", instruction: str = ""
+    provider_name: str = LLM_PROVIDER, model: str = LLM_MODEL, instruction: str = ""
 ) -> LLMProvider:
     """
     Get cached LLM provider.
@@ -237,21 +236,17 @@ def get_cached_llm_provider(
     Uses @lru_cache to reuse the same provider instance across requests
     with the same parameters (provider, model, instruction).
     """
-    if ENV == "PROD":
-        if provider_name == "Gemini":
-            return GeminiProvider(instruction=instruction, model=model)
-        msg = f"Unknown LLM provider: {provider_name}"
-        raise ValueError(msg)
+    if provider_name == "Gemini":
+        return GeminiProvider(instruction=instruction, model=model)
 
-    # ENV != "PROD":
-    if LLM_LOCAL == "Mock":
-        return MockProvider(instruction=instruction, model="random")
+    if provider_name == "Mock":
+        return MockProvider(instruction=instruction, model=model)
 
-    if LLM_LOCAL == "OpenAI_AzureDefaultAzureCredential":
-        return AzureOpenAIProvider(instruction=instruction, model="gpt-5-nano")
+    if provider_name == "OpenAI_AzureDefaultAzureCredential":
+        return AzureOpenAIProvider(instruction=instruction, model=model)
 
-    if LLM_LOCAL == "Ollama":
-        return OllamaProvider(instruction=instruction, model="llama3.2:1b")
+    if provider_name == "Ollama":
+        return OllamaProvider(instruction=instruction, model=model)
 
     msg = f"Unknown LLM provider: {provider_name}"
     raise ValueError(msg)
@@ -267,10 +262,6 @@ if __name__ == "__main__":
 
     # switch here
     if ENV != "PROD":
-        llm_provider = get_cached_llm_provider(
-            provider_name="OpenAI_AzureDefaultAzureCredential",
-            model="gpt-5-nano",
-            instruction=instruction,
-        )
+        llm_provider = get_cached_llm_provider(instruction=instruction)
         llm_provider.print_llm_and_model()
         print(llm_provider.call(prompt))
