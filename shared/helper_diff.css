@@ -1,0 +1,41 @@
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
+                 'Liberation Mono', monospace;
+    font-size: 13px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    background: white;
+}
+.comparison-table th {
+    background-color: #f6f8fa;
+    color: #1f2328;
+    padding: 12px;
+    font-weight: 600;
+    border-bottom: 2px solid #d0d7de;
+    text-align: center;
+    width: 50%;
+}
+.comparison-table td {
+    padding: 12px;
+    vertical-align: top;
+    border-bottom: 1px solid #d0d7de;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    width: 50%;
+}
+.comparison-table tr:last-child td {
+    border-bottom: none;
+}
+.comparison-table td:first-child {
+    border-right: 1px solid #d0d7de;
+}
+.diff-delete {
+    background-color: #ffebe9;
+    color: #1f2328;
+}
+.diff-insert {
+    background-color: #dafbe1;
+    color: #1f2328;
+}
