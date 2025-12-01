@@ -82,7 +82,7 @@ class TestTokenExpiration:
         token = login_response.json()["access_token"]
 
         # Decode token (without verification for testing)
-        secret_key = my_get_env("JWT_SECRET_KEY")
+        secret_key = my_get_env("FASTAPI_JWT_SECRET_KEY")
         payload = jwt.decode(token, secret_key, algorithms=["HS256"])
 
         # Verify payload contains correct data
@@ -96,7 +96,7 @@ class TestTokenExpiration:
         token = login_response.json()["access_token"]
 
         # Decode token
-        secret_key = my_get_env("JWT_SECRET_KEY")
+        secret_key = my_get_env("FASTAPI_JWT_SECRET_KEY")
         payload = jwt.decode(token, secret_key, algorithms=["HS256"])
 
         # Check expiration is approximately 24 hours from now
