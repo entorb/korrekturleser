@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import MySQLConnectionPool, PooledMySQLConnection
 
-from shared.helper import my_get_env, verify_geheimnis, where_am_i
+from .helper import my_get_env, verify_geheimnis, where_am_i
 
 # Load environment variables from .env file in project root
 load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
