@@ -13,7 +13,6 @@ from fastapi_app.schemas import (
 )
 from shared.config import (
     LLM_MODEL,
-    LLM_PROVIDER,
 )
 from shared.helper import where_am_i
 from shared.helper_ai import MODE_CONFIGS
@@ -61,11 +60,7 @@ async def improve_text(
 
     try:
         # Get LLM provider
-        llm_provider = get_cached_llm_provider(
-            provider_name=LLM_PROVIDER,
-            model=LLM_MODEL,
-            instruction=instruction,
-        )
+        llm_provider = get_cached_llm_provider(instruction=instruction)
 
         # Call LLM
         improved_text, tokens_used = llm_provider.call(request.text)
