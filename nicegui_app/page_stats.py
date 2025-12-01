@@ -3,11 +3,9 @@
 import logging
 from pathlib import Path
 
-import pandas as pd
 from nicegui import app, ui
 
-from shared.config import LLM_MODEL, LLM_PROVIDER
-from shared.helper import where_am_i
+from shared.helper import format_config_dataframe, format_session_dataframe
 from shared.helper_db import (
     db_select_usage_stats_daily,
     db_select_usage_stats_total,
@@ -21,7 +19,6 @@ from .helper_nicegui import (
 )
 
 logger = logging.getLogger(Path(__file__).stem)
-ENV = where_am_i()
 
 
 def create_stats_page() -> None:
@@ -90,14 +87,7 @@ def create_stats_page() -> None:
             # Config
             with ui.card().classes("flex-1"):
                 ui.label("Config").classes("text-h6 mb-4")
-                config_data = {
-                    "ENV": ENV,
-                    "LLM_PROVIDER": LLM_PROVIDER,
-                    "LLM_PROD_MODEL": LLM_MODEL,
-                }
-                # Convert to DataFrame with sorted items
-                config_items = sorted([(k, str(v)) for k, v in config_data.items()])
-                df_config = pd.DataFrame(config_items, columns=["key", "value"])
+                df_config = format_config_dataframe()
                 ui.table.from_pandas(df_config)
 
             # Session
@@ -110,6 +100,5 @@ def create_stats_page() -> None:
                     SESSION_CNT_REQUESTS: app.storage.user.get(SESSION_CNT_REQUESTS, 0),
                     SESSION_CNT_TOKENS: app.storage.user.get(SESSION_CNT_TOKENS, 0),
                 }
-                session_items = sorted([(k, str(v)) for k, v in session_data.items()])
-                df_session = pd.DataFrame(session_items, columns=["key", "value"])
+                df_session = format_session_dataframe(session_data)
                 ui.table.from_pandas(df_session)
