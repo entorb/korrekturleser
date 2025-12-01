@@ -7,6 +7,7 @@ from typing import NamedTuple
 
 from nicegui import ui
 
+from nicegui_app.config_nice import BASE_URL
 from shared.config import LLM_MODEL, LLM_PROVIDER
 from shared.helper import where_am_i
 from shared.helper_ai import MODE_CONFIGS
@@ -15,7 +16,6 @@ from shared.helper_diff import create_diff_html as create_diff_table
 from shared.llm_provider import get_cached_llm_provider
 from shared.texts import GOOGLE_DISCLAIMER
 
-from .config_nice import CSS_HEADER
 from .helper_nicegui import SessionManager
 
 logger = logging.getLogger(Path(__file__).stem)
@@ -54,16 +54,19 @@ class UIElements(NamedTuple):
 
 def _create_header() -> None:
     """Create page header with navigation."""
-    with ui.header().classes("items-center").style(CSS_HEADER):
+    with ui.header().classes("items-center").style("background-color: #1976d2;"):
         ui.label("KI Korrekturleser").classes("text-h5 font-weight-bold")
         ui.space()
         ui.label(SessionManager.get_user_name()).classes("mr-2")
-        ui.button(icon="settings", on_click=lambda: ui.navigate.to("/stats")).props(
-            "flat round"
-        ).tooltip("Statistik (Esc)")
+        ui.button(
+            icon="settings", on_click=lambda: ui.navigate.to(f"{BASE_URL}/stats")
+        ).props("flat round").tooltip("Statistik (Esc)")
         ui.button(
             icon="logout",
-            on_click=lambda: (SessionManager.logout(), ui.navigate.to("/login")),
+            on_click=lambda: (
+                SessionManager.logout(),
+                ui.navigate.to(f"{BASE_URL}/login"),
+            ),
         ).props("flat round").tooltip("Abmelden")
 
 
@@ -194,7 +197,7 @@ def _track_usage(tokens: int) -> None:
 def create_text_page() -> None:
     """Create main text improvement page."""
     if not SessionManager.is_authenticated():
-        ui.navigate.to("/login")
+        ui.navigate.to(f"{BASE_URL}/login")
         return
 
     state = ProcessingState()
@@ -203,7 +206,9 @@ def create_text_page() -> None:
 
     # Escape key handler for navigation to stats
     ui.keyboard(
-        on_key=lambda e: ui.navigate.to("/stats") if e.key == "Escape" else None
+        on_key=lambda e: ui.navigate.to(f"{BASE_URL}/stats")
+        if e.key == "Escape"
+        else None
     )
 
     _create_main_content(state)
