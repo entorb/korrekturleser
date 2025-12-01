@@ -17,6 +17,7 @@ hashpw
 httptools
 iconsets
 keepends
+keydown
 korrekturleser
 Korrekturleser
 levelname

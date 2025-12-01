@@ -23,29 +23,52 @@ ENV = where_am_i()
 NICEGUI_STORAGE_SECRET = my_get_env("NICEGUI_STORAGE_SECRET")
 
 
-# Define routes
-@ui.page("/")
-def index_page() -> None:
-    """Index page - text improvement page."""
-    # Auto-login for local development
+def _auto_login_if_local() -> None:
+    """Auto-login for local development."""
     if ENV != "PROD" and not SessionManager.is_authenticated():
         SessionManager.login(USER_ID_LOCAL, USER_NAME_LOCAL)
+        logger.info("Auto-login for local development")
+
+
+def _require_authentication() -> bool:
+    """
+    Ensure user is authenticated before accessing protected routes.
+
+    Returns True if authenticated, False otherwise (and redirects to login).
+    """
+    _auto_login_if_local()
+
+    if not SessionManager.is_authenticated():
+        ui.navigate.to("/login")
+        return False
+    return True
+
+
+# Define routes
+@ui.page("/login")
+def login_page() -> None:
+    """Login page."""
+    _auto_login_if_local()
 
     if SessionManager.is_authenticated():
-        create_text_page()
+        ui.navigate.to("/")
     else:
         create_login_page()
 
 
-@ui.page("/login")
-def login_page() -> None:
-    """Login page."""
-    create_login_page()
+@ui.page("/")
+def index_page() -> None:
+    """Index page - text improvement page (requires authentication)."""
+    if not _require_authentication():
+        return
+    create_text_page()
 
 
 @ui.page("/stats")
 def stats_page() -> None:
-    """Statistics page."""
+    """Statistics page (requires authentication)."""
+    if not _require_authentication():
+        return
     create_stats_page()
 
 
@@ -55,7 +78,7 @@ def main() -> None:
         title="KI Korrekturleser",
         favicon="🤖",
         storage_secret=NICEGUI_STORAGE_SECRET,
-        host="127.0.0.1",  # only listen for requests from local machine.
+        host="localhost",  # only listen for requests from local machine.
         port=8505,
         reload=ENV != "PROD",
     )

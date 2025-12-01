@@ -19,25 +19,22 @@ def create_login_page() -> None:
             label="Geheimnis", password=True, password_toggle_button=True
         ).classes("w-full")
 
-        error_label = ui.label("").classes("text-red text-center")
-        error_label.visible = False
-
         def handle_login() -> None:
             """Handle login submission."""
-            secret = secret_input.value
+            secret = secret_input.value.strip()
             if not secret:
-                error_label.text = "Bitte Geheimnis eingeben"
-                error_label.visible = True
+                ui.notify("Bitte Geheimnis eingeben", type="warning")
                 return
 
             # Verify credentials
-            user_id, username = db_select_user_from_geheimnis(secret_input.value)
+            user_id, username = db_select_user_from_geheimnis(secret)
             if user_id > 0:
                 SessionManager.login(user_id, username)
                 ui.notify("Login erfolgreich!", type="positive")
                 ui.navigate.to("/")
             else:
                 ui.notify("Falsches Passwort", type="negative")
+                secret_input.value = ""
 
         ui.button("Login", on_click=handle_login).classes("w-full").props(
             "color=primary"

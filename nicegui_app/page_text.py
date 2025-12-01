@@ -15,6 +15,7 @@ from shared.helper_diff import create_diff_html as create_diff_table
 from shared.llm_provider import get_cached_llm_provider
 from shared.texts import GOOGLE_DISCLAIMER
 
+from .config_nice import CSS_HEADER
 from .helper_nicegui import SessionManager
 
 logger = logging.getLogger(Path(__file__).stem)
@@ -53,7 +54,7 @@ class UIElements(NamedTuple):
 
 def _create_header() -> None:
     """Create page header with navigation."""
-    with ui.header().classes("items-center").style("background-color: #1976d2;"):
+    with ui.header().classes("items-center").style(CSS_HEADER):
         ui.label("KI Korrekturleser").classes("text-h5 font-weight-bold")
         ui.space()
         ui.label(SessionManager.get_user_name()).classes("mr-2")
