@@ -1,0 +1,6 @@
+"""Common text snippets used in the application."""
+
+GOOGLE_DISCLAIMER = (
+    "***Achtung***: *Die Google KI wird deine Eingaben zum Trainieren verwenden."
+    " Nur für Dinge verwenden, die nicht streng geheim sind.*"
+)
