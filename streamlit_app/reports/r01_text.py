@@ -109,5 +109,5 @@ if selected_mode:
         st.html(f"<style>{css_content}</style>")
         st.html(diff_html)
 
-    st.subheader("Anweisung")
-    st.code(language="markdown", body=instruction)
+    # st.subheader("Anweisung")
+    # st.code(language="markdown", body=instruction)
