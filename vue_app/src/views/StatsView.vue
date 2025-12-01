@@ -105,7 +105,7 @@ const totalHeaders = [
     </v-app-bar>
 
     <v-main>
-      <v-container>
+      <v-container fluid>
         <v-card>
           <v-card-text>
             <!-- Loading -->
