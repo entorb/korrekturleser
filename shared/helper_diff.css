@@ -1,8 +1,7 @@
 .comparison-table {
     width: 100%;
     border-collapse: collapse;
-    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
-                 'Liberation Mono', monospace;
+    font-family: monospace;
     font-size: 13px;
     border: 1px solid #d0d7de;
     border-radius: 6px;
@@ -32,10 +31,10 @@
     border-right: 1px solid #d0d7de;
 }
 .diff-delete {
-    background-color: #ffebe9;
+    background-color: #f35243;
     color: #1f2328;
 }
 .diff-insert {
-    background-color: #dafbe1;
+    background-color: #29f154;
     color: #1f2328;
 }
