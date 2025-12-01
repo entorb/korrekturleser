@@ -19,62 +19,55 @@ async function handleLogin() {
 </script>
 
 <template>
-  <v-container
-    fluid
-    class="fill-height"
-    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-  >
-    <v-row
-      align="center"
-      justify="center"
+  <q-page-container>
+    <q-page
+      class="flex flex-center"
+      style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
     >
-      <v-col
-        cols="12"
-        sm="8"
-        md="6"
-        lg="4"
-      >
-        <v-card>
-          <v-card-title class="text-h4 text-center"> KI Korrekturleser </v-card-title>
-          <v-card-subtitle class="text-center">
-            KI-gestützte Textkorrektur und -verbesserung
-          </v-card-subtitle>
+      <div style="width: 100%; max-width: 500px; padding: 20px">
+        <q-card>
+          <q-card-section>
+            <div class="text-h4 text-center">KI Korrekturleser</div>
+            <div class="text-subtitle2 text-center text-grey-7">
+              KI-gestützte Textkorrektur und -verbesserung
+            </div>
+          </q-card-section>
 
-          <v-card-text>
-            <v-form @submit.prevent="handleLogin">
-              <v-text-field
+          <q-card-section>
+            <q-form @submit.prevent="handleLogin">
+              <q-input
                 v-model="secret"
                 label="Geheimnis"
                 type="password"
-                :disabled="authStore.isLoading"
+                :disable="authStore.isLoading"
                 autocomplete="current-password"
-                variant="outlined"
+                outlined
                 required
+                class="q-mb-md"
               />
 
-              <v-alert
+              <q-banner
                 v-if="authStore.error"
-                type="error"
-                variant="tonal"
-                class="mb-4"
+                class="bg-negative text-white q-mb-md"
+                rounded
               >
                 {{ authStore.error }}
-              </v-alert>
+              </q-banner>
 
-              <v-btn
+              <q-btn
                 type="submit"
                 color="primary"
                 :loading="authStore.isLoading"
-                :disabled="!secret"
-                block
-                size="large"
-              >
-                Anmelden
-              </v-btn>
-            </v-form>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+                :disable="!secret"
+                unelevated
+                size="lg"
+                class="full-width"
+                label="Anmelden"
+              />
+            </q-form>
+          </q-card-section>
+        </q-card>
+      </div>
+    </q-page>
+  </q-page-container>
 </template>

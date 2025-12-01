@@ -151,7 +151,7 @@ korrekturleser/
 │   │   ├── stores/      # Pinia state stores (auth, text)
 │   │   ├── services/    # API client configuration
 │   │   ├── utils/       # Utilities (JWT decoding)
-│   │   └── plugins/     # Vuetify configuration
+│   │   └── plugins/     # Quasar configuration
 │   └── __tests__/       # Vitest unit tests
 ├── nicegui_app/         # NiceGUI application (V3 Standalone)
 │   ├── main.py          # App initialization, routing, auth guard
@@ -228,7 +228,7 @@ REST API with JWT authentication and three endpoint groups:
 
 ### Vue.js Application (`vue_app/`)
 
-Modern frontend with TypeScript, Vue 3, and Vuetify:
+Modern frontend with TypeScript, Vue 3, and Quasar:
 
 - **Auto-Generated API Client**: Types and services generated from OpenAPI spec
 - **JWT Token Management**: Client-side JWT decoding for user info (no `/me` endpoint needed)

@@ -191,7 +191,7 @@ REST API with JWT authentication:
 
 ### Vue.js Application (`vue_app/`)
 
-Modern frontend with TypeScript, Vue 3, and Vuetify:
+Modern frontend with TypeScript, Vue 3, and Quasar:
 
 - **`src/api/`**: Auto-generated from FastAPI OpenAPI spec
   - Services: `AuthenticationService`, `TextImprovementService`, `StatisticsService`
@@ -276,7 +276,6 @@ Key differences from V1/V2:
 - Reactive UI with NiceGUI (similar to Streamlit but more flexible)
 - Session storage instead of JWT tokens
 - Direct use of shared business logic (no REST API needed)
-- Consistent header styling matching Vue.js app (Vuetify primary blue)
 
 ### Authentication Flow
 
