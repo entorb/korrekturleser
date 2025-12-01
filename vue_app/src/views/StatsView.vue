@@ -20,11 +20,11 @@ function handleKeyPress(event: KeyboardEvent) {
 
 onMounted(async () => {
   await loadStats()
-  window.addEventListener('keydown', handleKeyPress)
+  globalThis.addEventListener('keydown', handleKeyPress)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeyPress)
+  globalThis.removeEventListener('keydown', handleKeyPress)
 })
 
 async function loadStats() {
@@ -52,7 +52,7 @@ function handleLogout() {
 
 function formatNumber(num: number | string | undefined): string {
   if (num === undefined || num === null) return '0'
-  const numValue = typeof num === 'string' ? parseInt(num, 10) : num
+  const numValue = typeof num === 'string' ? Number.parseInt(num, 10) : num
   return numValue.toLocaleString()
 }
 
