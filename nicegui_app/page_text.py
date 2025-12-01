@@ -51,30 +51,39 @@ class UIElements(NamedTuple):
 
 def _create_header() -> None:
     """Create page header with navigation."""
-    with ui.header().classes("items-center"):
-        ui.label("KI Korrekturleser").classes("text-h5")
+    with (
+        ui.header()
+        .classes("items-center")
+        .style("background: linear-gradient(90deg, #1976d2 0%, #1565c0 100%);")
+    ):
+        ui.label("KI Korrekturleser").classes("text-h5 font-weight-bold")
         ui.space()
-        ui.label(SessionManager.get_user_name()).classes("mr-4")
-        ui.link("Stats", "/stats").classes("text-white no-underline")
-        ui.link("Logout", "/").on("click", lambda: SessionManager.logout()).classes(
-            "text-white no-underline ml-4"
-        )
+        ui.label(SessionManager.get_user_name()).classes("mr-2")
+        ui.button(icon="settings", on_click=lambda: ui.navigate.to("/stats")).props(
+            "flat round"
+        ).tooltip("Statistik (Esc)")
+        ui.button(
+            icon="logout",
+            on_click=lambda: (SessionManager.logout(), ui.navigate.to("/")),
+        ).props("flat round").tooltip("Abmelden")
 
 
 def _create_input_column() -> ui.textarea:
     """Create input column and return textarea."""
     with ui.column().classes("flex-1"):
-        ui.label("Mein Text").classes("text-subtitle1")
+        with ui.row().classes("w-full items-center justify-between mb-2"):
+            with ui.row().classes("items-center gap-2"):
+                ui.icon("account_circle", size="md").classes("text-primary")
+                ui.label("Mein Text").classes("text-subtitle1")
+            ui.button(
+                icon="content_paste",
+                on_click=lambda: ui.notify("Bitte mit Strg+V / Cmd+V einfügen"),
+            ).props("flat round size=sm").tooltip("Einfügen")
         input_textarea = (
-            ui.textarea(label="Text hier eingeben...", value="")
+            ui.textarea(placeholder="Text hier eingeben...", value="")
             .classes("w-full")
-            .props("rows=15")
+            .props("outlined rows=15")
         )
-
-        ui.button(
-            icon="content_paste",
-            on_click=lambda: ui.notify("Bitte mit Strg+V / Cmd+V einfügen"),
-        ).props("flat size=sm").tooltip("Einfügen")
 
     return input_textarea
 
@@ -83,11 +92,19 @@ def _create_output_column() -> OutputElements:
     """Create output column and return UI elements."""
     output_column = ui.column().classes("flex-1")
     with output_column:
-        ui.label("KI Text").classes("text-subtitle1")
+        with ui.row().classes("w-full items-center justify-between mb-2"):
+            with ui.row().classes("items-center gap-2"):
+                ui.icon("smart_toy", size="md").classes("text-primary")
+                ui.label("KI Text").classes("text-subtitle1")
+            copy_btn = (
+                ui.button(icon="content_copy")
+                .props("flat round size=sm")
+                .tooltip("Kopieren")
+            )
         output_textarea = (
-            ui.textarea(label="KI-verbesserter Text erscheint hier...", value="")
+            ui.textarea(placeholder="KI-verbesserter Text erscheint hier...", value="")
             .classes("w-full")
-            .props("rows=15 readonly")
+            .props("outlined rows=15 readonly")
         )
         output_markdown = ui.markdown("")
 
@@ -97,10 +114,9 @@ def _create_output_column() -> OutputElements:
                 await ui.run_javascript(
                     f"navigator.clipboard.writeText({output_textarea.value!r})"
                 )
-                ui.notify("Kopiert!")
+                ui.notify("Kopiert!", type="positive")
 
-        copy_btn = ui.button(icon="content_copy", on_click=copy_to_clipboard)
-        copy_btn.props("flat size=sm").tooltip("Kopieren")
+        copy_btn.on("click", copy_to_clipboard)
 
     output_column.visible = False
     output_markdown.visible = False
@@ -177,10 +193,10 @@ def create_text_page() -> None:
 
 def _create_main_content(state: ProcessingState) -> None:
     """Create main content area."""
-    with ui.column().classes("w-full p-4"):
+    with ui.column().classes("w-full max-w-7xl mx-auto p-6 gap-4"):
         if LLM_PROVIDER == "Gemini":
-            with ui.card().classes("w-full"):
-                ui.markdown(GOOGLE_DISCLAIMER)
+            with ui.card().classes("w-full bg-blue-50"):
+                ui.markdown(GOOGLE_DISCLAIMER).classes("text-caption")
 
         # Create UI elements
         input_textarea, output, mode_select = _create_io_section()
@@ -218,23 +234,29 @@ def _create_io_section() -> tuple[ui.textarea, OutputElements, ui.select]:
         input_textarea = _create_input_column()
         output = _create_output_column()
 
-    mode_select = ui.select(
-        options={mode: config.description for mode, config in MODE_CONFIGS.items()},
-        value="correct",
-        label="Modus",
-    ).classes("flex-1")
+    mode_select = (
+        ui.select(
+            options={mode: config.description for mode, config in MODE_CONFIGS.items()},
+            value="correct",
+            label="Modus",
+        )
+        .classes("flex-grow-1")
+        .props("outlined")
+    )
 
     return input_textarea, output, mode_select
 
 
 def _create_control_section() -> tuple[ui.row, ui.button, ui.spinner]:
     """Create control section with mode selector and process button."""
-    control_row = ui.row().classes("w-full gap-2 items-end")
+    control_row = ui.row().classes("w-full gap-2 items-end mt-4")
     with control_row:
-        process_spinner = ui.spinner(size="lg")
+        process_spinner = ui.spinner(size="lg", color="primary")
         process_spinner.visible = False
         process_btn = ui.button(icon="smart_toy")
-        process_btn.props("color=primary size=lg").tooltip("KI verarbeiten")
+        process_btn.props("color=primary size=large unelevated").style(
+            "width: 56px; height: 56px"
+        ).tooltip("KI verarbeiten")
 
     return control_row, process_btn, process_spinner
 
