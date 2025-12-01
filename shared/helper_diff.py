@@ -4,7 +4,7 @@ import difflib
 import html
 
 
-def create_diff_html(text_in: str, text_ai: str) -> str:
+def create_diff_html(text_in: str, text_ai: str) -> str:  # noqa: C901
     """
     Create side-by-side comparison table with highlighted changes.
 
@@ -21,24 +21,26 @@ def create_diff_html(text_in: str, text_ai: str) -> str:
         """Highlight deletions in original text."""
         result = []
         for tag, i1, i2, _j1, _j2 in opcodes:
+            chunk = text[i1:i2]
+            if not chunk:  # Skip empty chunks
+                continue
             if tag == "equal":
-                result.append(html.escape(text[i1:i2]))
+                result.append(html.escape(chunk))
             elif tag in ("replace", "delete"):
-                result.append(
-                    f'<span class="diff-delete">{html.escape(text[i1:i2])}</span>'
-                )
+                result.append(f'<span class="diff-delete">{html.escape(chunk)}</span>')
         return "".join(result)
 
     def highlight_ai(text: str, opcodes: list) -> str:
         """Highlight insertions in AI text."""
         result = []
         for tag, _i1, _i2, j1, j2 in opcodes:
+            chunk = text[j1:j2]
+            if not chunk:  # Skip empty chunks
+                continue
             if tag == "equal":
-                result.append(html.escape(text[j1:j2]))
+                result.append(html.escape(chunk))
             elif tag in ("replace", "insert"):
-                result.append(
-                    f'<span class="diff-insert">{html.escape(text[j1:j2])}</span>'
-                )
+                result.append(f'<span class="diff-insert">{html.escape(chunk)}</span>')
         return "".join(result)
 
     # Get opcodes for character-level diff
