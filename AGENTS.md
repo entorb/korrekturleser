@@ -21,7 +21,7 @@ uv sync
 
 # Copy environment variables template
 cp .env.example .env
-# Then edit .env with your GEMINI_API_KEY and JWT_SECRET_KEY
+# Then edit .env with your GEMINI_API_KEY and FASTAPI_JWT_SECRET_KEY
 ```
 
 ## Running Applications
@@ -149,7 +149,7 @@ REST API with JWT authentication:
 - **`helper_fastapi.py`**: JWT authentication
   - `create_access_token()`: Creates JWT with 24h expiration
   - `get_current_user()`: FastAPI dependency for protected routes
-  - Uses HS256 algorithm with JWT_SECRET_KEY
+  - Uses HS256 algorithm with FASTAPI_JWT_SECRET_KEY
 
 - **`schemas.py`**: Pydantic models for request/response validation
   - `TextMode` Literal: Defines valid mode types
