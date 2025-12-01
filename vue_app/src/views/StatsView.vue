@@ -81,6 +81,12 @@ const totalHeaders = [
       color="primary"
       prominent
     >
+      <v-app-bar-title>Statistik</v-app-bar-title>
+
+      <v-spacer />
+
+      <span class="mr-4">{{ authStore.user?.user_name }}</span>
+
       <v-btn
         icon
         @click="goBack"
@@ -88,12 +94,6 @@ const totalHeaders = [
       >
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
-
-      <v-app-bar-title>Statistik</v-app-bar-title>
-
-      <v-spacer />
-
-      <span class="mr-4">{{ authStore.user?.user_name }}</span>
 
       <v-btn
         icon
@@ -163,7 +163,7 @@ const totalHeaders = [
                 <v-data-table
                   :headers="dailyHeaders"
                   :items="stats.daily"
-                  :items-per-page="10"
+                  :items-per-page="30"
                 >
                   <template #[`header.date`]>
                     <v-icon title="Datum">mdi-calendar</v-icon>
