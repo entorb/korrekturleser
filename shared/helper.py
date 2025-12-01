@@ -23,6 +23,7 @@ def init_logging() -> None:
     )
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("google_genai").setLevel(logging.WARNING)
+    logging.getLogger("azure").setLevel(logging.WARNING)
 
 
 def my_get_env(key: str) -> str:

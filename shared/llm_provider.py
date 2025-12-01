@@ -6,10 +6,12 @@ import time
 from functools import lru_cache
 from pathlib import Path
 
+from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from google import genai  # pip install google-genai
 from google.genai import types as genai_types
+from openai import AzureOpenAI
 
-from shared.helper import my_get_env, where_am_i
+from .helper import my_get_env, where_am_i
 
 logger = logging.getLogger(Path(__file__).stem)
 ENV = where_am_i()
@@ -22,6 +24,18 @@ def get_gemini_client() -> genai.Client:
     """Get cached Gemini client."""
     api_key = my_get_env("GEMINI_API_KEY")
     return genai.Client(api_key=api_key)
+
+
+@lru_cache(maxsize=1)
+def get_openai_client_default_azure_creds() -> AzureOpenAI:
+    """Create and return an Azure OpenAI client."""
+    return AzureOpenAI(
+        api_version=my_get_env("AZURE_OPENAI_API_VERSION"),
+        azure_endpoint=my_get_env("AZURE_OPENAI_URL"),
+        azure_ad_token_provider=get_bearer_token_provider(
+            DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
+        ),
+    )
 
 
 class LLMProvider:
@@ -45,7 +59,9 @@ class LLMProvider:
 
     def print_llm_and_model(self) -> None:
         """Print out the LLM and the model."""
-        logger.info("LLM: %s %s", self.provider, self.model)
+        s = f"LLM: {self.provider} {self.model}"
+        print(s)
+        logger.info(s)
 
     def call(self, prompt: str) -> tuple[str, int]:
         """
@@ -135,6 +151,47 @@ class GeminiProvider(LLMProvider):
         return s, tokens
 
 
+class AzureOpenAIProvider(LLMProvider):
+    """Azure OpenAI LLM provider."""
+
+    def __init__(self, instruction: str, model: str) -> None:
+        """Initialize Azure OpenAI provider with instruction and model."""
+        super().__init__(instruction, model)
+        self.provider = "AzureOpenAI"
+        self.models = {
+            "gpt-5-nano",
+            "gpt-5-mini",
+            "gpt-5",
+        }
+        self.check_model_valid(model)
+
+    def call(self, prompt: str) -> tuple[str, int]:
+        """Call the LLM."""
+        client = get_openai_client_default_azure_creds()
+        messages = [
+            {"role": "system", "content": self.instruction},
+            {"role": "user", "content": prompt},
+        ]
+        response = None
+        tokens = 0
+        response = client.chat.completions.create(
+            model=self.model,
+            messages=messages,  # type: ignore
+        )
+
+        s = (
+            response.choices[0].message.content
+            if response.choices[0].message.content
+            else ""
+        )
+        tokens = (
+            response.usage.total_tokens
+            if hasattr(response, "usage") and response.usage
+            else 0
+        )
+        return s, tokens
+
+
 # Ollama available only locally, not on webserver
 if ENV != "PROD" and LLM_LOCAL == "Ollama":
     from ollama import ChatResponse, chat  # uv add --dev ollama
@@ -190,6 +247,9 @@ def get_cached_llm_provider(
     if LLM_LOCAL == "Mock":
         return MockProvider(instruction=instruction, model="random")
 
+    if LLM_LOCAL == "OpenAI_AzureDefaultAzureCredential":
+        return AzureOpenAIProvider(instruction=instruction, model="gpt-5-nano")
+
     if LLM_LOCAL == "Ollama":
         return OllamaProvider(instruction=instruction, model="llama3.2:1b")
 
@@ -198,12 +258,19 @@ def get_cached_llm_provider(
 
 
 if __name__ == "__main__":
+    # run this file directly to test LLM providers
+    # uv run python -m shared.llm_provider
     instruction = "Talk like a pirate. Give a short answer. "
     prompt = "What is the capital of Germany?"
+
+    print(f"{ENV=}")
 
     # switch here
     if ENV != "PROD":
         llm_provider = get_cached_llm_provider(
-            provider_name="Mock", model="random", instruction=instruction
+            provider_name="OpenAI_AzureDefaultAzureCredential",
+            model="gpt-5-nano",
+            instruction=instruction,
         )
+        llm_provider.print_llm_and_model()
         print(llm_provider.call(prompt))
