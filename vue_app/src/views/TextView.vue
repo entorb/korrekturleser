@@ -76,11 +76,11 @@ function generateDiff(original: string, improved: string): string {
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', handleKeyPress)
+  globalThis.addEventListener('keydown', handleKeyPress)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeyPress)
+  globalThis.removeEventListener('keydown', handleKeyPress)
 })
 
 async function handleProcessText() {
