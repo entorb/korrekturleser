@@ -1,0 +1,359 @@
+"""Text processing page for NiceGUI application."""
+
+import logging
+from pathlib import Path
+from typing import NamedTuple
+
+from nicegui import ui
+
+from shared.config import LLM_MODEL, LLM_PROVIDER
+from shared.helper import where_am_i
+from shared.helper_ai import MODE_CONFIGS
+from shared.helper_db import db_insert_usage
+from shared.llm_provider import get_cached_llm_provider
+from shared.texts import GOOGLE_DISCLAIMER
+
+from .helper_nicegui import SessionManager, create_diff_html
+
+logger = logging.getLogger(Path(__file__).stem)
+ENV = where_am_i()
+
+
+class OutputElements(NamedTuple):
+    """Container for output UI elements."""
+
+    column: ui.column
+    textarea: ui.textarea
+    markdown: ui.markdown
+    copy_btn: ui.button
+
+
+class ProcessingState:
+    """Manage processing state."""
+
+    def __init__(self) -> None:
+        """Initialize processing state."""
+        self.is_processing = False
+        self.output_text = ""
+        self.selected_mode = "correct"
+
+
+class UIElements(NamedTuple):
+    """Container for UI elements."""
+
+    spinner: ui.spinner
+    button: ui.button
+    result_info: ui.row
+    result_label: ui.label
+    diff_container: ui.column
+    diff_card: ui.card
+
+
+def _create_header() -> None:
+    """Create page header with navigation."""
+    with (
+        ui.header()
+        .classes("items-center")
+        .style("background: linear-gradient(90deg, #1976d2 0%, #1565c0 100%);")
+    ):
+        ui.label("KI Korrekturleser").classes("text-h5 font-weight-bold")
+        ui.space()
+        ui.label(SessionManager.get_user_name()).classes("mr-2")
+        ui.button(icon="settings", on_click=lambda: ui.navigate.to("/stats")).props(
+            "flat round"
+        ).tooltip("Statistik (Esc)")
+        ui.button(
+            icon="logout",
+            on_click=lambda: (SessionManager.logout(), ui.navigate.to("/")),
+        ).props("flat round").tooltip("Abmelden")
+
+
+def _create_input_column() -> ui.textarea:
+    """Create input column and return textarea."""
+    with ui.column().classes("flex-1"):
+        with ui.row().classes("w-full items-center justify-between mb-2"):
+            with ui.row().classes("items-center gap-2"):
+                ui.icon("account_circle", size="md").classes("text-primary")
+                ui.label("Mein Text").classes("text-subtitle1")
+            ui.button(
+                icon="content_paste",
+                on_click=lambda: ui.notify("Bitte mit Strg+V / Cmd+V einfügen"),
+            ).props("flat round size=sm").tooltip("Einfügen")
+        input_textarea = (
+            ui.textarea(placeholder="Text hier eingeben...", value="")
+            .classes("w-full")
+            .props("outlined rows=15")
+        )
+
+    return input_textarea
+
+
+def _create_output_column() -> OutputElements:
+    """Create output column and return UI elements."""
+    output_column = ui.column().classes("flex-1")
+    with output_column:
+        with ui.row().classes("w-full items-center justify-between mb-2"):
+            with ui.row().classes("items-center gap-2"):
+                ui.icon("smart_toy", size="md").classes("text-primary")
+                ui.label("KI Text").classes("text-subtitle1")
+            copy_btn = (
+                ui.button(icon="content_copy")
+                .props("flat round size=sm")
+                .tooltip("Kopieren")
+            )
+        output_textarea = (
+            ui.textarea(placeholder="KI-verbesserter Text erscheint hier...", value="")
+            .classes("w-full")
+            .props("outlined rows=15 readonly")
+        )
+        output_markdown = ui.markdown("")
+
+        async def copy_to_clipboard() -> None:
+            """Copy output to clipboard."""
+            if output_textarea.value:
+                await ui.run_javascript(
+                    f"navigator.clipboard.writeText({output_textarea.value!r})"
+                )
+                ui.notify("Kopiert!", type="positive")
+
+        copy_btn.on("click", copy_to_clipboard)
+
+    output_column.visible = False
+    output_markdown.visible = False
+    return OutputElements(output_column, output_textarea, output_markdown, copy_btn)
+
+
+def _update_output_display(
+    mode: str, output: OutputElements, text_response: str
+) -> None:
+    """Update output display based on mode."""
+    output.column.visible = True
+
+    if mode == "summarize":
+        output.textarea.visible = False
+        output.markdown.visible = True
+        output.markdown.content = text_response
+        output.copy_btn.visible = False
+    else:
+        output.textarea.visible = True
+        output.markdown.visible = False
+        output.textarea.value = text_response
+        output.copy_btn.visible = True
+
+
+def _update_diff_display(
+    mode: str,
+    input_text: str,
+    output_text: str,
+    diff_container: ui.column,
+    diff_card: ui.card,
+) -> None:
+    """Update diff display for correct and improve modes."""
+    diff_container.clear()
+    if mode in ("correct", "improve"):
+        diff_html = create_diff_html(input_text, output_text)
+        with diff_container:
+            ui.html(diff_html, sanitize=False)
+        diff_card.visible = True
+    else:
+        diff_card.visible = False
+
+
+def _process_with_llm(mode: str, input_text: str) -> tuple[str, int]:
+    """Process text with LLM and return response and tokens."""
+    instruction = MODE_CONFIGS[mode].instruction
+    llm_provider = get_cached_llm_provider(instruction=instruction)
+    return llm_provider.call(input_text)
+
+
+def _track_usage(tokens: int) -> None:
+    """Track usage in database and session."""
+    if ENV == "PROD":
+        db_insert_usage(user_id=SessionManager.get_user_id(), tokens=tokens)
+    SessionManager.increment_usage(tokens)
+
+
+def create_text_page() -> None:
+    """Create main text improvement page."""
+    if not SessionManager.is_authenticated():
+        ui.navigate.to("/")
+        return
+
+    state = ProcessingState()
+
+    _create_header()
+
+    # Escape key handler for navigation to stats
+    ui.keyboard(
+        on_key=lambda e: ui.navigate.to("/stats") if e.key == "Escape" else None
+    )
+
+    _create_main_content(state)
+
+
+def _create_main_content(state: ProcessingState) -> None:
+    """Create main content area."""
+    with ui.column().classes("w-full max-w-7xl mx-auto p-6 gap-4"):
+        if LLM_PROVIDER == "Gemini":
+            with ui.card().classes("w-full bg-blue-50"):
+                ui.markdown(GOOGLE_DISCLAIMER).classes("text-caption")
+
+        # Create UI elements
+        input_textarea, output, mode_select = _create_io_section()
+        control_row, process_btn, process_spinner = _create_control_section()
+        result_info, result_info_label = _create_result_info()
+        diff_card, diff_container = _create_diff_display()
+
+        # Add mode selector to control row
+        with control_row:
+            mode_select.move()
+
+        # Group UI elements
+        ui_elements = UIElements(
+            process_spinner,
+            process_btn,
+            result_info,
+            result_info_label,
+            diff_container,
+            diff_card,
+        )
+
+        # Setup process handler
+        def process_text() -> None:
+            """Process text with AI."""
+            _handle_text_processing(
+                state, input_textarea, output, mode_select, ui_elements
+            )
+
+        process_btn.on("click", process_text)
+
+
+def _create_io_section() -> tuple[ui.textarea, OutputElements, ui.select]:
+    """Create input/output section."""
+    with ui.row().classes("w-full gap-4"):
+        input_textarea = _create_input_column()
+        output = _create_output_column()
+
+    mode_select = (
+        ui.select(
+            options={mode: config.description for mode, config in MODE_CONFIGS.items()},
+            value="correct",
+            label="Modus",
+        )
+        .classes("flex-grow-1")
+        .props("outlined")
+    )
+
+    return input_textarea, output, mode_select
+
+
+def _create_control_section() -> tuple[ui.row, ui.button, ui.spinner]:
+    """Create control section with mode selector and process button."""
+    control_row = ui.row().classes("w-full gap-2 items-end mt-4")
+    with control_row:
+        process_spinner = ui.spinner(size="lg", color="primary")
+        process_spinner.visible = False
+        process_btn = ui.button(icon="smart_toy")
+        process_btn.props("color=primary size=large unelevated").style(
+            "width: 56px; height: 56px"
+        ).tooltip("KI verarbeiten")
+
+    return control_row, process_btn, process_spinner
+
+
+def _create_result_info() -> tuple[ui.row, ui.label]:
+    """Create result info section."""
+    result_info = ui.row().classes("w-full")
+    with result_info:
+        result_info_label = ui.label("")
+    result_info.visible = False
+    return result_info, result_info_label
+
+
+def _create_diff_display() -> tuple[ui.card, ui.column]:
+    """Create diff display section."""
+    diff_card = ui.card().classes("w-full mt-4")
+    with diff_card:
+        ui.label("Unterschied").classes("text-subtitle1 mb-2")
+        diff_container = ui.column().classes("w-full overflow-x-auto")
+    diff_card.visible = False
+    return diff_card, diff_container
+
+
+def _handle_text_processing(
+    state: ProcessingState,
+    input_textarea: ui.textarea,
+    output: OutputElements,
+    mode_select: ui.select,
+    ui_elements: UIElements,
+) -> None:
+    """Handle text processing workflow."""
+    if not input_textarea.value:
+        ui.notify("Bitte Text eingeben", type="warning")
+        return
+
+    if state.is_processing:
+        return
+
+    _start_processing(state, output, ui_elements)
+
+    try:
+        _execute_processing(state, input_textarea, output, mode_select, ui_elements)
+    except Exception as e:
+        logger.exception("Error processing text:")
+        ui.notify(f"Fehler: {e!s}", type="negative")
+    finally:
+        _finish_processing(state, ui_elements)
+
+
+def _start_processing(
+    state: ProcessingState, output: OutputElements, ui_elements: UIElements
+) -> None:
+    """Set UI state for processing start."""
+    state.is_processing = True
+    ui_elements.spinner.visible = True
+    ui_elements.button.props("disable")
+    output.column.visible = False
+    ui_elements.diff_container.clear()
+    ui_elements.result_info.visible = False
+
+
+def _execute_processing(
+    state: ProcessingState,
+    input_textarea: ui.textarea,
+    output: OutputElements,
+    mode_select: ui.select,
+    ui_elements: UIElements,
+) -> None:
+    """Execute the processing logic."""
+    selected_mode = mode_select.value
+    if not selected_mode or selected_mode not in MODE_CONFIGS:
+        ui.notify("Ungültiger Modus", type="warning")
+        return
+
+    state.selected_mode = selected_mode
+    text_response, tokens = _process_with_llm(selected_mode, input_textarea.value)
+    state.output_text = text_response
+
+    _update_output_display(selected_mode, output, text_response)
+    _track_usage(tokens)
+
+    ui_elements.result_info.visible = True
+    ui_elements.result_label.text = f"Modell: {LLM_MODEL} | Token verbraucht: {tokens}"
+
+    _update_diff_display(
+        selected_mode,
+        input_textarea.value,
+        text_response,
+        ui_elements.diff_container,
+        ui_elements.diff_card,
+    )
+
+    ui.notify("Verarbeitung erfolgreich", type="positive")
+
+
+def _finish_processing(state: ProcessingState, ui_elements: UIElements) -> None:
+    """Set UI state for processing completion."""
+    state.is_processing = False
+    ui_elements.spinner.visible = False
+    ui_elements.button.props(remove="disable")
