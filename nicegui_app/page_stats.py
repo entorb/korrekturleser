@@ -32,12 +32,12 @@ def create_stats_page() -> None:
 
     # Header
     with ui.header().classes("items-center").style("background-color: #1976d2;"):
-        ui.button(icon="arrow_back", on_click=lambda: ui.navigate.to(BASE_URL)).props(
-            "flat round"
-        ).tooltip("Zurück (Esc)")
         ui.label("Statistik").classes("text-h5")
         ui.space()
         ui.label(SessionManager.get_user_name()).classes("mr-2")
+        ui.button(icon="arrow_back", on_click=lambda: ui.navigate.to(BASE_URL)).props(
+            "flat round"
+        ).tooltip("Zurück (Esc)")
         ui.button(
             icon="logout",
             on_click=lambda: (
