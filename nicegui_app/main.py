@@ -26,21 +26,21 @@ NICEGUI_STORAGE_SECRET = my_get_env("NICEGUI_STORAGE_SECRET")
 # Define routes
 @ui.page("/")
 def index_page() -> None:
-    """Index page - redirects to login or text."""
+    """Index page - text improvement page."""
     # Auto-login for local development
     if ENV != "PROD" and not SessionManager.is_authenticated():
         SessionManager.login(USER_ID_LOCAL, USER_NAME_LOCAL)
 
     if SessionManager.is_authenticated():
-        ui.navigate.to("/text")
+        create_text_page()
     else:
         create_login_page()
 
 
-@ui.page("/text")
-def text_page() -> None:
-    """Text improvement page."""
-    create_text_page()
+@ui.page("/login")
+def login_page() -> None:
+    """Login page."""
+    create_login_page()
 
 
 @ui.page("/stats")

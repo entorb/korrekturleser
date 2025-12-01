@@ -62,7 +62,7 @@ def _create_header() -> None:
         ).tooltip("Statistik (Esc)")
         ui.button(
             icon="logout",
-            on_click=lambda: (SessionManager.logout(), ui.navigate.to("/")),
+            on_click=lambda: (SessionManager.logout(), ui.navigate.to("/login")),
         ).props("flat round").tooltip("Abmelden")
 
 
@@ -193,7 +193,7 @@ def _track_usage(tokens: int) -> None:
 def create_text_page() -> None:
     """Create main text improvement page."""
     if not SessionManager.is_authenticated():
-        ui.navigate.to("/")
+        ui.navigate.to("/login")
         return
 
     state = ProcessingState()
