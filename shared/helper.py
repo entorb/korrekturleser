@@ -2,6 +2,7 @@
 
 import logging
 import os
+from functools import lru_cache
 from pathlib import Path
 
 import bcrypt
@@ -21,11 +22,13 @@ def init_logging() -> None:
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
-    logging.getLogger("httpx").setLevel(logging.WARNING)
-    logging.getLogger("google_genai").setLevel(logging.WARNING)
     logging.getLogger("azure").setLevel(logging.WARNING)
+    logging.getLogger("google_genai").setLevel(logging.WARNING)
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("tornado").setLevel(logging.WARNING)
 
 
+@lru_cache(maxsize=1)
 def my_get_env(key: str) -> str:
     """Get environment variable, throw exception if not set."""
     value = os.getenv(key)
@@ -40,6 +43,7 @@ def verify_geheimnis(geheimnis: str, hashed_geheimnis: str) -> bool:
     return bcrypt.checkpw(geheimnis.encode("utf-8"), hashed_geheimnis.encode("utf-8"))
 
 
+@lru_cache(maxsize=1)
 def where_am_i() -> str:
     """Return PROD or Local, depending on if the webserver dir is found."""
     return "PROD" if Path(PATH_ON_WEBSERVER).is_dir() else "Local"
