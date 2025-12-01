@@ -1,5 +1,6 @@
 """Text processing page for NiceGUI application."""
 
+import asyncio
 import logging
 from pathlib import Path
 from typing import NamedTuple
@@ -10,10 +11,11 @@ from shared.config import LLM_MODEL, LLM_PROVIDER
 from shared.helper import where_am_i
 from shared.helper_ai import MODE_CONFIGS
 from shared.helper_db import db_insert_usage
+from shared.helper_diff import create_diff_html as create_diff_table
 from shared.llm_provider import get_cached_llm_provider
 from shared.texts import GOOGLE_DISCLAIMER
 
-from .helper_nicegui import SessionManager, create_diff_html
+from .helper_nicegui import SessionManager
 
 logger = logging.getLogger(Path(__file__).stem)
 ENV = where_am_i()
@@ -104,7 +106,7 @@ def _create_output_column() -> OutputElements:
         output_textarea = (
             ui.textarea(placeholder="KI-verbesserter Text erscheint hier...", value="")
             .classes("w-full")
-            .props("outlined rows=15 readonly")
+            .props("outlined rows=15")
         )
         output_markdown = ui.markdown("")
 
@@ -151,9 +153,17 @@ def _update_diff_display(
     """Update diff display for correct and improve modes."""
     diff_container.clear()
     if mode in ("correct", "improve"):
-        diff_html = create_diff_html(input_text, output_text)
+        # Read CSS file and inject it
+        css_path = Path(__file__).parent.parent / "shared" / "helper_diff.css"
+        css_content = css_path.read_text(encoding="utf-8")
+
+        # Get diff table HTML (without CSS)
+        table_html = create_diff_table(input_text, output_text)
+
         with diff_container:
-            ui.html(diff_html, sanitize=False)
+            # Add CSS and HTML separately
+            ui.add_head_html(f"<style>{css_content}</style>")
+            ui.html(table_html, sanitize=False)
         diff_card.visible = True
     else:
         diff_card.visible = False
@@ -192,21 +202,17 @@ def create_text_page() -> None:
 
 
 def _create_main_content(state: ProcessingState) -> None:
-    """Create main content area."""
-    with ui.column().classes("w-full max-w-7xl mx-auto p-6 gap-4"):
+    """Create the main content area with input and output columns."""
+    with ui.column().classes("w-full p-6 gap-4"):
         if LLM_PROVIDER == "Gemini":
             with ui.card().classes("w-full bg-blue-50"):
                 ui.markdown(GOOGLE_DISCLAIMER).classes("text-caption")
 
         # Create UI elements
-        input_textarea, output, mode_select = _create_io_section()
-        control_row, process_btn, process_spinner = _create_control_section()
+        input_textarea, output = _create_io_section()
+        mode_select, process_btn, process_spinner = _create_control_section()
         result_info, result_info_label = _create_result_info()
         diff_card, diff_container = _create_diff_display()
-
-        # Add mode selector to control row
-        with control_row:
-            mode_select.move()
 
         # Group UI elements
         ui_elements = UIElements(
@@ -219,38 +225,43 @@ def _create_main_content(state: ProcessingState) -> None:
         )
 
         # Setup process handler
-        def process_text() -> None:
+        async def process_text() -> None:
             """Process text with AI."""
-            _handle_text_processing(
+            await _handle_text_processing(
                 state, input_textarea, output, mode_select, ui_elements
             )
 
         process_btn.on("click", process_text)
 
+        # Add Ctrl+Enter (Windows/Linux) and Cmd+Enter (Mac) keyboard shortcuts
+        input_textarea.on("keydown.ctrl.enter", process_text)
+        input_textarea.on("keydown.meta.enter", process_text)
 
-def _create_io_section() -> tuple[ui.textarea, OutputElements, ui.select]:
+
+def _create_io_section() -> tuple[ui.textarea, OutputElements]:
     """Create input/output section."""
     with ui.row().classes("w-full gap-4"):
         input_textarea = _create_input_column()
         output = _create_output_column()
 
-    mode_select = (
-        ui.select(
-            options={mode: config.description for mode, config in MODE_CONFIGS.items()},
-            value="correct",
-            label="Modus",
-        )
-        .classes("flex-grow-1")
-        .props("outlined")
-    )
-
-    return input_textarea, output, mode_select
+    return input_textarea, output
 
 
-def _create_control_section() -> tuple[ui.row, ui.button, ui.spinner]:
+def _create_control_section() -> tuple[ui.select, ui.button, ui.spinner]:
     """Create control section with mode selector and process button."""
     control_row = ui.row().classes("w-full gap-2 items-end mt-4")
     with control_row:
+        mode_select = (
+            ui.select(
+                options={
+                    mode: config.description for mode, config in MODE_CONFIGS.items()
+                },
+                value="correct",
+                label="Modus",
+            )
+            .classes("flex-grow-1")
+            .props("outlined")
+        )
         process_spinner = ui.spinner(size="lg", color="primary")
         process_spinner.visible = False
         process_btn = ui.button(icon="smart_toy")
@@ -258,7 +269,7 @@ def _create_control_section() -> tuple[ui.row, ui.button, ui.spinner]:
             "width: 56px; height: 56px"
         ).tooltip("KI verarbeiten")
 
-    return control_row, process_btn, process_spinner
+    return mode_select, process_btn, process_spinner
 
 
 def _create_result_info() -> tuple[ui.row, ui.label]:
@@ -280,7 +291,7 @@ def _create_diff_display() -> tuple[ui.card, ui.column]:
     return diff_card, diff_container
 
 
-def _handle_text_processing(
+async def _handle_text_processing(
     state: ProcessingState,
     input_textarea: ui.textarea,
     output: OutputElements,
@@ -298,7 +309,9 @@ def _handle_text_processing(
     _start_processing(state, output, ui_elements)
 
     try:
-        _execute_processing(state, input_textarea, output, mode_select, ui_elements)
+        await _execute_processing(
+            state, input_textarea, output, mode_select, ui_elements
+        )
     except Exception as e:
         logger.exception("Error processing text:")
         ui.notify(f"Fehler: {e!s}", type="negative")
@@ -318,7 +331,7 @@ def _start_processing(
     ui_elements.result_info.visible = False
 
 
-def _execute_processing(
+async def _execute_processing(
     state: ProcessingState,
     input_textarea: ui.textarea,
     output: OutputElements,
@@ -332,7 +345,10 @@ def _execute_processing(
         return
 
     state.selected_mode = selected_mode
-    text_response, tokens = _process_with_llm(selected_mode, input_textarea.value)
+    # Run LLM processing in executor to keep UI responsive
+    text_response, tokens = await asyncio.to_thread(
+        _process_with_llm, selected_mode, input_textarea.value
+    )
     state.output_text = text_response
 
     _update_output_display(selected_mode, output, text_response)
