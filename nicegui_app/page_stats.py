@@ -13,6 +13,7 @@ from shared.helper_db import (
     db_select_usage_stats_total,
 )
 
+from .config_nice import BASE_URL
 from .helper_nicegui import (
     SESSION_CNT_REQUESTS,
     SESSION_CNT_TOKENS,
@@ -26,12 +27,12 @@ ENV = where_am_i()
 def create_stats_page() -> None:
     """Create statistics page."""
     if not SessionManager.is_authenticated():
-        ui.navigate.to("/")
+        ui.navigate.to(f"{BASE_URL}/login")
         return
 
     # Header
     with ui.header().classes("items-center").style("background-color: #1976d2;"):
-        ui.button(icon="arrow_back", on_click=lambda: ui.navigate.to("/text")).props(
+        ui.button(icon="arrow_back", on_click=lambda: ui.navigate.to(BASE_URL)).props(
             "flat round"
         ).tooltip("Zurück (Esc)")
         ui.label("Statistik").classes("text-h5")
@@ -39,11 +40,16 @@ def create_stats_page() -> None:
         ui.label(SessionManager.get_user_name()).classes("mr-2")
         ui.button(
             icon="logout",
-            on_click=lambda: (SessionManager.logout(), ui.navigate.to("/")),
+            on_click=lambda: (
+                SessionManager.logout(),
+                ui.navigate.to(f"{BASE_URL}/login"),
+            ),
         ).props("flat round").tooltip("Abmelden")
 
     # Escape key handler for navigation back to text
-    ui.keyboard(on_key=lambda e: ui.navigate.to("/text") if e.key == "Escape" else None)
+    ui.keyboard(
+        on_key=lambda e: ui.navigate.to(BASE_URL) if e.key == "Escape" else None
+    )
 
     # Main content
     with ui.column().classes("w-full p-4"):
