@@ -60,138 +60,153 @@ function formatDate(dateStr: string): string {
   const date = new Date(dateStr)
   return date.toLocaleDateString('de-DE')
 }
-
-const dailyHeaders = [
-  { title: '', key: 'date' },
-  { title: '', key: 'user_name' },
-  { title: '', key: 'cnt_requests' },
-  { title: '', key: 'cnt_tokens' }
-]
-
-const totalHeaders = [
-  { title: '', key: 'user_name' },
-  { title: '', key: 'cnt_requests' },
-  { title: '', key: 'cnt_tokens' }
-]
 </script>
 
 <template>
-  <v-app>
-    <v-app-bar
-      color="primary"
-      prominent
+  <q-page-container>
+    <q-header
+      elevated
+      class="bg-primary"
     >
-      <v-app-bar-title>Statistik</v-app-bar-title>
+      <q-toolbar>
+        <q-toolbar-title>Statistik</q-toolbar-title>
 
-      <v-spacer />
+        <span class="q-mr-md">{{ authStore.user?.user_name }}</span>
 
-      <span class="mr-4">{{ authStore.user?.user_name }}</span>
+        <q-btn
+          flat
+          round
+          dense
+          icon="arrow_back"
+          @click="goBack"
+        >
+          <q-tooltip>Zurück (Esc)</q-tooltip>
+        </q-btn>
 
-      <v-btn
-        icon
-        @click="goBack"
-        title="Zurück (Esc)"
-      >
-        <v-icon>mdi-arrow-left</v-icon>
-      </v-btn>
+        <q-btn
+          flat
+          round
+          dense
+          icon="logout"
+          @click="handleLogout"
+        >
+          <q-tooltip>Abmelden</q-tooltip>
+        </q-btn>
+      </q-toolbar>
+    </q-header>
 
-      <v-btn
-        icon
-        @click="handleLogout"
-        title="Abmelden"
-      >
-        <v-icon>mdi-logout</v-icon>
-      </v-btn>
-    </v-app-bar>
-
-    <v-main>
-      <v-container fluid>
-        <v-card>
-          <v-card-text>
-            <!-- Loading -->
-            <v-progress-circular
-              v-if="isLoading"
-              indeterminate
+    <q-page class="q-pa-md">
+      <q-card>
+        <q-card-section>
+          <!-- Loading -->
+          <div
+            v-if="isLoading"
+            class="row justify-center q-pa-lg"
+          >
+            <q-spinner
               color="primary"
-              class="ma-4"
+              size="3em"
             />
+          </div>
 
-            <!-- Error -->
-            <v-alert
-              v-else-if="error"
-              type="error"
-              variant="tonal"
+          <!-- Error -->
+          <q-banner
+            v-else-if="error"
+            class="bg-negative text-white"
+            rounded
+          >
+            {{ error }}
+          </q-banner>
+
+          <!-- Stats Content -->
+          <div v-else-if="stats">
+            <!-- Total Usage Table -->
+            <q-card
+              bordered
+              class="q-mb-md"
             >
-              {{ error }}
-            </v-alert>
+              <q-card-section>
+                <div class="text-h6">Gesamt</div>
+              </q-card-section>
+              <q-markup-table>
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      <q-icon name="account_circle">
+                        <q-tooltip>Nutzer</q-tooltip>
+                      </q-icon>
+                    </th>
+                    <th scope="col">
+                      <q-icon name="send">
+                        <q-tooltip>Anfragen</q-tooltip>
+                      </q-icon>
+                    </th>
+                    <th scope="col">
+                      <q-icon name="tag">
+                        <q-tooltip>Token</q-tooltip>
+                      </q-icon>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="item in stats.total"
+                    :key="item.user_name"
+                  >
+                    <td>{{ item.user_name }}</td>
+                    <td>{{ formatNumber(item.cnt_requests) }}</td>
+                    <td>{{ formatNumber(item.cnt_tokens) }}</td>
+                  </tr>
+                </tbody>
+              </q-markup-table>
+            </q-card>
 
-            <!-- Stats Content -->
-            <div v-else-if="stats">
-              <!-- Total Usage Table -->
-              <v-card
-                variant="outlined"
-                class="mb-4"
-              >
-                <v-card-title class="text-h6">Gesamt</v-card-title>
-                <v-data-table
-                  :headers="totalHeaders"
-                  :items="stats.total"
-                  :items-per-page="-1"
-                  hide-default-footer
-                >
-                  <template #[`header.user_name`]>
-                    <v-icon title="Nutzer">mdi-account-outline</v-icon>
-                  </template>
-                  <template #[`header.cnt_requests`]>
-                    <v-icon title="Anfragen">mdi-send</v-icon>
-                  </template>
-                  <template #[`header.cnt_tokens`]>
-                    <v-icon title="Token">mdi-pound</v-icon>
-                  </template>
-                  <template #[`item.cnt_requests`]="{ item }">
-                    {{ formatNumber(item.cnt_requests) }}
-                  </template>
-                  <template #[`item.cnt_tokens`]="{ item }">
-                    {{ formatNumber(item.cnt_tokens) }}
-                  </template>
-                </v-data-table>
-              </v-card>
-
-              <!-- Daily Usage Table -->
-              <v-card variant="outlined">
-                <v-card-title class="text-h6">Täglich</v-card-title>
-                <v-data-table
-                  :headers="dailyHeaders"
-                  :items="stats.daily"
-                  :items-per-page="30"
-                >
-                  <template #[`header.date`]>
-                    <v-icon title="Datum">mdi-calendar</v-icon>
-                  </template>
-                  <template #[`header.user_name`]>
-                    <v-icon title="Nutzer">mdi-account-outline</v-icon>
-                  </template>
-                  <template #[`header.cnt_requests`]>
-                    <v-icon title="Anfragen">mdi-send</v-icon>
-                  </template>
-                  <template #[`header.cnt_tokens`]>
-                    <v-icon title="Token">mdi-pound</v-icon>
-                  </template>
-                  <template #[`item.date`]="{ item }">
-                    {{ formatDate(item.date) }}
-                  </template>
-                  <template #[`item.cnt_requests`]="{ item }">
-                    {{ formatNumber(item.cnt_requests) }}
-                  </template>
-                  <template #[`item.cnt_tokens`]="{ item }">
-                    {{ formatNumber(item.cnt_tokens) }}
-                  </template>
-                </v-data-table>
-              </v-card>
-            </div>
-          </v-card-text>
-        </v-card>
-      </v-container>
-    </v-main>
-  </v-app>
+            <!-- Daily Usage Table -->
+            <q-card bordered>
+              <q-card-section>
+                <div class="text-h6">Täglich</div>
+              </q-card-section>
+              <q-markup-table>
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      <q-icon name="calendar_today">
+                        <q-tooltip>Datum</q-tooltip>
+                      </q-icon>
+                    </th>
+                    <th scope="col">
+                      <q-icon name="account_circle">
+                        <q-tooltip>Nutzer</q-tooltip>
+                      </q-icon>
+                    </th>
+                    <th scope="col">
+                      <q-icon name="send">
+                        <q-tooltip>Anfragen</q-tooltip>
+                      </q-icon>
+                    </th>
+                    <th scope="col">
+                      <q-icon name="tag">
+                        <q-tooltip>Token</q-tooltip>
+                      </q-icon>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="item in stats.daily.slice(0, 30)"
+                    :key="`${item.date}-${item.user_name}`"
+                  >
+                    <td>{{ formatDate(item.date) }}</td>
+                    <td>{{ item.user_name }}</td>
+                    <td>{{ formatNumber(item.cnt_requests) }}</td>
+                    <td>{{ formatNumber(item.cnt_tokens) }}</td>
+                  </tr>
+                </tbody>
+              </q-markup-table>
+            </q-card>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-page>
+  </q-page-container>
 </template>
