@@ -108,7 +108,7 @@ def _create_output_column() -> OutputElements:
     with output_column:
         with ui.row().classes("w-full items-center justify-between mb-2"):
             with ui.row().classes("items-center gap-2"):
-                ui.icon("smart_toy", size="md").classes("text-primary")
+                ui.icon("auto_fix_high", size="md").classes("text-primary")
                 ui.label("KI Text").classes("text-subtitle1")
             copy_btn = (
                 ui.button(icon="content_copy")
@@ -277,10 +277,8 @@ def _create_control_section() -> tuple[ui.select, ui.button, ui.spinner]:
         )
         process_spinner = ui.spinner(size="lg", color="primary")
         process_spinner.visible = False
-        process_btn = ui.button(icon="smart_toy")
-        process_btn.props("color=primary size=large unelevated").style(
-            "width: 56px; height: 56px"
-        ).tooltip("KI verarbeiten")
+        process_btn = ui.button(icon="auto_fix_high")
+        process_btn.props("color=primary size=large unelevated round")  # .style(
 
     return mode_select, process_btn, process_spinner
 
