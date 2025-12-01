@@ -9,6 +9,7 @@ from nicegui import ui
 # Add parent directory to path for shared module access
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from nicegui_app.config_nice import BASE_URL
 from nicegui_app.helper_nicegui import SessionManager
 from nicegui_app.page_login import create_login_page
 from nicegui_app.page_stats import create_stats_page
@@ -39,24 +40,30 @@ def _require_authentication() -> bool:
     _auto_login_if_local()
 
     if not SessionManager.is_authenticated():
-        ui.navigate.to("/login")
+        ui.navigate.to(f"{BASE_URL}/login")
         return False
     return True
 
 
 # Define routes
-@ui.page("/login")
+@ui.page("/")
+def root_redirect() -> None:
+    """Redirect from root to base URL."""
+    ui.navigate.to(BASE_URL)
+
+
+@ui.page(f"{BASE_URL}/login")
 def login_page() -> None:
     """Login page."""
     _auto_login_if_local()
 
     if SessionManager.is_authenticated():
-        ui.navigate.to("/")
+        ui.navigate.to(BASE_URL)
     else:
         create_login_page()
 
 
-@ui.page("/")
+@ui.page(BASE_URL)
 def index_page() -> None:
     """Index page - text improvement page (requires authentication)."""
     if not _require_authentication():
@@ -64,7 +71,7 @@ def index_page() -> None:
     create_text_page()
 
 
-@ui.page("/stats")
+@ui.page(f"{BASE_URL}/stats")
 def stats_page() -> None:
     """Statistics page (requires authentication)."""
     if not _require_authentication():

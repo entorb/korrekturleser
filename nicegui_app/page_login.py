@@ -4,6 +4,7 @@ from nicegui import ui
 
 from shared.helper_db import db_select_user_from_geheimnis
 
+from .config_nice import BASE_URL
 from .helper_nicegui import SessionManager
 
 
@@ -31,7 +32,7 @@ def create_login_page() -> None:
             if user_id > 0:
                 SessionManager.login(user_id, username)
                 ui.notify("Login erfolgreich!", type="positive")
-                ui.navigate.to("/")
+                ui.navigate.to(BASE_URL)
             else:
                 ui.notify("Falsches Passwort", type="negative")
                 secret_input.value = ""
