@@ -51,7 +51,7 @@ class TestUsageStats:
             "username": "NonAdmin",
             "exp": datetime.now(UTC) + timedelta(hours=24),
         }
-        secret_key = my_get_env("JWT_SECRET_KEY")
+        secret_key = my_get_env("FASTAPI_JWT_SECRET_KEY")
         fake_token = jwt.encode(token_data, secret_key, algorithm="HS256")
 
         response = client.get(
