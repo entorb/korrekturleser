@@ -2,6 +2,7 @@
 
 import datetime as dt
 import logging
+import sqlite3
 from collections.abc import Generator
 from contextlib import contextmanager
 from functools import lru_cache
@@ -13,6 +14,7 @@ from dotenv import load_dotenv
 from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import MySQLConnectionPool, PooledMySQLConnection
 
+from .config import LLM_PROVIDER
 from .helper import my_get_env, verify_geheimnis, where_am_i
 
 # Load environment variables from .env file in project root
@@ -27,6 +29,81 @@ MOCK_USERS = [
     (1, "Torben", MOCK_USER_SECRET_HASH),
 ]
 ENV = where_am_i()
+
+# SQLite database path for local development
+SQLITE_DB_PATH = Path(__file__).parent.parent / "db.sqlite"
+
+
+# SQLite functions for local development
+def init_sqlite_db() -> None:
+    """
+    Initialize SQLite database with schema matching MySQL.
+
+    Creates db.sqlite if it doesn't exist with user and history tables.
+    """
+    if SQLITE_DB_PATH.exists():
+        return
+
+    logger.info("Creating SQLite database: %s", SQLITE_DB_PATH)
+
+    con = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = con.cursor()
+
+    # Create user table
+    cursor.execute("""
+        CREATE TABLE user (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            secret_hashed TEXT NOT NULL UNIQUE
+        )
+    """)
+
+    # Create history table
+    cursor.execute("""
+        CREATE TABLE history (
+            date TEXT NOT NULL,
+            user_id INTEGER NOT NULL,
+            cnt_requests INTEGER NOT NULL,
+            cnt_tokens INTEGER NOT NULL,
+            UNIQUE(date, user_id)
+        )
+    """)
+
+    # Create indexes
+    cursor.execute("CREATE INDEX idx_history_date ON history(date)")
+    cursor.execute("CREATE INDEX idx_history_user_id ON history(user_id)")
+
+    # Insert mock user
+    cursor.execute(
+        "INSERT INTO user (id, name, secret_hashed) VALUES (?, ?, ?)",
+        (1, "Torben", MOCK_USER_SECRET_HASH),
+    )
+
+    con.commit()
+    con.close()
+    logger.info("SQLite database created successfully")
+
+
+@contextmanager
+def sqlite_connection() -> Generator[sqlite3.Connection, None, None]:
+    """
+    Context manager for SQLite database connections.
+
+    Ensures database exists and provides a connection with automatic cleanup.
+    """
+    init_sqlite_db()
+    con = None
+    try:
+        con = sqlite3.connect(SQLITE_DB_PATH)
+        # Enable foreign keys for SQLite
+        con.execute("PRAGMA foreign_keys = ON")
+        yield con
+    except sqlite3.Error:
+        logger.exception("SQLite connection error")
+        raise
+    finally:
+        if con is not None:
+            con.close()
 
 
 # 1. MySQL functions
@@ -108,14 +185,23 @@ def db_select_user_from_geheimnis(geheimnis: str) -> tuple[int, str]:
     database queries. Acceptable for small user bases (<10 users).
 
     """
-    # Mock mode for local development
+    # Local development with SQLite
     if ENV != "PROD":
-        logger.debug("Mock mode: Using mock user data")
-        for user_id, username, secret_hashed in MOCK_USERS:
-            if verify_geheimnis(geheimnis, secret_hashed):
-                return user_id, username
+        logger.debug("Local mode: Using SQLite database")
+        with sqlite_connection() as con:
+            cursor = con.cursor()
+            cursor.execute("SELECT id, name, secret_hashed FROM user ORDER BY id")
+            rows = cursor.fetchall()
+
+        # Verify the provided secret against each user's hashed secret
+        for row in rows:
+            if len(row) == 3:  # noqa: PLR2004
+                user_id, username, secret_hashed = row[0], row[1], row[2]
+                if verify_geheimnis(geheimnis, str(secret_hashed)):
+                    return int(user_id), str(username)
         return 0, ""
 
+    # Production with MySQL
     # Fetch id, name, and hashed secrets in a single query
     query = "SELECT id, name, secret_hashed FROM user ORDER BY id"
     rows = db_select_rows(query=query, param=())
@@ -136,12 +222,37 @@ def db_select_user_from_geheimnis(geheimnis: str) -> tuple[int, str]:
 
 def db_insert_usage(user_id: int, tokens: int) -> None:
     """Insert/update usage stats in table history."""
-    if ENV != "PROD":
-        logger.debug("Mock mode: Skipping usage insert")
+    # Skip DB insert when using mocked LLM provider
+    if LLM_PROVIDER == "Mocked":
+        logger.debug("Mocked LLM: Skipping usage insert")
         return
 
     today = dt.date.today()  # noqa: DTZ011
 
+    if ENV != "PROD":
+        # Local development with SQLite
+        logger.debug("Local mode: Inserting usage into SQLite")
+        try:
+            with sqlite_connection() as con:
+                cursor = con.cursor()
+                # SQLite UPSERT syntax
+                cursor.execute(
+                    """
+                    INSERT INTO history (date, user_id, cnt_requests, cnt_tokens)
+                    VALUES (?, ?, 1, ?)
+                    ON CONFLICT(date, user_id) DO UPDATE SET
+                        cnt_requests = cnt_requests + 1,
+                        cnt_tokens = cnt_tokens + ?
+                    """,
+                    (today.isoformat(), user_id, tokens, tokens),
+                )
+                con.commit()
+        except sqlite3.Error:
+            logger.exception("SQLite error during insert")
+            raise
+        return
+
+    # Production with MySQL
     # Note: This requires a UNIQUE constraint on (date, user_id)
     query = """
 INSERT INTO history (date, user_id, cnt_requests, cnt_tokens)
@@ -167,22 +278,41 @@ def db_select_usage_stats_total(user_id: int) -> pd.DataFrame:
     """SELECT user_name, sum(cnt_requests), sum(cnt_tokens)."""
     col_names = ["user_name", "cnt_requests", "cnt_tokens"]
 
-    if ENV != "PROD":
-        logger.debug("Mock mode: Returning empty stats")
-        return pd.DataFrame(columns=col_names)
-
     sql = """
 SELECT u.name, SUM(h.cnt_requests) AS cnt_requests, SUM(h.cnt_tokens) AS cnt_tokens
 FROM user u
 JOIN history h on h.user_id = u.id
-WHERE u.id = %s
+WHERE u.id = ?
 GROUP BY u.name
 ORDER BY cnt_tokens DESC, u.name ASC
 """
+
+    if ENV != "PROD":
+        # Local development with SQLite
+        logger.debug("Local mode: Querying SQLite stats")
+        try:
+            with sqlite_connection() as con:
+                cursor = con.cursor()
+                if user_id == 1:
+                    # Admin sees all users - no WHERE clause needed
+                    sql_query = sql.replace("WHERE u.id = ?", "")
+                    cursor.execute(sql_query)
+                else:
+                    cursor.execute(sql, (user_id,))
+                res = cursor.fetchall()
+                if not res:
+                    return pd.DataFrame(columns=col_names)
+                return pd.DataFrame(res, columns=col_names)
+        except sqlite3.Error:
+            logger.exception("SQLite error during stats query")
+            raise
+
+    # Production with MySQL
+    sql_mysql = sql.replace("?", "%s")
     # user 1 (admin get's to see all users usages)
     if user_id == 1:
-        sql = sql.replace("WHERE", "-- WHERE", 1)
-    res = db_select_rows(sql, param=(user_id,))
+        sql_mysql = sql_mysql.replace("WHERE", "-- WHERE", 1)
+    res = db_select_rows(sql_mysql, param=(user_id,))
 
     if not res:
         return pd.DataFrame(columns=col_names)
@@ -193,21 +323,40 @@ def db_select_usage_stats_daily(user_id: int) -> pd.DataFrame:
     """SELECT date, user_name, cnt_requests, cnt_tokens."""
     col_names = ["date", "user_name", "cnt_requests", "cnt_tokens"]
 
-    if ENV != "PROD":
-        logger.info("Mock mode: Returning empty stats")
-        return pd.DataFrame(columns=col_names)
-
     sql = """
 SELECT h.date, u.name, h.cnt_requests, h.cnt_tokens
 FROM user u
 JOIN history h ON h.user_id = u.id
-WHERE u.id = %s
+WHERE u.id = ?
 ORDER BY h.date DESC, u.name ASC
 """
+
+    if ENV != "PROD":
+        # Local development with SQLite
+        logger.debug("Local mode: Querying SQLite daily stats")
+        try:
+            with sqlite_connection() as con:
+                cursor = con.cursor()
+                if user_id == 1:
+                    # Admin sees all users - no WHERE clause needed
+                    sql_query = sql.replace("WHERE u.id = ?", "")
+                    cursor.execute(sql_query)
+                else:
+                    cursor.execute(sql, (user_id,))
+                res = cursor.fetchall()
+                if not res:
+                    return pd.DataFrame(columns=col_names)
+                return pd.DataFrame(res, columns=col_names)
+        except sqlite3.Error:
+            logger.exception("SQLite error during daily stats query")
+            raise
+
+    # Production with MySQL
+    sql_mysql = sql.replace("?", "%s")
     # user 1 (admin get's to see all users usages)
     if user_id == 1:
-        sql = sql.replace("WHERE", "-- WHERE", 1)
-    res = db_select_rows(sql, param=(user_id,))
+        sql_mysql = sql_mysql.replace("WHERE", "-- WHERE", 1)
+    res = db_select_rows(sql_mysql, param=(user_id,))
     if not res:
         return pd.DataFrame(columns=col_names)
     return pd.DataFrame(res, columns=col_names)
