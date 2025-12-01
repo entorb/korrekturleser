@@ -143,172 +143,191 @@ function handleLogout() {
 </script>
 
 <template>
-  <v-app>
-    <v-app-bar
-      color="primary"
-      prominent
+  <q-page-container>
+    <q-header
+      elevated
+      class="bg-primary"
     >
-      <v-app-bar-title>KI Korrekturleser</v-app-bar-title>
+      <q-toolbar>
+        <q-toolbar-title>KI Korrekturleser</q-toolbar-title>
 
-      <v-spacer />
+        <span class="q-mr-md">{{ authStore.user?.user_name }}</span>
 
-      <span class="mr-4">{{ authStore.user?.user_name }}</span>
+        <q-btn
+          flat
+          round
+          dense
+          icon="settings"
+          @click="goToStats"
+        >
+          <q-tooltip>Statistik (Esc)</q-tooltip>
+        </q-btn>
 
-      <v-btn
-        icon
-        @click="goToStats"
-        title="Statistik (Esc)"
-      >
-        <v-icon>mdi-cog</v-icon>
-      </v-btn>
+        <q-btn
+          flat
+          round
+          dense
+          icon="logout"
+          @click="handleLogout"
+        >
+          <q-tooltip>Abmelden</q-tooltip>
+        </q-btn>
+      </q-toolbar>
+    </q-header>
 
-      <v-btn
-        icon
-        @click="handleLogout"
-        title="Abmelden"
-      >
-        <v-icon>mdi-logout</v-icon>
-      </v-btn>
-    </v-app-bar>
-
-    <v-main>
-      <v-container fluid>
-        <v-card>
-          <v-card-text>
-            <!-- Text Areas -->
-            <v-row>
-              <v-col :cols="textStore.outputText ? 6 : 12">
-                <div class="d-flex justify-space-between align-center mb-2">
-                  <v-icon
-                    title="Mein Text"
-                    size="large"
-                    >mdi-account-outline</v-icon
-                  >
-                  <v-btn
-                    icon
-                    size="small"
-                    @click="pasteFromClipboard"
-                    title="Einfügen"
-                  >
-                    <v-icon>mdi-content-paste</v-icon>
-                  </v-btn>
-                </div>
-                <v-textarea
-                  v-model="textStore.inputText"
-                  placeholder="Text hier eingeben..."
-                  variant="outlined"
-                  :disabled="isProcessing"
-                  rows="15"
-                  @keydown="handleTextareaKeydown"
-                />
-              </v-col>
-
-              <v-col
-                v-if="textStore.outputText"
-                cols="6"
-              >
-                <div class="d-flex justify-space-between align-center mb-2">
-                  <v-icon
-                    title="KI Text"
-                    size="large"
-                    >mdi-robot-outline</v-icon
-                  >
-                  <v-btn
-                    icon
-                    size="small"
-                    @click="handleCopyToClipboard"
-                    title="Kopieren"
-                  >
-                    <v-icon>mdi-content-copy</v-icon>
-                  </v-btn>
-                </div>
-                <v-textarea
-                  v-if="!showMarkdown"
-                  v-model="textStore.outputText"
-                  placeholder="KI-verbesserter Text erscheint hier..."
-                  variant="outlined"
-                  rows="15"
-                />
-                <v-card
-                  v-else
-                  variant="outlined"
-                  class="pa-4"
-                  style="min-height: 360px"
+    <q-page class="q-pa-md">
+      <q-card>
+        <q-card-section>
+          <!-- Text Areas -->
+          <div class="row q-col-gutter-md">
+            <div :class="textStore.outputText ? 'col-6' : 'col-12'">
+              <div class="row items-center justify-between q-mb-sm">
+                <q-icon
+                  name="account_circle"
+                  size="md"
                 >
-                  <div
-                    v-html="markdownHtml"
-                    class="markdown-content"
-                  />
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <!-- Mode Selector and KI Button -->
-            <div class="d-flex gap-2 mb-4">
-              <v-select
-                v-model="textStore.selectedMode"
-                :items="modes"
-                label="Modus"
-                variant="outlined"
-                class="flex-grow-1"
-              >
-                <template #item="{ props, item }">
-                  <v-list-item
-                    v-bind="props"
-                    :title="modeDescriptions[item.value] || item.value"
-                  />
-                </template>
-                <template #selection="{ item }">
-                  {{ modeDescriptions[item.value] || item.value }}
-                </template>
-              </v-select>
-              <v-btn
-                icon
-                color="primary"
-                :loading="isProcessing"
-                :disabled="!textStore.inputText"
-                @click="handleProcessText"
-                title="KI verarbeiten"
-                style="height: 56px; width: 56px"
-              >
-                <v-icon>mdi-auto-fix</v-icon>
-              </v-btn>
+                </q-icon>
+                Mein Text
+                <q-btn
+                  flat
+                  round
+                  dense
+                  size="sm"
+                  icon="content_paste"
+                  @click="pasteFromClipboard"
+                >
+                  <q-tooltip>Einfügen</q-tooltip>
+                </q-btn>
+              </div>
+              <q-input
+                v-model="textStore.inputText"
+                type="textarea"
+                placeholder="Text hier eingeben..."
+                outlined
+                :disable="isProcessing"
+                :input-style="{ minHeight: '360px' }"
+                @keydown="handleTextareaKeydown"
+              />
             </div>
 
-            <!-- Error Message -->
-            <v-alert
-              v-if="textStore.error"
-              type="error"
-              variant="tonal"
-              class="mt-4"
+            <div
+              v-if="textStore.outputText"
+              class="col-6"
             >
-              {{ textStore.error }}
-            </v-alert>
-
-            <!-- Diff Display -->
-            <v-card
-              v-if="showDiff && textStore.diffHtml"
-              class="mt-6"
-            >
-              <v-card-text>
-                <div
-                  v-html="textStore.diffHtml"
-                  style="overflow-x: auto"
-                />
-              </v-card-text>
-
-              <!-- Result Info -->
-              <div
-                v-if="textStore.lastResult"
-                class="text-caption text-medium-emphasis mt-2"
-              >
-                Modell: {{ textStore.lastResult.model }} | Token verbraucht:
-                {{ textStore.lastResult.tokens_used }}
+              <div class="row items-center justify-between q-mb-sm">
+                <q-icon
+                  name="auto_fix_high"
+                  size="md"
+                >
+                </q-icon>
+                KI Text
+                <q-btn
+                  flat
+                  round
+                  dense
+                  size="sm"
+                  icon="content_copy"
+                  @click="handleCopyToClipboard"
+                >
+                  <q-tooltip>Kopieren</q-tooltip>
+                </q-btn>
               </div>
-            </v-card>
-          </v-card-text>
-        </v-card>
-      </v-container>
-    </v-main>
-  </v-app>
+              <q-input
+                v-if="!showMarkdown"
+                v-model="textStore.outputText"
+                type="textarea"
+                placeholder="KI-verbesserter Text erscheint hier..."
+                outlined
+                readonly
+                :input-style="{ minHeight: '360px' }"
+              />
+              <q-card
+                v-else
+                bordered
+                class="q-pa-md"
+                style="min-height: 360px"
+              >
+                <div
+                  v-html="markdownHtml"
+                  class="markdown-content"
+                />
+              </q-card>
+            </div>
+          </div>
+
+          <!-- Mode Selector and KI Button -->
+          <div class="row q-col-gutter-sm q-mt-md">
+            <div class="col-grow">
+              <q-select
+                v-model="textStore.selectedMode"
+                :options="modes"
+                label="Modus"
+                outlined
+                emit-value
+                map-options
+              >
+                <template #option="scope">
+                  <q-item v-bind="scope.itemProps">
+                    <q-item-section>
+                      <q-item-label>{{
+                        modeDescriptions[scope.opt.value] || scope.opt.value
+                      }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template #selected>
+                  {{ modeDescriptions[textStore.selectedMode] || textStore.selectedMode }}
+                </template>
+              </q-select>
+            </div>
+            <div>
+              <q-btn
+                round
+                color="primary"
+                icon="auto_fix_high"
+                :loading="isProcessing"
+                :disable="!textStore.inputText"
+                @click="handleProcessText"
+                size="lg"
+              >
+                <q-tooltip>KI verarbeiten</q-tooltip>
+              </q-btn>
+            </div>
+          </div>
+
+          <!-- Error Message -->
+          <q-banner
+            v-if="textStore.error"
+            class="bg-negative text-white q-mt-md"
+            rounded
+          >
+            {{ textStore.error }}
+          </q-banner>
+
+          <!-- Diff Display -->
+          <q-card
+            v-if="showDiff && textStore.diffHtml"
+            bordered
+            class="q-mt-lg"
+          >
+            <q-card-section>
+              <div
+                v-html="textStore.diffHtml"
+                style="overflow-x: auto"
+              />
+            </q-card-section>
+
+            <!-- Result Info -->
+            <q-card-section
+              v-if="textStore.lastResult"
+              class="text-caption text-grey-7"
+            >
+              Modell: {{ textStore.lastResult.model }} | Token verbraucht:
+              {{ textStore.lastResult.tokens_used }}
+            </q-card-section>
+          </q-card>
+        </q-card-section>
+      </q-card>
+    </q-page>
+  </q-page-container>
 </template>

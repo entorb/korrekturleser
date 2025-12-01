@@ -4,7 +4,7 @@
 </script>
 
 <template>
-  <v-app>
+  <q-layout view="hHh lpR fFf">
     <router-view />
-  </v-app>
+  </q-layout>
 </template>
