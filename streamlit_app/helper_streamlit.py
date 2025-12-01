@@ -14,24 +14,10 @@ if TYPE_CHECKING:
 ENV = where_am_i()
 
 
-@st.cache_resource
-def get_shared_state() -> dict[str, str]:
-    """
-    Shared state dict.
-
-    Prefilled with ENV (= where the app is running).
-    """
-    d: dict[str, str] = {}
-    d["ENV"] = ENV
-    return d
-
-
 def init_dev_session_state() -> None:
     """Set session variables needed for local dev without login."""
     st.session_state["USER_ID"] = USER_ID_LOCAL
     st.session_state["USER_NAME"] = USER_NAME_LOCAL
-    st.session_state["cnt_requests"] = 0
-    st.session_state["cnt_tokens"] = 0
 
 
 def create_navigation_menu() -> str:

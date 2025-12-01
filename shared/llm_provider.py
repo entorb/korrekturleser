@@ -192,7 +192,7 @@ class AzureOpenAIProvider(LLMProvider):
 
 
 # Ollama available only locally, not on webserver
-if ENV != "PROD" and LLM_PROVIDER == "Ollama":
+if LLM_PROVIDER == "Ollama" and ENV != "PROD":
     from ollama import ChatResponse, chat  # uv add --dev ollama
 
     class OllamaProvider(LLMProvider):

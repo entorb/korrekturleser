@@ -66,8 +66,9 @@ if selected_mode:
     text_response, tokens = llm_provider.call(textarea_in)
     st.session_state["ai_response"] = text_response
 
-    if ENV == "PROD":
-        db_insert_usage(user_id=USER_ID, tokens=tokens)
+    db_insert_usage(user_id=USER_ID, tokens=tokens)
+    st.session_state["cnt_requests"] += 1
+    st.session_state["cnt_tokens"] += tokens
 
     # Display output differently for summarize mode (markdown) vs others (text)
     if selected_mode == "summarize":

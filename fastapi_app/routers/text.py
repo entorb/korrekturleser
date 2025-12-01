@@ -65,9 +65,8 @@ async def improve_text(
         # Call LLM
         improved_text, tokens_used = llm_provider.call(request.text)
 
-        # Log usage in production
-        if ENV == "PROD":
-            db_insert_usage(user_id=current_user.user_id, tokens=tokens_used)
+        # Log usage
+        db_insert_usage(user_id=current_user.user_id, tokens=tokens_used)
 
         logger.debug(
             "Successfully improved text for %s, used %d tokens",
