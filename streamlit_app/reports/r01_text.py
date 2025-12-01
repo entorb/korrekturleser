@@ -1,6 +1,5 @@
 """Textverbesserung."""
 
-import difflib
 import logging
 from pathlib import Path
 
@@ -97,21 +96,16 @@ if selected_mode:
     if selected_mode in ("correct", "improve"):
         st.subheader("Unterschied")
 
-        # Create HTML diff
-        text_in_lines = textarea_in.splitlines(keepends=True)
-        text_ai_lines = st.session_state["ai_response"].splitlines(keepends=True)
+        # Import shared diff helper
+        from shared.helper_diff import create_diff_html
 
-        diff_html = difflib.HtmlDiff(wrapcolumn=80).make_table(
-            text_in_lines,
-            text_ai_lines,
-            fromdesc="Original",
-            todesc="KI Text",
-            context=True,
-            numlines=0,
-        )
+        # Read CSS file
+        css_path = Path(__file__).parent.parent.parent / "shared" / "helper_diff.css"
+        css_content = css_path.read_text(encoding="utf-8")
 
-        # CSS styling for better diff visualization with mobile optimization
-        st.html(Path("streamlit_app/table_diff.css"))
+        # Create and display diff
+        diff_html = create_diff_html(textarea_in, st.session_state["ai_response"])
+        st.html(f"<style>{css_content}</style>")
         st.html(diff_html)
 
     st.subheader("Anweisung")
