@@ -3,6 +3,7 @@
 # ruff: noqa: PLR2004
 
 from datetime import UTC, datetime, timedelta
+from unittest.mock import MagicMock, patch
 
 import jwt
 from fastapi.testclient import TestClient
@@ -19,10 +20,28 @@ class TestUsageStats:
 
         assert response.status_code == 403
 
+    @patch("shared.helper_db.sqlite_connection")
     def test_stats_with_valid_token(
-        self, client: TestClient, auth_headers: dict[str, str]
+        self,
+        mock_sqlite: MagicMock,
+        client: TestClient,
+        auth_headers: dict[str, str],
     ) -> None:
         """Test stats endpoint returns mock data in local mode."""
+        # Mock SQLite connection for stats queries
+        mock_con = MagicMock()
+        mock_cursor = MagicMock()
+
+        # Mock responses for both queries in correct order
+        # First call: daily stats (4 columns: date, user_name, cnt_requests, cnt_tokens)
+        # Second call: total stats (3 columns: user_name, cnt_requests, cnt_tokens)
+        mock_cursor.fetchall.side_effect = [
+            [("2025-12-01", "Torben", 0, 0)],  # Daily stats
+            [("Torben", 0, 0)],  # Total stats
+        ]
+        mock_con.cursor.return_value = mock_cursor
+        mock_sqlite.return_value.__enter__.return_value = mock_con
+
         response = client.get("/api/stats", headers=auth_headers)
 
         assert response.status_code == 200
@@ -43,8 +62,25 @@ class TestUsageStats:
         assert data["total"][0]["cnt_requests"] == 0
         assert data["total"][0]["cnt_tokens"] == 0
 
-    def test_stats_non_admin_user_gets_own_data(self, client: TestClient) -> None:
+    @patch("shared.helper_db.sqlite_connection")
+    def test_stats_non_admin_user_gets_own_data(
+        self, mock_sqlite: MagicMock, client: TestClient
+    ) -> None:
         """Test stats endpoint returns user's own data for non-admin in local mode."""
+        # Mock SQLite connection for stats queries
+        mock_con = MagicMock()
+        mock_cursor = MagicMock()
+
+        # Mock responses for both queries in correct order
+        # First call: daily stats (4 columns: date, user_name, cnt_requests, cnt_tokens)
+        # Second call: total stats (3 columns: user_name, cnt_requests, cnt_tokens)
+        mock_cursor.fetchall.side_effect = [
+            [("2025-12-01", "NonAdmin", 0, 0)],  # Daily stats
+            [("NonAdmin", 0, 0)],  # Total stats
+        ]
+        mock_con.cursor.return_value = mock_cursor
+        mock_sqlite.return_value.__enter__.return_value = mock_con
+
         # Create a token for a different user (not admin)
         token_data = {
             "user_id": 2,

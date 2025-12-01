@@ -15,7 +15,7 @@ from nicegui_app.page_login import create_login_page
 from nicegui_app.page_stats import create_stats_page
 from nicegui_app.page_text import create_text_page
 from shared.config import USER_ID_LOCAL, USER_NAME_LOCAL
-from shared.helper import init_logging, my_get_env, where_am_i
+from shared.helper import auto_login_for_local_dev, init_logging, my_get_env, where_am_i
 
 init_logging()
 logger = logging.getLogger(Path(__file__).stem)
@@ -26,9 +26,12 @@ NICEGUI_STORAGE_SECRET = my_get_env("NICEGUI_STORAGE_SECRET")
 
 def _auto_login_if_local() -> None:
     """Auto-login for local development."""
-    if ENV != "PROD" and not SessionManager.is_authenticated():
-        SessionManager.login(USER_ID_LOCAL, USER_NAME_LOCAL)
-        logger.info("Auto-login for local development")
+    auto_login_for_local_dev(
+        SessionManager.is_authenticated,
+        SessionManager.login,
+        USER_ID_LOCAL,
+        USER_NAME_LOCAL,
+    )
 
 
 def _require_authentication() -> bool:
