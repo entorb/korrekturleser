@@ -172,7 +172,7 @@ function handleLogout() {
     </v-app-bar>
 
     <v-main>
-      <v-container>
+      <v-container fluid>
         <v-card>
           <v-card-text>
             <!-- Text Areas -->
