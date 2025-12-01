@@ -13,6 +13,7 @@ from shared.helper_db import (
     db_select_usage_stats_total,
 )
 
+from .config_nice import CSS_HEADER
 from .helper_nicegui import (
     SESSION_CNT_REQUESTS,
     SESSION_CNT_TOKENS,
@@ -30,7 +31,7 @@ def create_stats_page() -> None:
         return
 
     # Header
-    with ui.header().classes("items-center").style("background-color: #1976d2;"):
+    with ui.header().classes("items-center").style(CSS_HEADER):
         ui.button(icon="arrow_back", on_click=lambda: ui.navigate.to("/")).props(
             "flat round"
         ).tooltip("Zurück (Esc)")
