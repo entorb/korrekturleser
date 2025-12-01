@@ -118,25 +118,37 @@ All business logic and external integrations are shared between Streamlit and Fa
   - Uses `@lru_cache` for connection pooling
   - Returns tuple: `(response_text, tokens_used)`
 
-- **`helper_db.py`**: Database operations with automatic mock mode
-  - Connection pooling via `get_db_pool()` and `db_connection()` context manager
+- **`helper_db.py`**: Database operations with automatic environment detection
+  - **Production (MySQL)**: Connection pooling via `get_db_pool()` and `db_connection()` context manager
+  - **Local (SQLite)**: Auto-creates `db.sqlite` with `init_sqlite_db()`, uses `sqlite_connection()` context manager
   - Login: `db_select_user_from_geheimnis()` - verifies bcrypt hash for all users (O(n), acceptable for <10 users)
-  - Usage tracking: `db_insert_usage()`, `db_select_usage_of_user()`
-  - Stats queries: `db_select_usage_stats_daily()`, `db_select_usage_stats_total()`
+  - Usage tracking: `db_insert_usage()` - skips when `LLM_PROVIDER == "Mocked"`
+  - Stats queries: `db_select_usage_stats_daily()`, `db_select_usage_stats_total()` - work with both MySQL and SQLite
 
 - **`helper.py`**: Utility functions
   - `my_get_env()`: Strict environment variable getter
   - `verify_geheimnis()`: bcrypt password verification
   - `where_am_i()`: Returns "PROD" or "Local"
 
-### Mock Mode for Local Development
+### Database Support
 
-The application automatically enables mock mode when running locally (no database connection required):
+**Production (MySQL)**:
 
+- Full MySQL database with user authentication and usage tracking
+- Connection pooling via `get_db_pool()` and `db_connection()` context manager
+
+**Local Development (SQLite)**:
+
+- Automatic SQLite database (`db.sqlite`) created when running locally
+- Schema mirrors MySQL production database
+- Auto-populated with mock user (Login with secret `test`, user: Torben, ID: 1)
 - Environment detection: Checks if `/home/entorb/korrekturleser` exists
-- Mock user: Login with secret `test` (user: Torben, ID: 1)
-- Database operations: All DB calls return mock data or no-ops in local mode
 - Only `GEMINI_API_KEY` required for local development
+
+**LLM Mocked Mode**:
+
+- When `LLM_PROVIDER == "Mocked"`, database writes are skipped
+- Useful for testing without consuming API tokens
 
 ### FastAPI Application (`fastapi_app/`)
 
@@ -224,30 +236,47 @@ Modern frontend with TypeScript, Vue 3, and Vuetify:
 
 Standalone Python application combining frontend and backend:
 
-- **`main.py`**: Single-file application with UI and logic
+- **`main.py`**: Application routing and authentication
   - Uses `nicegui` library for reactive web UI
-  - **SessionManager**: Manages user authentication state using NiceGUI's `app.storage.user`
-  - **Page Functions**:
-    - `create_login_page()`: Login form with bcrypt verification
-    - `create_text_page()`: Main text improvement interface with mode selector
-    - `create_stats_page()`: Usage statistics display
-  - **Routes**: Three pages - `/` (login/redirect), `/text` (main), `/stats` (statistics)
-  - **Features**:
-    - Session-based authentication (auto-login in local mode)
-    - Real-time UI updates with async/await
-    - Diff visualization for correct/improve modes (using `difflib`)
-    - Markdown rendering for summarize mode
-    - Session usage tracking (requests and tokens)
-    - Production database integration (same as V1/V2)
+  - **Routes**: Three pages - `/` (text improvement), `/login` (authentication), `/stats` (statistics), all relative to `BASE_URL` (`/korrekturleser-nice`)
+  - **Authentication**: `_require_authentication()` helper ensures all protected routes require login
+  - **Auto-login**: Local development mode automatically logs in test user
   - **Port**: 8505
   - **Auto-reload**: Enabled in local mode
 
+- **`helper_nicegui.py`**: Session management
+  - **SessionManager**: Manages user authentication state using NiceGUI's `app.storage.user`
+  - Session-based authentication (no JWT tokens)
+  - Session usage tracking (requests and tokens)
+
+- **`page_login.py`**: Login page
+  - Login form with password input
+  - bcrypt verification via `db_select_user_from_geheimnis()`
+  - Auto-redirects authenticated users
+
+- **`page_text.py`**: Main text improvement page
+  - Mode selector with all AI improvement modes
+  - Input/output text areas with clipboard support
+  - Diff visualization for correct/improve modes (using `shared/helper_diff.py`)
+  - Markdown rendering for summarize mode
+  - Async LLM processing with spinner
+  - Ctrl+Enter / Cmd+Enter keyboard shortcuts
+  - Escape key navigates to stats
+
+- **`page_stats.py`**: Statistics page
+  - Displays total and daily usage stats from database
+  - Shows config (ENV, LLM provider/model)
+  - Shows session stats (user, requests, tokens)
+  - Admin (user_id=1) sees all users' stats
+  - Escape key navigates back to text page
+
 Key differences from V1/V2:
 
-- Single Python file (no separate frontend/backend)
+- Multi-file modular structure (main, pages, helpers)
 - Reactive UI with NiceGUI (similar to Streamlit but more flexible)
 - Session storage instead of JWT tokens
 - Direct use of shared business logic (no REST API needed)
+- Consistent header styling matching Vue.js app (Vuetify primary blue)
 
 ### Authentication Flow
 

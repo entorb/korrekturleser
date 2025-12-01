@@ -6,7 +6,7 @@ The application has been implemented in multiple tech stacks, to compare them:
 
 - V1: Python Streamlit
 - V2: Python FastAPI backend with Vue.js frontend
-- V3: (pending) Python NiceGUI
+- V3: Python NiceGUI
 - V4: (pending) Python Flask
 
 ## Installation
@@ -37,16 +37,22 @@ pnpm install
 
 Both backends and the fronted use a shared `.env` file for configuration: see [.env.example](.env.example)
 
-### Local Development (Without Database)
+### Local Development (With SQLite Database)
 
-The application supports local development without database access using mock mode:
+The application can be run locally with an SQLite database:
 
 - **Environment Detection**: Automatically detects if running locally or on production webserver
-- **Mock User Credentials**: Login with secret `test` (user: Torben, ID: 1)
-- **Database Operations**: All database operations are skipped in local mode
-  - Login uses mock bcrypt-hashed credentials
-  - Usage stats return (0, 0) without database queries
-  - No usage tracking is saved
+- **SQLite Database**: Auto-creates `db.sqlite` when running locally
+  - Schema mirrors MySQL production database
+  - Includes `user` and `history` tables with proper indexes
+- **Mock User**: Pre-populated with test user
+  - Login with secret `test` (user: Torben, ID: 1)
+  - bcrypt-hashed credentials matching production format
+- **Database Operations**: Fully functional in local mode
+  - User authentication works against SQLite
+  - Usage tracking saves to SQLite
+  - Stats queries return real data from SQLite
+  - Skips database writes when `LLM_PROVIDER == "Mocked"`
 - **LLM Operations**: Work normally - only Gemini API key required
 
 ## Running the Applications
@@ -84,6 +90,21 @@ scripts/fastapi.sh
 pnpm generate-api
 ```
 
+### NiceGUI App (V3)
+
+```sh
+scripts/nicegui.sh
+open http://localhost:8505/korrekturleser-nice
+```
+
+Standalone application combining frontend and backend using NiceGUI. Features:
+
+- Session-based authentication (auto-login in local mode)
+- SQLite database in local mode, MySQL in production
+- Real-time UI updates with async processing
+- Diff visualization and markdown rendering
+- Consistent styling with Vue.js app
+
 ### Code checks
 
 These should be executed before commit and after each AI assistant step.
@@ -110,7 +131,8 @@ korrekturleser/
 │   ├── config.py        # Configuration and environment detection
 │   ├── helper.py        # Shared helper functions
 │   ├── helper_ai.py     # AI mode configurations (single source of truth)
-│   ├── helper_db.py     # Database operations with mock mode
+│   ├── helper_db.py     # Database operations (MySQL prod, SQLite local)
+│   ├── helper_diff.py   # Diff HTML generation
 │   └── llm_provider.py  # LLM provider abstraction (Gemini, Ollama)
 ├── streamlit_app/       # Streamlit application (V1)
 │   └── reports/         # Report pages
@@ -131,10 +153,17 @@ korrekturleser/
 │   │   ├── utils/       # Utilities (JWT decoding)
 │   │   └── plugins/     # Vuetify configuration
 │   └── __tests__/       # Vitest unit tests
+├── nicegui_app/         # NiceGUI application (V3 Standalone)
+│   ├── main.py          # App initialization, routing, auth guard
+│   ├── helper_nicegui.py # SessionManager for user state
+│   ├── page_login.py    # Login page
+│   ├── page_text.py     # Text improvement page
+│   └── page_stats.py    # Statistics page
 ├── scripts/             # Helper scripts
 │   ├── generate_mode_descriptions.py  # Generates TypeScript from Python modes
 │   ├── fastapi.sh       # Run FastAPI backend
 │   ├── vue.sh           # Run Vue.js frontend
+│   ├── nicegui.sh       # Run NiceGUI app
 │   └── streamlit.sh     # Run Streamlit app
 └── tests/               # Pytest for Streamlit and FastAPI
 ```
@@ -163,11 +192,13 @@ All business logic is centralized in the shared layer, used by both Streamlit an
   - `OllamaProvider`: Local development only
   - Connection pooling with `@lru_cache`
 
-- **`helper_db.py`**: Database operations with automatic mock mode
+- **`helper_db.py`**: Database operations with automatic environment detection
   - Auto-detects local vs production environment
-  - Mock mode: Returns test data when running locally (no DB required)
-  - User authentication with bcrypt
-  - Usage tracking and statistics
+  - **Production**: MySQL with connection pooling
+  - **Local**: SQLite (`db.sqlite`) auto-created with matching schema
+  - **Mocked LLM**: Skips database writes when `LLM_PROVIDER == "Mocked"`
+  - User authentication with bcrypt (works with both databases)
+  - Usage tracking and statistics (works with both databases)
 
 ### FastAPI Application (`fastapi_app/`)
 
@@ -238,7 +269,7 @@ see **Available Modes** (defined in `shared/helper_ai.py`):
 
 - Each of the ~10 users receives a unique secret
 - Secrets are stored as bcrypt hashes in the database
-- Backend validates user-provided secret against database hashes
+- The backend validates the user-provided secret against the database hashes
 
 ### V2 (FastAPI + Vue.js) - Stateless JWT Authentication
 
@@ -263,9 +294,13 @@ see **Available Modes** (defined in `shared/helper_ai.py`):
 
 Secret: GEMINI_API_KEY from <https://aistudio.google.com/apikey>
 
-### MySQL Database
+### Database
 
-for Login and Usage Stats. Only access from prod deployment possible.
+**Production**: MySQL database for login and usage stats.
+
+**Local Development**: SQLite database (`db.sqlite`) with identical schema, auto-created on first run.
+
+Schema (applies to both MySQL and SQLite):
 
 ```sql
 CREATE TABLE `user` (
