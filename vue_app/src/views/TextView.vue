@@ -271,7 +271,7 @@ function handleLogout() {
                 title="KI verarbeiten"
                 style="height: 56px; width: 56px"
               >
-                <v-icon>mdi-robot</v-icon>
+                <v-icon>mdi-auto-fix</v-icon>
               </v-btn>
             </div>
 

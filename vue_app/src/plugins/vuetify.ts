@@ -11,6 +11,7 @@ import type { IconSet } from 'vuetify'
 import {
   mdiAccountOutline,
   mdiArrowLeft,
+  mdiAutoFix,
   mdiCalendar,
   mdiChartBar,
   mdiChevronLeft,
@@ -52,6 +53,7 @@ const iconMap: Record<string, string> = {
   'mdi-pound': mdiPound,
   'mdi-robot': mdiRobot,
   'mdi-robot-outline': mdiRobotOutline,
+  'mdi-auto-fix': mdiAutoFix,
   'mdi-send': mdiSend
 }
 
