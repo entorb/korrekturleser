@@ -73,19 +73,31 @@ def _create_header() -> None:
 def _create_input_column() -> ui.textarea:
     """Create input column and return textarea."""
     with ui.column().classes("flex-1"):
+        input_textarea = (
+            ui.textarea(placeholder="Text hier eingeben...", value="")
+            .classes("w-full")
+            .props("outlined rows=15")
+        )
+
+        async def paste_from_clipboard() -> None:
+            """Paste clipboard content into textarea."""
+            clipboard_text = await ui.run_javascript("navigator.clipboard.readText()")
+            if clipboard_text:
+                input_textarea.value = clipboard_text
+                ui.notify("Eingefügt!", type="positive")
+            else:
+                ui.notify("Zwischenablage ist leer", type="warning")
+
         with ui.row().classes("w-full items-center justify-between mb-2"):
             with ui.row().classes("items-center gap-2"):
                 ui.icon("account_circle", size="md").classes("text-primary")
                 ui.label("Mein Text").classes("text-subtitle1")
             ui.button(
                 icon="content_paste",
-                on_click=lambda: ui.notify("Bitte mit Strg+V / Cmd+V einfügen"),
+                on_click=paste_from_clipboard,
             ).props("flat round size=sm").tooltip("Einfügen")
-        input_textarea = (
-            ui.textarea(placeholder="Text hier eingeben...", value="")
-            .classes("w-full")
-            .props("outlined rows=15")
-        )
+
+        input_textarea.move()
 
     return input_textarea
 
