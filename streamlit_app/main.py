@@ -56,9 +56,7 @@ def login() -> None:
 
 
 def main() -> None:  # noqa: D103
-    if ENV == "PROD":
-        pass
-    else:
+    if ENV != "PROD":
         # for local running I skip the login and set the session infos
         init_dev_session_state()
 
@@ -73,15 +71,6 @@ def main() -> None:  # noqa: D103
 
     # run the page
     _ = create_navigation_menu()
-
-    # footer
-    if ENV == "PROD" and "USER_ID" in st.session_state:
-        msg = (
-            f"{st.session_state['USER_NAME']} hat bisher"
-            f" {st.session_state['cnt_requests']} Anfragen"
-            f" mit {st.session_state['cnt_tokens']} Token gestellt."
-        )
-        st.write(msg)
 
 
 if __name__ == "__main__":

@@ -19,6 +19,7 @@ __pycache__/
 *.swp
 CLAUDE.md
 coverage.xml
+db.sqlite
 GEMINI.md
 requirements.txt
 TODO.md

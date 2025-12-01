@@ -53,11 +53,7 @@ class UIElements(NamedTuple):
 
 def _create_header() -> None:
     """Create page header with navigation."""
-    with (
-        ui.header()
-        .classes("items-center")
-        .style("background: linear-gradient(90deg, #1976d2 0%, #1565c0 100%);")
-    ):
+    with ui.header().classes("items-center").style("background-color: #1976d2;"):
         ui.label("KI Korrekturleser").classes("text-h5 font-weight-bold")
         ui.space()
         ui.label(SessionManager.get_user_name()).classes("mr-2")
@@ -190,8 +186,7 @@ def _process_with_llm(mode: str, input_text: str) -> tuple[str, int]:
 
 def _track_usage(tokens: int) -> None:
     """Track usage in database and session."""
-    if ENV == "PROD":
-        db_insert_usage(user_id=SessionManager.get_user_id(), tokens=tokens)
+    db_insert_usage(user_id=SessionManager.get_user_id(), tokens=tokens)
     SessionManager.increment_usage(tokens)
 
 
