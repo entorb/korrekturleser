@@ -31,15 +31,13 @@ def create_login_page() -> None:
                 return
 
             # Verify credentials
-            user_id, user_name = db_select_user_from_geheimnis(geheimnis=secret)
-            if user_id == 0:
-                error_label.text = "So nicht!"
-                error_label.visible = True
-                return
-
-            # Login successful
-            SessionManager.login(user_id, user_name)
-            ui.navigate.to("/text")
+            user_id, username = db_select_user_from_geheimnis(secret_input.value)
+            if user_id > 0:
+                SessionManager.login(user_id, username)
+                ui.notify("Login erfolgreich!", type="positive")
+                ui.navigate.to("/")
+            else:
+                ui.notify("Falsches Passwort", type="negative")
 
         ui.button("Login", on_click=handle_login).classes("w-full").props(
             "color=primary"
