@@ -4,24 +4,25 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from .helper import my_get_env
+from .helper import my_get_env, where_am_i
 
 # Load environment variables from .env file in project root
 load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
+ENV = where_am_i()
 
 # Local user
 USER_ID_LOCAL = 1
 USER_NAME_LOCAL = "Torben"
 
 # LLM configuration
-LLM_PROVIDER = "Gemini"
-LLM_MODEL = "gemini-2.5-flash-lite"  # "gemini-2.5-flash", "gemini-2.5-pro"
-# LLM_MODEL = "Ollama"
-# LLM_PROVIDER = "llama3.2:1b"
+LLM_PROVIDER = my_get_env("LLM_PROD") if ENV == "PROD" else my_get_env("LLM_LOCAL")
+LLM_MODEL = (
+    my_get_env("LLM_PROD_MODEL") if ENV == "PROD" else my_get_env("LLM_LOCAL_MODEL")
+)
 
 # FastAPI parameters
 # JWT Configuration
-JWT_SECRET_KEY = my_get_env("JWT_SECRET_KEY")
+FASTAPI_JWT_SECRET_KEY = my_get_env("FASTAPI_JWT_SECRET_KEY")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRE_HOURS = 24
