@@ -238,7 +238,6 @@ function handleLogout() {
                 type="textarea"
                 placeholder="KI-verbesserter Text erscheint hier..."
                 outlined
-                readonly
                 :input-style="{ minHeight: '360px' }"
               />
               <q-card
