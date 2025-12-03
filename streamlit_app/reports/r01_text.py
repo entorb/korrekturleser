@@ -14,7 +14,7 @@ from shared.helper import where_am_i
 from shared.helper_ai import MODE_CONFIGS
 from shared.helper_db import db_insert_usage
 from shared.llm_provider import get_cached_llm_provider
-from shared.texts import GOOGLE_DISCLAIMER
+from shared.texts import GOOGLE_DISCLAIMER, LABEL_KI_TEXT, LABEL_MY_TEXT
 
 st.title("Textverbesserung")
 logger = logging.getLogger(Path(__file__).stem)
@@ -23,48 +23,43 @@ ENV = where_am_i()
 
 USER_ID = st.session_state["USER_ID"]  # shortcut
 
+
 if LLM_PROVIDER == "Gemini":
     st.markdown(GOOGLE_DISCLAIMER)
 
 
-st.subheader("Mein Text")
-with st.form("Mein Text"):
+st.subheader(LABEL_MY_TEXT)
+with st.form(LABEL_MY_TEXT):
     cols = st.columns((5, 1), vertical_alignment="top")
     textarea_in = cols[0].text_area(
-        label="Mein Text",
+        label=LABEL_MY_TEXT,
         height="content",
         label_visibility="collapsed",
         key="textarea_in",
     )
 
-    # Dynamically create submit buttons from MODE_CONFIGS
-    submit_buttons = {}
-    for mode, config in MODE_CONFIGS.items():
-        submit_buttons[mode] = cols[1].form_submit_button(
-            config.description, type="primary"
-        )
+    # Mode selection and submit button
+    mode_options = {config.description: mode for mode, config in MODE_CONFIGS.items()}
+    selected_description = cols[1].selectbox(
+        "Mode",
+        options=list(mode_options.keys()),
+        key="mode_select",
+    )
+    submit_button = cols[1].form_submit_button("Submit", type="primary")
 
 # Determine which mode was selected
 selected_mode = None
-for mode, was_clicked in submit_buttons.items():
-    if was_clicked:
-        selected_mode = mode
-        st.session_state["selected_mode"] = mode
-        break
-
-# Use cached mode if available
-if not selected_mode and "selected_mode" in st.session_state:
-    selected_mode = st.session_state["selected_mode"]
+if submit_button:
+    selected_mode = mode_options[selected_description]
 
 # Process if any button was clicked or there's a cached response
-if selected_mode:
+if selected_mode and selected_mode:
     instruction = MODE_CONFIGS[selected_mode].instruction
 
-    st.subheader("KI Text")
+    st.subheader(LABEL_KI_TEXT)
 
     llm_provider = get_cached_llm_provider(instruction=instruction)
     text_response, tokens = llm_provider.call(textarea_in)
-    st.session_state["ai_response"] = text_response
 
     db_insert_usage(user_id=USER_ID, tokens=tokens)
     st.session_state["cnt_requests"] += 1
@@ -72,17 +67,15 @@ if selected_mode:
 
     # Display output differently for summarize mode (markdown) vs others (text)
     if selected_mode == "summarize":
-        textarea_ai = st.markdown(
-            st.session_state["ai_response"],
-        )
+        textarea_ai = st.markdown(text_response)
 
     else:
         textarea_ai = st.text_area(
-            label="KI Text",
-            value=st.session_state["ai_response"],
+            label=LABEL_KI_TEXT,
+            value=text_response,
             height="content",
             label_visibility="collapsed",
-            key="textarea_ai",
+            disabled=False,
         )
         copy_button(
             str(textarea_ai),
@@ -91,7 +84,7 @@ if selected_mode:
             icon="st",
         )
 
-    st.write(f"{tokens} Token verbraucht für {LLM_MODEL}")
+    st.write(f"{tokens} Tokens verbraucht für {LLM_MODEL}")
 
     # Show diff for correct and improve modes
     if selected_mode in ("correct", "improve"):
@@ -105,9 +98,10 @@ if selected_mode:
         css_content = css_path.read_text(encoding="utf-8")
 
         # Create and display diff
-        diff_html = create_diff_html(textarea_in, st.session_state["ai_response"])
+        diff_html = create_diff_html(textarea_in, str(textarea_ai))
         st.html(f"<style>{css_content}</style>")
         st.html(diff_html)
 
     # st.subheader("Anweisung")
     # st.code(language="markdown", body=instruction)
+    # st.write(text_response)
