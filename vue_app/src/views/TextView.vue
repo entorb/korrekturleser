@@ -268,9 +268,7 @@ function handleLogout() {
                 <template #option="scope">
                   <q-item v-bind="scope.itemProps">
                     <q-item-section>
-                      <q-item-label>{{
-                        modeDescriptions[scope.opt.value] || scope.opt.value
-                      }}</q-item-label>
+                      <q-item-label>{{ modeDescriptions[scope.opt] || scope.opt }}</q-item-label>
                     </q-item-section>
                   </q-item>
                 </template>
