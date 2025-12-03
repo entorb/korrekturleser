@@ -2,7 +2,6 @@
 dependencies = [
     "azure-identity>=1.25.1",
     "bcrypt>=4.2.0",
-    "diff-match-patch>=20241021",
     "dotenv>=0.9.9",
     "fastapi>=0.115.0",
     "google-genai>=1.44.0",
