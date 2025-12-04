@@ -3,6 +3,8 @@
 import difflib
 import html
 
+from shared.texts import LABEL_KI_TEXT, LABEL_MY_TEXT
+
 
 def create_diff_html(text_in: str, text_ai: str) -> str:  # noqa: C901
     """
@@ -55,8 +57,8 @@ def create_diff_html(text_in: str, text_ai: str) -> str:  # noqa: C901
 <table class="comparison-table">
     <thead>
         <tr>
-            <th>Original</th>
-            <th>KI Text</th>
+            <th>{LABEL_MY_TEXT}</th>
+            <th>{LABEL_KI_TEXT}</th>
         </tr>
     </thead>
     <tbody>

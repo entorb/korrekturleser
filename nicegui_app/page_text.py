@@ -14,7 +14,7 @@ from shared.helper_ai import MODE_CONFIGS
 from shared.helper_db import db_insert_usage
 from shared.helper_diff import create_diff_html as create_diff_table
 from shared.llm_provider import get_cached_llm_provider
-from shared.texts import GOOGLE_DISCLAIMER
+from shared.texts import GOOGLE_DISCLAIMER, LABEL_KI_TEXT, LABEL_MY_TEXT
 
 from .helper_nicegui import SessionManager
 
@@ -91,7 +91,7 @@ def _create_input_column() -> ui.textarea:
         with ui.row().classes("w-full items-center justify-between mb-2"):
             with ui.row().classes("items-center gap-2"):
                 ui.icon("account_circle", size="md").classes("text-primary")
-                ui.label("Mein Text").classes("text-subtitle1")
+                ui.label(LABEL_MY_TEXT).classes("text-subtitle1")
             ui.button(
                 icon="content_paste",
                 on_click=paste_from_clipboard,
@@ -109,7 +109,7 @@ def _create_output_column() -> OutputElements:
         with ui.row().classes("w-full items-center justify-between mb-2"):
             with ui.row().classes("items-center gap-2"):
                 ui.icon("auto_fix_high", size="md").classes("text-primary")
-                ui.label("KI Text").classes("text-subtitle1")
+                ui.label(LABEL_KI_TEXT).classes("text-subtitle1")
             copy_btn = (
                 ui.button(icon="content_copy")
                 .props("flat round size=sm")
