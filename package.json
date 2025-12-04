@@ -17,7 +17,7 @@
     "spell": "cspell --cache --quiet \"vue_app/**/*.{txt,md,html,js,ts,vue,json,yml,py}\" \"docs/*\"",
     "spell-store": "cspell --cache --quiet --words-only --unique \"vue_app/**/*.{txt,md,html,js,ts,vue,json,yml,py}\" > cspell-unknown-words.txt",
     "check": "run-p format lint type-check spell test",
-    "generate-api": "openapi --input http://localhost:9002/openapi.json --output vue_app/src/api --client axios && uv run python scripts/generate_mode_descriptions.py"
+    "generate-api": "openapi --input http://127.0.0.1:9002/openapi.json --output vue_app/src/api --client axios && uv run python scripts/generate_mode_descriptions.py"
   },
   "dependencies": {
     "@quasar/extras": "^1.17.0",
