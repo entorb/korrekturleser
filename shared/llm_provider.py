@@ -6,11 +6,6 @@ import time
 from functools import lru_cache
 from pathlib import Path
 
-from azure.identity import DefaultAzureCredential, get_bearer_token_provider
-from google import genai  # pip install google-genai
-from google.genai import types as genai_types
-from openai import AzureOpenAI
-
 from .config import LLM_MODEL, LLM_PROVIDER
 from .helper import my_get_env, where_am_i
 
@@ -19,15 +14,23 @@ ENV = where_am_i()
 
 
 @lru_cache(maxsize=1)
-def get_gemini_client() -> genai.Client:
+def get_gemini_client():  # noqa: ANN201
     """Get cached Gemini client."""
+    from google import genai  # pip install google-genai  # noqa: PLC0415
+
     api_key = my_get_env("GEMINI_API_KEY")
     return genai.Client(api_key=api_key)
 
 
 @lru_cache(maxsize=1)
-def get_openai_client_default_azure_creds() -> AzureOpenAI:
+def get_openai_client_default_azure_creds():  # noqa: ANN201
     """Create and return an Azure OpenAI client."""
+    from azure.identity import (  # noqa: PLC0415
+        DefaultAzureCredential,
+        get_bearer_token_provider,
+    )
+    from openai import AzureOpenAI  # noqa: PLC0415
+
     return AzureOpenAI(
         api_version=my_get_env("AZURE_OPENAI_API_VERSION"),
         azure_endpoint=my_get_env("AZURE_OPENAI_URL"),
@@ -104,6 +107,8 @@ class GeminiProvider(LLMProvider):
 
     def call(self, prompt: str) -> tuple[str, int]:
         """Call the LLM."""
+        from google.genai import types as genai_types  # noqa: PLC0415
+
         client = get_gemini_client()
 
         response = None
