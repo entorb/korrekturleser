@@ -26,7 +26,7 @@ _INSTRUCTION_TRANSLATE = """
 Input
 - Text
 Tasks
-- Übersetzen den Text in die Sprache: <LANG>
+- Übersetzen den Text in <LANG> Sprache
 Output
 - Text
 - Format: einfacher Text, keine Markdown-Formatierung.
@@ -100,12 +100,12 @@ Output
     "translate_de": ModeConfig(
         mode="translate_de",
         description="Übersetzen -> DE",
-        instruction=_INSTRUCTION_TRANSLATE.replace("<LANG>", "Deutsch", 1),
+        instruction=_INSTRUCTION_TRANSLATE.replace("<LANG>", "Deutsche", 1),
     ),
     "translate_en": ModeConfig(
         mode="translate_en",
         description="Übersetzen -> EN",
-        instruction=_INSTRUCTION_TRANSLATE.replace("<LANG>", "Englisch", 1),
+        instruction=_INSTRUCTION_TRANSLATE.replace("<LANG>", "Englische", 1),
     ),
 }
 
