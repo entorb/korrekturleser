@@ -27,6 +27,7 @@ nicegui
 numlines
 ollama
 Ollama
+OpenAi
 oxlint
 pyarrow
 pycache
