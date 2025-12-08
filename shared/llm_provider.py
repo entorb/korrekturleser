@@ -40,6 +40,14 @@ def get_openai_client_default_azure_creds():  # noqa: ANN201
     )
 
 
+@lru_cache(maxsize=1)
+def get_openai_client():  # noqa: ANN201
+    """Create and return an OpenAI API client."""
+    from openai import OpenAI  # noqa: PLC0415
+
+    return OpenAI(api_key=my_get_env("OPENAI_API_KEY"))
+
+
 class LLMProvider:
     """Class for different LLM providers."""
 
@@ -196,6 +204,47 @@ class AzureOpenAIProvider(LLMProvider):
         return s, tokens
 
 
+class OpenAIProvider(LLMProvider):
+    """OpenAI API LLM provider."""
+
+    def __init__(self, instruction: str, model: str) -> None:
+        """Initialize Azure OpenAI provider with instruction and model."""
+        super().__init__(instruction, model)
+        self.provider = "OpenAI"
+        self.models = {
+            "gpt-5-nano",
+            "gpt-5-mini",
+            "gpt-5",
+        }
+        self.check_model_valid(model)
+
+    def call(self, prompt: str) -> tuple[str, int]:
+        """Call the LLM."""
+        client = get_openai_client()
+        messages = [
+            {"role": "system", "content": self.instruction},
+            {"role": "user", "content": prompt},
+        ]
+        response = None
+        tokens = 0
+        response = client.chat.completions.create(
+            model=self.model,
+            messages=messages,  # type: ignore
+        )
+
+        s = (
+            response.choices[0].message.content
+            if response.choices[0].message.content
+            else ""
+        )
+        tokens = (
+            response.usage.total_tokens
+            if hasattr(response, "usage") and response.usage
+            else 0
+        )
+        return s, tokens
+
+
 # Ollama available only locally, not on webserver
 if LLM_PROVIDER == "Ollama" and ENV != "PROD":
     from ollama import ChatResponse, chat  # uv add --dev ollama
@@ -249,6 +298,9 @@ def get_cached_llm_provider(
 
     if provider_name == "OpenAI_AzureDefaultAzureCredential":
         return AzureOpenAIProvider(instruction=instruction, model=model)
+
+    if provider_name == "OpenAI":
+        return OpenAIProvider(instruction=instruction, model=model)
 
     if provider_name == "Ollama":
         return OllamaProvider(instruction=instruction, model=model)
