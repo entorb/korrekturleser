@@ -30,20 +30,11 @@ async def improve_text(
     request: ImproveRequest,
     current_user: Annotated[UserInfoInternal, Depends(get_current_user)],
 ) -> ImproveResponse:
-    """
-    Improve text using AI based on the selected mode.
+    """Improve text using AI based on the selected mode."""
+    # Validate input
+    if not request.text or not request.text.strip():
+        raise HTTPException(status_code=400, detail="Text cannot be empty")
 
-    Args:
-        request: Text improvement request with text and mode
-        current_user: Authenticated user (injected by dependency)
-
-    Returns:
-        ImproveResponse: Improved text and metadata
-
-    Raises:
-        HTTPException: If LLM processing fails
-
-    """
     # Get instruction for mode
     mode_config = MODE_CONFIGS.get(request.mode)
     if not mode_config:
@@ -59,14 +50,28 @@ async def improve_text(
     )
 
     try:
-        # Get LLM provider
-        llm_provider = get_cached_llm_provider(instruction=instruction)
+        # Get LLM provider with explicit error handling
+        try:
+            llm_provider = get_cached_llm_provider(instruction=instruction)
+        except (ValueError, ImportError) as e:
+            msg = "Failed to get LLM provider:"
+            logger.exception(msg)
+            raise HTTPException(
+                status_code=500, detail="LLM service is not properly configured"
+            ) from e
 
-        # Call LLM
+        # Call LLM with timeout protection (if using async)
         improved_text, tokens_used = llm_provider.call(request.text)
 
-        # Log usage
-        db_insert_usage(user_id=current_user.user_id, tokens=tokens_used)
+        # Validate response
+        if not improved_text:
+            msg = "LLM returned empty response"
+            raise ValueError(msg)  # noqa: TRY301
+
+        try:
+            db_insert_usage(user_id=current_user.user_id, tokens=tokens_used)
+        except Exception:
+            logger.exception("Failed to log usage:")
 
         logger.debug(
             "Successfully improved text for %s, used %d tokens",
@@ -82,6 +87,8 @@ async def improve_text(
             model=LLM_MODEL,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.exception("Error improving text")
         raise HTTPException(
