@@ -319,7 +319,8 @@ function handleLogout() {
               v-if="textStore.lastResult"
               class="text-caption text-grey-7"
             >
-              Modell: {{ textStore.lastResult.model }} | Token verbraucht:
+              LLM: {{ textStore.lastResult.provider }} | Model: {{ textStore.lastResult.model }} |
+              Tokens:
               {{ textStore.lastResult.tokens_used }}
             </q-card-section>
           </q-card>
