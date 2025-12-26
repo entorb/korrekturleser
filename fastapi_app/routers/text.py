@@ -11,9 +11,7 @@ from fastapi_app.schemas import (
     ImproveResponse,
     UserInfoInternal,
 )
-from shared.config import (
-    LLM_MODEL,
-)
+from shared.config import LLM_MODEL, LLM_PROVIDER
 from shared.helper import where_am_i
 from shared.helper_ai import MODE_CONFIGS
 from shared.helper_db import db_insert_usage
@@ -85,6 +83,7 @@ async def improve_text(
             mode=request.mode,
             tokens_used=tokens_used,
             model=LLM_MODEL,
+            provider=LLM_PROVIDER,
         )
 
     except HTTPException:

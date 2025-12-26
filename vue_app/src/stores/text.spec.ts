@@ -95,7 +95,8 @@ describe('Text Store', () => {
       text_ai: 'Improved',
       mode: ImproveRequest.mode.IMPROVE,
       tokens_used: 100,
-      model: 'gemini-2.5-flash'
+      model: 'gemini-2.5-flash',
+      provider: 'Gemini'
     }
 
     store.setLastResult(mockResult)

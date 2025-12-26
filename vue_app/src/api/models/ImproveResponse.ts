@@ -11,6 +11,7 @@ export type ImproveResponse = {
     mode: ImproveResponse.mode;
     tokens_used: number;
     model: string;
+    provider: string;
 };
 export namespace ImproveResponse {
     export enum mode {

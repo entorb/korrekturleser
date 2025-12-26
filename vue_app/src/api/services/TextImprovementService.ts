@@ -11,16 +11,6 @@ export class TextImprovementService {
     /**
      * Improve Text
      * Improve text using AI based on the selected mode.
-     *
-     * Args:
-     * request: Text improvement request with text and mode
-     * current_user: Authenticated user (injected by dependency)
-     *
-     * Returns:
-     * ImproveResponse: Improved text and metadata
-     *
-     * Raises:
-     * HTTPException: If LLM processing fails
      * @param requestBody
      * @returns ImproveResponse Successful Response
      * @throws ApiError
