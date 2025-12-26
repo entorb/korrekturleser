@@ -44,6 +44,7 @@ class ImproveResponse(BaseModel):
     mode: TextMode  # pyright: ignore[reportInvalidTypeForm]
     tokens_used: int
     model: str
+    provider: str
 
 
 # Statistics schemas
