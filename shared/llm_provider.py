@@ -2,14 +2,70 @@
 
 import logging
 import random
+import time
+from collections.abc import Callable
 from functools import lru_cache
 from pathlib import Path
+from typing import TypeVar
 
 from .config import LLM_MODEL, LLM_PROVIDER
 from .helper import where_am_i
 
 logger = logging.getLogger(Path(__file__).stem)
 ENV = where_am_i()
+
+
+logger = logging.getLogger(__name__)
+
+T = TypeVar("T")
+
+
+def retry_with_exponential_backoff(
+    func: Callable[..., T],
+    max_retries: int = 3,
+    initial_wait: int = 1,
+    provider_name: str = "API",
+) -> Callable[..., T]:
+    """
+    Retry decorator for function with exponential backoff.
+
+    Args:
+        func: Function to retry
+        max_retries: Maximum number of retry attempts
+        initial_wait: Initial wait time in seconds (will be multiplied by 2^attempt)
+        provider_name: Name of the provider for logging
+
+    Returns:
+        Wrapped function with retry logic
+
+    """
+
+    def wrapper(*args, **kwargs) -> T:  # noqa: ANN002, ANN003
+        for attempt in range(max_retries):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    wait_time = initial_wait * (2**attempt)
+                    logger.warning(
+                        "%s error, retrying in %d seconds (attempt %d/%d): %s",
+                        provider_name,
+                        wait_time,
+                        attempt + 1,
+                        max_retries,
+                        str(e),
+                    )
+                    time.sleep(wait_time)
+                else:
+                    logger.exception(
+                        "%s failed after %d attempts", provider_name, max_retries
+                    )
+                    raise
+        # This should never be reached, but satisfies type checker
+        msg = f"{provider_name} retry logic failed unexpectedly"
+        raise RuntimeError(msg)
+
+    return wrapper
 
 
 class LLMProvider:
