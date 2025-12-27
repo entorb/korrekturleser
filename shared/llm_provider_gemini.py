@@ -1,15 +1,15 @@
 """Gemini LLM provider class."""
 
 import logging
-import time
 from functools import lru_cache
 from pathlib import Path
 
 from google.genai import types as genai_types
 from google.genai.client import Client
+from google.genai.types import GenerateContentResponse
 
 from .helper import my_get_env, where_am_i
-from .llm_provider import LLMProvider
+from .llm_provider import LLMProvider, retry_with_exponential_backoff
 
 logger = logging.getLogger(Path(__file__).stem)
 ENV = where_am_i()
@@ -43,52 +43,29 @@ class GeminiProvider(LLMProvider):
 
     def call(self, prompt: str) -> tuple[str, int]:
         """Call the LLM with retry logic."""
-        assert self.instruction is not None
-
         client = get_gemini_client()
 
-        response = None
-        tokens = 0
-        max_retries = 3
+        def _api_call() -> GenerateContentResponse:
+            response = client.models.generate_content(
+                model=self.model,
+                config=genai_types.GenerateContentConfig(
+                    system_instruction=self.instruction
+                ),
+                contents=prompt,
+            )
+            return response
 
-        for attempt in range(max_retries):
-            try:
-                response = client.models.generate_content(
-                    model=self.model,
-                    config=genai_types.GenerateContentConfig(
-                        system_instruction=self.instruction
-                    ),
-                    contents=prompt,
-                )
-                break  # Exit retry loop if successful
-            except Exception as e:
-                if attempt < max_retries - 1:
-                    wait_time = 2**attempt
-                    logger.warning(
-                        "Gemini API error, retrying in %d seconds (attempt %d/%d): %s",
-                        wait_time,
-                        attempt + 1,
-                        max_retries,
-                        str(e),
-                    )
-                    time.sleep(wait_time)
-                else:
-                    logger.exception("Gemini API failed after %d attempts", max_retries)
-                    raise
+        response = retry_with_exponential_backoff(_api_call, provider_name=PROVIDER)()
 
         if (
             response
             and response.usage_metadata
             and response.usage_metadata.total_token_count
         ):
-            logger.debug(
-                "tokens: %d prompt + %d candidates = %d",
-                response.usage_metadata.prompt_token_count,
-                response.usage_metadata.candidates_token_count,
-                response.usage_metadata.total_token_count,
-            )
             tokens = response.usage_metadata.total_token_count
         else:
             logger.warning("No token consumption retrieved.")
+            tokens = 0
+
         s = str(response.text) if response else ""
         return s, tokens
