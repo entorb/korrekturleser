@@ -1,6 +1,7 @@
 # CSpell Custom Dictionary Words
 accesslog
 checkpw
+creds
 deepseek
 dotenv
 entorb
