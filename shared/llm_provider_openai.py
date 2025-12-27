@@ -1,6 +1,7 @@
 """OpenAI LLM provider class."""
 
 import logging
+import time
 from functools import lru_cache
 from pathlib import Path
 
@@ -37,7 +38,7 @@ class OpenAIProvider(LLMProvider):
         self.check_model_valid(model)
 
     def call(self, prompt: str) -> tuple[str, int]:
-        """Call the LLM."""
+        """Call the LLM with retry logic."""
         client = get_openai_client()
         messages = [
             {"role": "system", "content": self.instruction},
@@ -45,11 +46,31 @@ class OpenAIProvider(LLMProvider):
         ]
         response = None
         tokens = 0
-        response = client.chat.completions.create(
-            model=self.model,
-            messages=messages,  # type: ignore
-        )
+        max_retries = 3
 
+        for attempt in range(max_retries):
+            try:
+                response = client.chat.completions.create(
+                    model=self.model,
+                    messages=messages,  # type: ignore
+                )
+                break  # Exit retry loop if successful
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    wait_time = 2**attempt
+                    logger.warning(
+                        "OpenAI API error, retrying in %d seconds (attempt %d/%d): %s",
+                        wait_time,
+                        attempt + 1,
+                        max_retries,
+                        str(e),
+                    )
+                    time.sleep(wait_time)
+                else:
+                    logger.exception("OpenAI API failed after %d attempts", max_retries)
+                    raise
+
+        assert response is not None
         s = (
             response.choices[0].message.content
             if response.choices[0].message.content

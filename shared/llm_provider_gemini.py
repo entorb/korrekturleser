@@ -42,7 +42,7 @@ class GeminiProvider(LLMProvider):
         self.check_model_valid(model)
 
     def call(self, prompt: str) -> tuple[str, int]:
-        """Call the LLM."""
+        """Call the LLM with retry logic."""
         assert self.instruction is not None
 
         client = get_gemini_client()
@@ -50,6 +50,7 @@ class GeminiProvider(LLMProvider):
         response = None
         tokens = 0
         max_retries = 3
+
         for attempt in range(max_retries):
             try:
                 response = client.models.generate_content(
@@ -61,16 +62,18 @@ class GeminiProvider(LLMProvider):
                 )
                 break  # Exit retry loop if successful
             except Exception as e:
-                if attempt < max_retries - 1 and "The model is overloaded" in str(e):
+                if attempt < max_retries - 1:
                     wait_time = 2**attempt
                     logger.warning(
-                        "Model overloaded, retrying in %d seconds (attempt %d/%d)...",
+                        "Gemini API error, retrying in %d seconds (attempt %d/%d): %s",
                         wait_time,
                         attempt + 1,
                         max_retries,
+                        str(e),
                     )
                     time.sleep(wait_time)
                 else:
+                    logger.exception("Gemini API failed after %d attempts", max_retries)
                     raise
 
         if (
