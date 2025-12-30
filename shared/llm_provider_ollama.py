@@ -10,35 +10,33 @@ from .llm_provider import LLMProvider, retry_with_exponential_backoff
 logger = logging.getLogger(Path(__file__).stem)
 
 PROVIDER = "Ollama"
-MODELS = {
+MODELS = [
     "llama3.2:1b",
     "llama3.2:3b",
     "deepseek-r1:1.5b",
     "deepseek-r1:8b",
     "deepseek-r1:7b",
-}
+]
 
 
 class OllamaProvider(LLMProvider):
     """Ollama LLM provider for local models."""
 
-    def __init__(self, instruction: str, model: str) -> None:
+    def __init__(self) -> None:
         """Initialize Ollama provider with instruction and model."""
-        super().__init__(instruction, model)
-        self.provider = PROVIDER
-        self.models = MODELS
-        self.check_model_valid(model)
+        super().__init__(provider=PROVIDER, models=MODELS)
 
-    def call(self, prompt: str) -> tuple[str, int]:
+    def call(self, model: str, instruction: str, prompt: str) -> tuple[str, int]:
         """Call the LLM with retry logic."""
+        self.check_model_valid(model)
 
         def _api_call() -> ChatResponse:
             response = chat(
-                model=self.model,
+                model=model,
                 stream=False,
                 # think=True,
                 messages=[
-                    {"role": "system", "content": self.instruction},
+                    {"role": "system", "content": instruction},
                     {"role": "user", "content": prompt},
                 ],
             )

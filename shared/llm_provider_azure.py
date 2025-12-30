@@ -17,11 +17,11 @@ from .llm_provider import LLMProvider, retry_with_exponential_backoff
 logger = logging.getLogger(Path(__file__).stem)
 
 PROVIDER = "AzureOpenAI"
-MODELS = {
+MODELS = [
     "gpt-5-nano",
     "gpt-5-mini",
     "gpt-5",
-}
+]
 
 
 @lru_cache(maxsize=1)
@@ -39,24 +39,22 @@ def get_openai_client_default_azure_creds() -> AzureOpenAI:
 class AzureOpenAIProvider(LLMProvider):
     """Azure OpenAI LLM provider."""
 
-    def __init__(self, instruction: str, model: str) -> None:
+    def __init__(self) -> None:
         """Initialize Azure OpenAI provider with instruction and model."""
-        super().__init__(instruction, model)
-        self.provider = PROVIDER
-        self.models = MODELS
-        self.check_model_valid(model)
+        super().__init__(provider=PROVIDER, models=MODELS)
 
-    def call(self, prompt: str) -> tuple[str, int]:
+    def call(self, model: str, instruction: str, prompt: str) -> tuple[str, int]:
         """Call the LLM with retry logic."""
+        self.check_model_valid(model)
         client = get_openai_client_default_azure_creds()
         messages = [
-            {"role": "system", "content": self.instruction},
+            {"role": "system", "content": instruction},
             {"role": "user", "content": prompt},
         ]
 
         def _api_call() -> ChatCompletion:
             response = client.chat.completions.create(
-                model=self.model,
+                model=model,
                 messages=messages,  # type: ignore
             )
             return response
