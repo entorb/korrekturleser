@@ -10,7 +10,6 @@ from shared.config import (
     LLM_MODEL,
     LLM_PROVIDER,
 )
-from shared.helper import where_am_i
 from shared.helper_ai import MODE_CONFIGS
 from shared.helper_db import db_insert_usage
 from shared.llm_provider import get_cached_llm_provider
@@ -19,10 +18,7 @@ from shared.texts import GOOGLE_DISCLAIMER, LABEL_KI_TEXT, LABEL_MY_TEXT
 st.title("Textverbesserung")
 logger = logging.getLogger(Path(__file__).stem)
 
-ENV = where_am_i()
-
 USER_ID = st.session_state["USER_ID"]  # shortcut
-
 
 if LLM_PROVIDER == "Gemini":
     st.markdown(GOOGLE_DISCLAIMER)

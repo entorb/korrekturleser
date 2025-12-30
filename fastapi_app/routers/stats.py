@@ -12,13 +12,11 @@ from fastapi_app.schemas import (
     UsageStatsResponse,
     UserInfoInternal,
 )
-from shared.helper import where_am_i
 from shared.helper_db import (
     db_select_usage_stats_daily,
     db_select_usage_stats_total,
 )
 
-ENV = where_am_i()
 logger = logging.getLogger(__name__)
 
 router = APIRouter()

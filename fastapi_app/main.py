@@ -36,14 +36,13 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Configure CORS
-origins = [
-    "http://localhost:4173",  # Vue Prod server
-    "http://localhost:5173",  # Vue Dev server
-]
-
 if ENV == "PROD":
-    # Add production domain when deployed
-    origins.append("https://entorb.net")
+    origins = ["https://entorb.net"]
+else:
+    origins = [
+        "http://localhost:4173",  # Vue Prod server
+        "http://localhost:5173",  # Vue Dev server
+    ]
 
 app.add_middleware(
     CORSMiddleware,
