@@ -30,31 +30,31 @@ cp .env.example .env
 
 ```sh
 scripts/streamlit.sh
-open http://127.0.0.1:8503/korrekturleser/
+open http://localhost:8503/korrekturleser/
 ```
 
 ### FastAPI Backend (V2)
 
 ```sh
 scripts/fastapi.sh
-open http://127.0.0.1:8504
+open http://localhost:8504
 
 # to view API spec
-open http://127.0.0.1:8504/docs
+open http://localhost:8504/docs
 ```
 
 ### Vue.js Frontend (V2)
 
 ```sh
 scripts/vue.sh
-open http://127.0.0.1:5173/korrekturleser2/
+open http://localhost:5173/korrekturleser2/
 ```
 
 ### NiceGUI App (V3)
 
 ```sh
 scripts/nicegui.sh
-open http://127.0.0.1:8505
+open http://localhost:8505
 ```
 
 The NiceGUI app is a standalone application that combines frontend and backend in a single Python file, using the same shared business logic layer.

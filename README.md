@@ -61,24 +61,24 @@ The application can be run locally with an SQLite database:
 
 ```sh
 scripts/streamlit.sh
-open http://127.0.0.1:8503/korrekturleser-streamlit/
+open http://localhost:8503/korrekturleser-streamlit/
 ```
 
 ### FastAPI Backend (V2)
 
 ```sh
 scripts/fastapi.sh
-open http://127.0.0.1:9002
+open http://localhost:9002
 
 # to view API spec
-open http://127.0.0.1:9002/docs
+open http://localhost:9002/docs
 ```
 
 ### Vue.js Frontend (V2)
 
 ```sh
 scripts/vue.sh
-open http://127.0.0.1:5173/korrekturleser-vue/
+open http://localhost:5173/korrekturleser-vue/
 ```
 
 The FastAPI routes and types are generated from FastAPI OpenAPI spec:
@@ -94,7 +94,7 @@ pnpm generate-api
 
 ```sh
 scripts/nicegui.sh
-open http://127.0.0.1:8505/korrekturleser-nice
+open http://localhost:8505/korrekturleser-nice
 ```
 
 Standalone application combining frontend and backend using NiceGUI. Features:
