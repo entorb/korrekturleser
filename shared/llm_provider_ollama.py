@@ -5,11 +5,9 @@ from pathlib import Path
 
 from ollama import ChatResponse, chat  # uv add --dev ollama
 
-from .helper import where_am_i
 from .llm_provider import LLMProvider, retry_with_exponential_backoff
 
 logger = logging.getLogger(Path(__file__).stem)
-ENV = where_am_i()
 
 PROVIDER = "Ollama"
 MODELS = {

@@ -14,12 +14,11 @@ class TestMockLLMProvider:
     def test_environment_variables_are_set(self) -> None:
         """Test that test environment variables are set correctly."""
         # Verify that the conftest.py fixture set these variables
-        assert os.environ.get("LLM_LOCAL") == "Mock"
-        assert os.environ.get("LLM_LOCAL_MODEL") == "random"
+        assert os.environ.get("LLM_PROVIDER") == "Mock"
+        assert os.environ.get("LLM_MODEL") == "random"
 
     def test_config_uses_mock_provider(self) -> None:
         """Test that config module picks up Mock provider."""
-        # Since we're in Local mode (not PROD), it should use LLM_LOCAL
         assert LLM_PROVIDER == "Mock"
         assert LLM_MODEL == "random"
 

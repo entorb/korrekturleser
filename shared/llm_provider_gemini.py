@@ -8,11 +8,10 @@ from google.genai import types as genai_types
 from google.genai.client import Client
 from google.genai.types import GenerateContentResponse
 
-from .helper import my_get_env, where_am_i
+from .helper import my_get_env
 from .llm_provider import LLMProvider, retry_with_exponential_backoff
 
 logger = logging.getLogger(Path(__file__).stem)
-ENV = where_am_i()
 
 PROVIDER = "Gemini"
 MODELS = {
