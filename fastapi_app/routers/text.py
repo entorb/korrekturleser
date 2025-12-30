@@ -7,9 +7,8 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from fastapi_app.helper_fastapi import get_current_user
 from fastapi_app.schemas import (
-    ImproveRequest,
-    ImproveResponse,
-    ModelsResponse,
+    TextRequest,
+    TextResponse,
     UserInfoInternal,
 )
 from shared.config import LLM_PROVIDER
@@ -22,28 +21,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/models")
-async def get_available_models(
-    _: Annotated[UserInfoInternal, Depends(get_current_user)],
-) -> ModelsResponse:
-    """Get available LLM models for the current provider."""
-    try:
-        llm_provider = get_llm_provider(LLM_PROVIDER)
-        models = llm_provider.get_models()
-        return ModelsResponse(models=models, provider=LLM_PROVIDER)
-    except (ValueError, ImportError) as e:
-        msg = "Failed to get LLM provider:"
-        logger.exception(msg)
-        raise HTTPException(
-            status_code=500, detail="LLM service is not properly configured"
-        ) from e
-
-
 @router.post("/")
 async def improve_text(
-    request: ImproveRequest,
+    request: TextRequest,
     current_user: Annotated[UserInfoInternal, Depends(get_current_user)],
-) -> ImproveResponse:
+) -> TextResponse:
     """Improve text using AI based on the selected mode."""
     # Validate input
     if not request.text or not request.text.strip():
@@ -56,7 +38,7 @@ async def improve_text(
 
     instruction = mode_config.instruction
 
-    logger.debug(
+    logger.info(
         "User %s requested %s for text length %d",
         current_user.user_name,
         request.mode,
@@ -102,7 +84,7 @@ async def improve_text(
             tokens_used,
         )
 
-        return ImproveResponse(
+        return TextResponse(
             text_original=request.text,
             text_ai=improved_text,
             mode=request.mode,
@@ -114,8 +96,8 @@ async def improve_text(
     except HTTPException:
         raise
     except Exception as e:
-        logger.exception("Error improving text")
+        logger.exception("Error improving text for user %s", current_user.user_name)
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to improve text: {e!s}",
+            detail="Failed to process text. Please try again.",
         ) from e

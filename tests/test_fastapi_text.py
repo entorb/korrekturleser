@@ -7,45 +7,45 @@ from fastapi.testclient import TestClient
 
 
 class TestImproveText:
-    """Test /api/ endpoint for text improvement."""
+    """Test /api/text endpoint for text improvement."""
 
     def test_improve_without_authentication(self, client: TestClient) -> None:
         """Test that improvement requires authentication."""
         response = client.post(
-            "/api/",
+            "/api/text",
             json={"text": "Hello world", "mode": "correct"},
         )
 
         assert response.status_code == 403
 
     def test_get_models_without_authentication(self, client: TestClient) -> None:
-        """Test that getting models requires authentication."""
-        response = client.get("/api/models")
+        """Test that getting config requires authentication."""
+        response = client.get("/api/config/")
         assert response.status_code == 403
 
     def test_get_models_with_authentication(
         self, client: TestClient, auth_headers: dict[str, str]
     ) -> None:
-        """Test getting available models."""
-        response = client.get("/api/models", headers=auth_headers)
+        """Test getting available models from config endpoint."""
+        response = client.get("/api/config/", headers=auth_headers)
 
         assert response.status_code == 200
         data = response.json()
 
         # Verify response structure
         assert "models" in data
-        assert "provider" in data
+        assert "llm_provider" in data
         assert isinstance(data["models"], list)
         assert len(data["models"]) > 0
         # In test mode, the provider name is "Mock"
-        assert data["provider"] in ("Mock", "Gemini", "Ollama")
+        assert data["llm_provider"] in ("Mock", "Gemini", "Ollama")
 
     def test_improve_with_correct_mode(
         self, client: TestClient, auth_headers: dict[str, str]
     ) -> None:
         """Test text improvement with CORRECT mode."""
         response = client.post(
-            "/api/",
+            "/api/text",
             json={"text": "Hello World", "mode": "correct"},
             headers=auth_headers,
         )
@@ -65,7 +65,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with IMPROVE mode."""
         response = client.post(
-            "/api/",
+            "/api/text",
             json={"text": "Simple text", "mode": "improve"},
             headers=auth_headers,
         )
@@ -84,7 +84,7 @@ class TestImproveText:
         long_text = "This is a very long text that needs to be summarized. " * 10
 
         response = client.post(
-            "/api/",
+            "/api/text",
             json={"text": long_text, "mode": "summarize"},
             headers=auth_headers,
         )
@@ -100,14 +100,14 @@ class TestImproveText:
         self, client: TestClient, auth_headers: dict[str, str]
     ) -> None:
         """Test text improvement with a specific model."""
-        # First get available models
-        models_response = client.get("/api/models", headers=auth_headers)
-        assert models_response.status_code == 200
-        models = models_response.json()["models"]
+        # First get available models from config
+        config_response = client.get("/api/config/", headers=auth_headers)
+        assert config_response.status_code == 200
+        models = config_response.json()["models"]
 
         # Use the first model
         response = client.post(
-            "/api/",
+            "/api/text",
             json={"text": "Test text", "mode": "correct", "model": models[0]},
             headers=auth_headers,
         )
@@ -122,7 +122,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with EXPAND mode."""
         response = client.post(
-            "/api/",
+            "/api/text",
             json={"text": "- Point 1\n- Point 2", "mode": "expand"},
             headers=auth_headers,
         )
@@ -140,7 +140,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with TRANSLATE_DE mode."""
         response = client.post(
-            "/api/",
+            "/api/text",
             json={"text": "Hello world", "mode": "translate_de"},
             headers=auth_headers,
         )
@@ -157,7 +157,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with TRANSLATE_EN mode."""
         response = client.post(
-            "/api/",
+            "/api/text",
             json={"text": "Hallo Welt", "mode": "translate_en"},
             headers=auth_headers,
         )
@@ -174,7 +174,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with invalid mode."""
         response = client.post(
-            "/api/",
+            "/api/text",
             json={"text": "Test text", "mode": "invalid_mode"},
             headers=auth_headers,
         )
@@ -187,7 +187,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with empty text."""
         response = client.post(
-            "/api/",
+            "/api/text",
             json={"text": "", "mode": "correct"},
             headers=auth_headers,
         )
@@ -200,7 +200,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with missing text field."""
         response = client.post(
-            "/api/",
+            "/api/text",
             json={"mode": "correct"},
             headers=auth_headers,
         )
@@ -213,7 +213,7 @@ class TestImproveText:
     ) -> None:
         """Test text improvement with missing mode field."""
         response = client.post(
-            "/api/",
+            "/api/text",
             json={"text": "Test text"},
             headers=auth_headers,
         )
@@ -226,7 +226,7 @@ class TestImproveText:
     ) -> None:
         """Test that text improvement works in local mode."""
         response = client.post(
-            "/api/",
+            "/api/text",
             json={"text": "Test text", "mode": "correct"},
             headers=auth_headers,
         )
@@ -260,7 +260,7 @@ class TestInputValidation:
     ) -> None:
         """Test that all improvement modes work correctly."""
         response = client.post(
-            "/api/",
+            "/api/text",
             json={"text": "Test text", "mode": mode},
             headers=auth_headers,
         )

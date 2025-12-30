@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const username = ref('') // dummy field,added for password manager compatibility
 const secret = ref('')
 
 async function handleLogin() {
@@ -37,6 +38,16 @@ async function handleLogin() {
 
           <q-card-section>
             <q-form @submit.prevent="handleLogin">
+              <!-- Hidden username field for accessibility and password managers -->
+              <input
+                v-model="username"
+                type="text"
+                autocomplete="username"
+                style="display: none"
+                tabindex="-1"
+                aria-hidden="true"
+              />
+
               <q-input
                 v-model="secret"
                 label="Geheimnis"

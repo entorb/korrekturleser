@@ -21,6 +21,13 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"  # noqa: S105
 
 
+class ConfigResponse(BaseModel):
+    """Configuration response schema."""
+
+    llm_provider: str
+    models: list[str] = Field(..., min_length=1, description="List of available models")
+
+
 class UserInfoInternal(BaseModel):
     """Current user information (internal use only)."""
 
@@ -29,17 +36,17 @@ class UserInfoInternal(BaseModel):
 
 
 # Text improvement schemas
-class ImproveRequest(BaseModel):
+class TextRequest(BaseModel):
     """Text improvement request schema."""
 
     text: str = Field(..., min_length=1, description="Text to improve")
-    mode: TextMode = Field(..., description="Improvement mode")  # pyright: ignore[reportInvalidTypeForm]
+    mode: TextMode = Field(..., description="AI text operation mode")  # pyright: ignore[reportInvalidTypeForm]
     model: str | None = Field(
         None, description="LLM model to use (optional, defaults to first available)"
     )
 
 
-class ImproveResponse(BaseModel):
+class TextResponse(BaseModel):
     """Text improvement response schema."""
 
     text_original: str
@@ -47,13 +54,6 @@ class ImproveResponse(BaseModel):
     mode: TextMode  # pyright: ignore[reportInvalidTypeForm]
     tokens_used: int
     model: str
-    provider: str
-
-
-class ModelsResponse(BaseModel):
-    """Available models response schema."""
-
-    models: list[str] = Field(..., min_length=1, description="List of available models")
     provider: str
 
 
@@ -80,10 +80,3 @@ class UsageStatsResponse(BaseModel):
 
     daily: list[DailyUsage]
     total: list[TotalUsage]
-
-
-# Error schemas
-class ErrorResponse(BaseModel):
-    """Error response schema."""
-
-    detail: str

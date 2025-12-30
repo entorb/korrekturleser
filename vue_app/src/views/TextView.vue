@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useTextStore } from '@/stores/text'
 import { api } from '@/services/apiClient'
-import { ImproveRequest } from '@/api'
+import { TextRequest } from '@/api'
 import { getAvailableModes, getModeDescriptions } from '@/config/modes'
 import { html } from 'diff2html'
 import { createTwoFilesPatch } from 'diff'
@@ -22,6 +22,11 @@ const isProcessing = ref(false)
 const modes = getAvailableModes()
 const modeDescriptions = getModeDescriptions()
 
+// Show disclaimer for Gemini provider
+const showDisclaimer = computed(() => {
+  return textStore.llmProvider === 'Gemini'
+})
+
 onMounted(() => {
   globalThis.addEventListener('keydown', handleKeyPress)
 })
@@ -30,14 +35,14 @@ onMounted(() => {
 const showDiff = computed(() => {
   return (
     textStore.outputText &&
-    (textStore.selectedMode === ImproveRequest.mode.CORRECT ||
-      textStore.selectedMode === ImproveRequest.mode.IMPROVE)
+    (textStore.selectedMode === TextRequest.mode.CORRECT ||
+      textStore.selectedMode === TextRequest.mode.IMPROVE)
   )
 })
 
 // Show markdown rendering for summarize mode
 const showMarkdown = computed(() => {
-  return textStore.outputText && textStore.selectedMode === ImproveRequest.mode.SUMMARIZE
+  return textStore.outputText && textStore.selectedMode === TextRequest.mode.SUMMARIZE
 })
 
 // Convert markdown to HTML
@@ -92,7 +97,7 @@ async function handleProcessText() {
   textStore.setDiffHtml('')
 
   try {
-    const result = await api.text.improveTextApiPost({
+    const result = await api.text.improveTextApiTextPost({
       text: textStore.inputText,
       mode: textStore.selectedMode,
       model: textStore.selectedModel || null
@@ -101,9 +106,12 @@ async function handleProcessText() {
     textStore.setOutputText(result.text_ai)
     textStore.setLastResult(result)
 
+    // Update provider (in case it changed)
+    textStore.setLlmProvider(result.provider)
+
     if (
-      textStore.selectedMode === ImproveRequest.mode.CORRECT ||
-      textStore.selectedMode === ImproveRequest.mode.IMPROVE
+      textStore.selectedMode === TextRequest.mode.CORRECT ||
+      textStore.selectedMode === TextRequest.mode.IMPROVE
     ) {
       const diffHtml = generateDiff(textStore.inputText + '\n\n', result.text_ai + '\n\n')
       textStore.setDiffHtml(diffHtml)
@@ -119,8 +127,9 @@ async function handleProcessText() {
 async function handleCopyToClipboard() {
   try {
     await copyText(textStore.outputText)
-  } catch (err) {
-    console.error('Failed to copy:', err)
+    $q.notify({ type: 'positive', message: 'Kopiert!' })
+  } catch {
+    $q.notify({ type: 'negative', message: 'Kopieren fehlgeschlagen' })
   }
 }
 
@@ -177,6 +186,25 @@ function handleLogout() {
     </q-header>
 
     <q-page class="q-pa-md">
+      <!-- Google Disclaimer -->
+      <q-banner
+        v-if="showDisclaimer"
+        class="bg-warning text-dark q-mb-md"
+        rounded
+      >
+        <template #avatar>
+          <q-icon
+            name="warning"
+            color="orange-9"
+          />
+        </template>
+        <strong>Achtung:</strong>
+        <em
+          >Die Google KI wird deine Eingaben zum Trainieren verwenden. Nur für Texte verwenden, die
+          keine persönlichen oder geheimen Daten enthalten (zB Namen vorher entfernen).</em
+        >
+      </q-banner>
+
       <q-card>
         <q-card-section>
           <!-- Text Areas -->

@@ -13,6 +13,9 @@ vi.mock('@/services/apiClient', () => ({
   api: {
     auth: {
       loginApiAuthLoginPost: vi.fn()
+    },
+    config: {
+      getConfigApiConfigGet: vi.fn()
     }
   },
   tokenManager: {
@@ -45,6 +48,10 @@ describe('Auth Store', () => {
       access_token: 'test-token',
       token_type: 'bearer'
     }
+    const mockConfigResponse = {
+      llm_provider: 'Gemini',
+      models: ['gemini-2.5-flash', 'gemini-2.5-pro']
+    }
     const mockPayload = {
       user_id: 1,
       username: 'TestUser',
@@ -52,6 +59,7 @@ describe('Auth Store', () => {
     }
 
     vi.mocked(api.auth.loginApiAuthLoginPost).mockResolvedValue(mockLoginResponse)
+    vi.mocked(api.config.getConfigApiConfigGet).mockResolvedValue(mockConfigResponse)
     vi.mocked(tokenManager.get).mockReturnValue('test-token')
     vi.mocked(isTokenExpired).mockReturnValue(false)
     vi.mocked(decodeJwt).mockReturnValue(mockPayload)

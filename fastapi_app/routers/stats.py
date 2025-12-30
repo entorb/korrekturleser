@@ -65,15 +65,6 @@ async def get_all_stats(
             for _, row in total_df.iterrows()
         ]
 
-        # For non-admin users, filter to only their own data
-        if current_user.user_id != 1:
-            daily_stats = [
-                stat for stat in daily_stats if stat.user_name == current_user.user_name
-            ]
-            total_stats = [
-                stat for stat in total_stats if stat.user_name == current_user.user_name
-            ]
-
         logger.debug("User %s accessed usage statistics", current_user.user_name)
 
         return UsageStatsResponse(daily=daily_stats, total=total_stats)
