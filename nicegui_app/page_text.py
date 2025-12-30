@@ -58,7 +58,7 @@ def _create_header() -> None:
         ui.label(SessionManager.get_user_name()).classes("mr-2")
         ui.button(
             icon="settings", on_click=lambda: ui.navigate.to(f"{BASE_URL}/stats")
-        ).props("flat round").tooltip("Statistik (Esc)")
+        ).props("flat round").tooltip("Statistik")
         ui.button(
             icon="logout",
             on_click=lambda: (
@@ -179,13 +179,16 @@ def _update_diff_display(
         diff_card.visible = False
 
 
-def _process_with_llm(mode: str, input_text: str) -> tuple[str, int]:
-    """Process text with LLM and return response and tokens."""
+def _process_with_llm(mode: str, input_text: str) -> tuple[str, int, str]:
+    """Process text with LLM and return response, tokens, and model name."""
     instruction = MODE_CONFIGS[mode].instruction
     llm_provider = get_llm_provider(LLM_PROVIDER)
     models = llm_provider.get_models()
-    model = models[0]  # TODO: allow the user to select
-    return llm_provider.call(model=model, instruction=instruction, prompt=input_text)
+    model = SessionManager.get_model() or models[0]
+    text_response, tokens = llm_provider.call(
+        model=model, instruction=instruction, prompt=input_text
+    )
+    return text_response, tokens, model
 
 
 def _track_usage(tokens: int) -> None:
@@ -204,13 +207,6 @@ def create_text_page() -> None:
 
     _create_header()
 
-    # Escape key handler for navigation to stats
-    ui.keyboard(
-        on_key=lambda e: ui.navigate.to(f"{BASE_URL}/stats")
-        if e.key == "Escape"
-        else None
-    )
-
     _create_main_content(state)
 
 
@@ -224,8 +220,8 @@ def _create_main_content(state: ProcessingState) -> None:
         # Create UI elements
         input_textarea, output = _create_io_section()
         mode_select, process_btn, process_spinner = _create_control_section()
-        result_info, result_info_label = _create_result_info()
         diff_card, diff_container = _create_diff_display()
+        result_info, result_info_label = _create_result_info()
 
         # Group UI elements
         ui_elements = UIElements(
@@ -357,7 +353,7 @@ async def _execute_processing(
 
     state.selected_mode = selected_mode
     # Run LLM processing in executor to keep UI responsive
-    text_response, tokens = await asyncio.to_thread(
+    text_response, tokens, model = await asyncio.to_thread(
         _process_with_llm, selected_mode, input_textarea.value
     )
     state.output_text = text_response
@@ -367,8 +363,7 @@ async def _execute_processing(
 
     ui_elements.result_info.visible = True
     ui_elements.result_label.text = (
-        f"LLM: {LLM_PROVIDER} | Model: TODO | Tokens: {tokens}"
-        # TODO: show model
+        f"LLM: {LLM_PROVIDER} | Model: {model} | Tokens: {tokens}"
     )
 
     _update_diff_display(

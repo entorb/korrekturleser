@@ -94,7 +94,6 @@ def format_config_dataframe() -> pd.DataFrame:
     config_data = {
         "ENV": where_am_i(),
         "LLM_PROVIDER": LLM_PROVIDER,
-        "LLM_MODEL": "TODO",  # TODO: show model
     }
     config_items = sorted([(k, str(v)) for k, v in config_data.items()])
     return pd.DataFrame(config_items, columns=["key", "value"])
