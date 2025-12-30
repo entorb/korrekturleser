@@ -6,12 +6,10 @@ from typing import TYPE_CHECKING
 import streamlit as st
 
 from shared.config import USER_ID_LOCAL, USER_NAME_LOCAL
-from shared.helper import auto_login_for_local_dev, where_am_i
+from shared.helper import auto_login_for_local_dev
 
 if TYPE_CHECKING:
     from streamlit.navigation.page import StreamlitPage
-
-ENV = where_am_i()
 
 
 def init_dev_session_state() -> None:
