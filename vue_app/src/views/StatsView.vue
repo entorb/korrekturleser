@@ -34,8 +34,9 @@ onUnmounted(() => {
 async function fetchModels() {
   loadingModels.value = true
   try {
-    const response = await api.text.getAvailableModelsApiModelsGet()
+    const response = await api.config.getConfigApiConfigGet()
     textStore.setAvailableModels(response.models)
+    textStore.setLlmProvider(response.llm_provider)
     // Set first model as default if not already set
     if (!textStore.selectedModel && response.models.length > 0) {
       textStore.setModel(response.models[0]!)

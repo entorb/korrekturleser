@@ -24,7 +24,7 @@ def generate_typescript_file() -> str:
         # e.g., "correct" -> "CORRECT"
         enum_key = mode_key.upper()
         description = config.description
-        mode_entries.append(f"  [ImproveRequest.mode.{enum_key}]: '{description}'")
+        mode_entries.append(f"  [TextRequest.mode.{enum_key}]: '{description}'")
 
     mode_descriptions = ",\n".join(mode_entries)
 
@@ -38,24 +38,24 @@ def generate_typescript_file() -> str:
  * To regenerate: pnpm generate-api
  */
 
-import {{ ImproveRequest }} from '@/api'
+import {{ TextRequest }} from '@/api'
 
 // Mode descriptions mapping (auto-generated from backend)
-const MODE_DESCRIPTIONS: Record<ImproveRequest.mode, string> = {{
+const MODE_DESCRIPTIONS: Record<TextRequest.mode, string> = {{
 {mode_descriptions}
 }}
 
 /**
  * Get all available modes (auto-generated from enum)
  */
-export function getAvailableModes(): ImproveRequest.mode[] {{
-  return Object.values(ImproveRequest.mode)
+export function getAvailableModes(): TextRequest.mode[] {{
+  return Object.values(TextRequest.mode)
 }}
 
 /**
  * Get description for a mode
  */
-export function getModeDescription(mode: ImproveRequest.mode): string {{
+export function getModeDescription(mode: TextRequest.mode): string {{
   return MODE_DESCRIPTIONS[mode] || mode
 }}
 

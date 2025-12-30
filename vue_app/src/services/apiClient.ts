@@ -3,7 +3,12 @@
  */
 
 import { OpenAPI } from '@/api'
-import { AuthenticationService, TextImprovementService, StatisticsService } from '@/api'
+import {
+  AuthenticationService,
+  ConfigurationService,
+  TextImprovementService,
+  StatisticsService
+} from '@/api'
 import { config } from '@/config/env'
 
 // Configure the generated OpenAPI client
@@ -36,6 +41,7 @@ export const tokenManager = {
 // Export services for easy use
 export const api = {
   auth: AuthenticationService,
+  config: ConfigurationService,
   text: TextImprovementService,
   statistics: StatisticsService
 }
