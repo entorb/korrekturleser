@@ -34,26 +34,22 @@ with st.form(LABEL_MY_TEXT):
     # Mode selection and submit button
     mode_options = {config.description: mode for mode, config in MODE_CONFIGS.items()}
     selected_description = cols[1].selectbox(
-        "Mode",
+        "Aufgabe",
         options=list(mode_options.keys()),
         key="mode_select",
     )
     submit_button = cols[1].form_submit_button("Submit", type="primary")
 
-# Determine which mode was selected
-selected_mode = None
 if submit_button:
+    # Determine which mode was selected
     selected_mode = mode_options[selected_description]
-
-# Process if any button was clicked or there's a cached response
-if selected_mode and selected_mode:
     instruction = MODE_CONFIGS[selected_mode].instruction
 
     st.subheader(LABEL_KI_TEXT)
 
     llm_provider = get_llm_provider(LLM_PROVIDER)
     models = llm_provider.get_models()
-    model = models[0]  # TODO: allow the user to select
+    model = st.session_state.get("LLM_MODEL", models[0])
     text_response, tokens = llm_provider.call(
         model=model, instruction=instruction, prompt=textarea_in
     )

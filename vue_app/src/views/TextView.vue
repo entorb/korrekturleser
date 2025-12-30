@@ -22,6 +22,10 @@ const isProcessing = ref(false)
 const modes = getAvailableModes()
 const modeDescriptions = getModeDescriptions()
 
+onMounted(() => {
+  globalThis.addEventListener('keydown', handleKeyPress)
+})
+
 // Show diff for correct and improve modes only
 const showDiff = computed(() => {
   return (
@@ -75,10 +79,6 @@ function generateDiff(original: string, improved: string): string {
   return diffHtml
 }
 
-onMounted(() => {
-  globalThis.addEventListener('keydown', handleKeyPress)
-})
-
 onUnmounted(() => {
   globalThis.removeEventListener('keydown', handleKeyPress)
 })
@@ -94,7 +94,8 @@ async function handleProcessText() {
   try {
     const result = await api.text.improveTextApiPost({
       text: textStore.inputText,
-      mode: textStore.selectedMode
+      mode: textStore.selectedMode,
+      model: textStore.selectedModel || null
     })
 
     textStore.setOutputText(result.text_ai)
