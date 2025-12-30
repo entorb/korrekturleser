@@ -95,6 +95,6 @@ if submit_button:
         st.html(f"<style>{css_content}</style>")
         st.html(diff_html)
 
-    # st.subheader("Anweisung")
-    # st.code(language="markdown", body=instruction)
-    # st.write(text_response)
+    st.subheader("Anweisung")
+    st.code(language="markdown", body=instruction)
+    st.write(text_response)
