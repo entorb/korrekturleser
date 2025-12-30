@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
 
-// Custom commands for Meeting Meter
+// Custom commands
 
 export {}

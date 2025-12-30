@@ -34,7 +34,6 @@ class OllamaProvider(LLMProvider):
             response = chat(
                 model=model,
                 stream=False,
-                # think=True,
                 messages=[
                     {"role": "system", "content": instruction},
                     {"role": "user", "content": prompt},
