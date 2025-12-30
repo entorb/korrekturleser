@@ -7,6 +7,7 @@ SESSION_USER_ID = "user_id"
 SESSION_USER_NAME = "user_name"
 SESSION_CNT_REQUESTS = "cnt_requests"
 SESSION_CNT_TOKENS = "cnt_tokens"
+SESSION_LLM_MODEL = "llm_model"
 
 
 class SessionManager:
@@ -59,3 +60,13 @@ class SessionManager:
     def get_token_count() -> int:
         """Get current token count."""
         return app.storage.user.get(SESSION_CNT_TOKENS, 0)
+
+    @staticmethod
+    def get_model() -> str | None:
+        """Get selected LLM model."""
+        return app.storage.user.get(SESSION_LLM_MODEL)
+
+    @staticmethod
+    def set_model(model: str) -> None:
+        """Set selected LLM model."""
+        app.storage.user[SESSION_LLM_MODEL] = model
