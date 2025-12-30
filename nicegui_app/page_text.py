@@ -8,11 +8,11 @@ from typing import NamedTuple
 from nicegui import ui
 
 from nicegui_app.config_nice import BASE_URL
-from shared.config import LLM_MODEL, LLM_PROVIDER
+from shared.config import LLM_PROVIDER
 from shared.helper_ai import MODE_CONFIGS
 from shared.helper_db import db_insert_usage
 from shared.helper_diff import create_diff_html as create_diff_table
-from shared.llm_provider import get_cached_llm_provider
+from shared.llm_provider import get_llm_provider
 from shared.texts import GOOGLE_DISCLAIMER, LABEL_KI_TEXT, LABEL_MY_TEXT
 
 from .helper_nicegui import SessionManager
@@ -182,8 +182,10 @@ def _update_diff_display(
 def _process_with_llm(mode: str, input_text: str) -> tuple[str, int]:
     """Process text with LLM and return response and tokens."""
     instruction = MODE_CONFIGS[mode].instruction
-    llm_provider = get_cached_llm_provider(instruction=instruction)
-    return llm_provider.call(input_text)
+    llm_provider = get_llm_provider(LLM_PROVIDER)
+    models = llm_provider.get_models()
+    model = models[0]  # TODO: allow the user to select
+    return llm_provider.call(model=model, instruction=instruction, prompt=input_text)
 
 
 def _track_usage(tokens: int) -> None:
@@ -364,7 +366,10 @@ async def _execute_processing(
     _track_usage(tokens)
 
     ui_elements.result_info.visible = True
-    ui_elements.result_label.text = f"Modell: {LLM_MODEL} | Token verbraucht: {tokens}"
+    ui_elements.result_label.text = (
+        f"LLM: {LLM_PROVIDER} | Model: TODO | Tokens: {tokens}"
+        # TODO: show model
+    )
 
     _update_diff_display(
         selected_mode,

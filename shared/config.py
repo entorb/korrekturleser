@@ -15,7 +15,6 @@ USER_NAME_LOCAL = "Torben"
 
 # LLM configuration
 LLM_PROVIDER = my_get_env("LLM_PROVIDER")
-LLM_MODEL = my_get_env("LLM_MODEL")
 
 # FastAPI parameters
 # JWT Configuration

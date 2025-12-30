@@ -14,11 +14,11 @@ from .llm_provider import LLMProvider, retry_with_exponential_backoff
 logger = logging.getLogger(Path(__file__).stem)
 
 PROVIDER = "Gemini"
-MODELS = {
+MODELS = [
     "gemini-2.5-flash-lite",
     "gemini-2.5-flash",
     "gemini-2.5-pro",
-}
+]
 
 
 @lru_cache(maxsize=1)
@@ -33,22 +33,20 @@ def get_gemini_client() -> Client:
 class GeminiProvider(LLMProvider):
     """Google Gemini LLM provider."""
 
-    def __init__(self, instruction: str, model: str) -> None:
+    def __init__(self) -> None:
         """Initialize Gemini provider with instruction and model."""
-        super().__init__(instruction, model)
-        self.provider = PROVIDER
-        self.models = MODELS
-        self.check_model_valid(model)
+        super().__init__(provider=PROVIDER, models=MODELS)
 
-    def call(self, prompt: str) -> tuple[str, int]:
+    def call(self, model: str, instruction: str, prompt: str) -> tuple[str, int]:
         """Call the LLM with retry logic."""
+        self.check_model_valid(model)
         client = get_gemini_client()
 
         def _api_call() -> GenerateContentResponse:
             response = client.models.generate_content(
-                model=self.model,
+                model=model,
                 config=genai_types.GenerateContentConfig(
-                    system_instruction=self.instruction
+                    system_instruction=instruction
                 ),
                 contents=prompt,
             )
