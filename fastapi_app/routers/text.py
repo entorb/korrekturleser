@@ -9,6 +9,7 @@ from fastapi_app.helper_fastapi import get_current_user
 from fastapi_app.schemas import (
     ImproveRequest,
     ImproveResponse,
+    ModelsResponse,
     UserInfoInternal,
 )
 from shared.config import LLM_PROVIDER
@@ -19,6 +20,23 @@ from shared.llm_provider import get_llm_provider
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+@router.get("/models")
+async def get_available_models(
+    _: Annotated[UserInfoInternal, Depends(get_current_user)],
+) -> ModelsResponse:
+    """Get available LLM models for the current provider."""
+    try:
+        llm_provider = get_llm_provider(LLM_PROVIDER)
+        models = llm_provider.get_models()
+        return ModelsResponse(models=models, provider=LLM_PROVIDER)
+    except (ValueError, ImportError) as e:
+        msg = "Failed to get LLM provider:"
+        logger.exception(msg)
+        raise HTTPException(
+            status_code=500, detail="LLM service is not properly configured"
+        ) from e
 
 
 @router.post("/")
@@ -50,7 +68,12 @@ async def improve_text(
         try:
             llm_provider = get_llm_provider(LLM_PROVIDER)
             models = llm_provider.get_models()
-            model = models[0]  # TODO: allow the user to select
+            # Use model from request, or default to first available
+            model = (
+                request.model
+                if request.model and request.model in models
+                else models[0]
+            )
         except (ValueError, ImportError) as e:
             msg = "Failed to get LLM provider:"
             logger.exception(msg)
