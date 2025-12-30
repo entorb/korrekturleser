@@ -319,11 +319,11 @@ Two tables in MySQL:
 
 ### LLM Provider Configuration
 
-Edit `shared/config.py` to change LLM provider or model:
+Edit `.env` to change LLM provider or model:
 
 ```python
-LLM_PROVIDER = "Gemini"
-LLM_MODEL = "gemini-2.5-flash-lite"  # or "gemini-2.5-flash", "gemini-2.5-pro"
+# Gemini, Ollama, Mock, OpenAI, OpenAI_AzureDefaultAzureCredential
+LLM_PROVIDER=Gemini
 ```
 
 Ollama is available for local development only (automatically disabled in PROD).

@@ -22,7 +22,10 @@ python3 scripts/config_convert.py
 
 # rsync -uz .streamlit/config-prod.toml entorb@entorb.net:korrekturleser/.streamlit/config.toml
 rsync -uz requirements.txt entorb@entorb.net:korrekturleser/
-rsync -uz .env entorb@entorb.net:korrekturleser/
+
+# DO NOT sync the .env secret file any more
+# rsync -uz .env entorb@entorb.net:korrekturleser/
+
 # rsync -uz pyproject.toml entorb@entorb.net:korrekturleser/
 rsync -ruzv --no-links --delete --delete-excluded --exclude __pycache__ shared/ entorb@entorb.net:korrekturleser/shared/
 # rsync -ruzv --no-links --delete --delete-excluded --exclude __pycache__ streamlit_app/ entorb@entorb.net:korrekturleser/streamlit_app/

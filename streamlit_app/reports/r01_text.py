@@ -6,13 +6,10 @@ from pathlib import Path
 import streamlit as st
 from st_copy import copy_button
 
-from shared.config import (
-    LLM_MODEL,
-    LLM_PROVIDER,
-)
+from shared.config import LLM_PROVIDER
 from shared.helper_ai import MODE_CONFIGS
 from shared.helper_db import db_insert_usage
-from shared.llm_provider import get_cached_llm_provider
+from shared.llm_provider import get_llm_provider
 from shared.texts import GOOGLE_DISCLAIMER, LABEL_KI_TEXT, LABEL_MY_TEXT
 
 st.title("Textverbesserung")
@@ -54,8 +51,12 @@ if selected_mode and selected_mode:
 
     st.subheader(LABEL_KI_TEXT)
 
-    llm_provider = get_cached_llm_provider(instruction=instruction)
-    text_response, tokens = llm_provider.call(textarea_in)
+    llm_provider = get_llm_provider(LLM_PROVIDER)
+    models = llm_provider.get_models()
+    model = models[0]  # TODO: allow the user to select
+    text_response, tokens = llm_provider.call(
+        model=model, instruction=instruction, prompt=textarea_in
+    )
 
     db_insert_usage(user_id=USER_ID, tokens=tokens)
     st.session_state["cnt_requests"] += 1
@@ -80,7 +81,7 @@ if selected_mode and selected_mode:
             icon="st",
         )
 
-    st.write(f"{tokens} Tokens verbraucht für {LLM_MODEL}")
+    st.write(f"LLM: {LLM_PROVIDER} | Model: {model} | Tokens: {tokens}")
 
     # Show diff for correct and improve modes
     if selected_mode in ("correct", "improve"):
