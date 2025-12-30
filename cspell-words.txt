@@ -41,6 +41,7 @@ pythonpath
 ruzv
 slowapi
 smallint
+SonarQube
 startsecs
 streamlit
 supervisorctl

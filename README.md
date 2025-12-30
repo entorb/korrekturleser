@@ -9,6 +9,8 @@ The application has been implemented in multiple tech stacks, to compare them:
 - V3: Python NiceGUI
 - V4: (pending) Python Flask
 
+[SonarQube](https://sonarcloud.io/summary/overall?id=entorb_korrekturleser) is used to check the code quality.
+
 ## Installation
 
 ### Python Backend (Streamlit & FastAPI)
