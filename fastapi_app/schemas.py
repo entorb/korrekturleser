@@ -34,6 +34,9 @@ class ImproveRequest(BaseModel):
 
     text: str = Field(..., min_length=1, description="Text to improve")
     mode: TextMode = Field(..., description="Improvement mode")  # pyright: ignore[reportInvalidTypeForm]
+    model: str | None = Field(
+        None, description="LLM model to use (optional, defaults to first available)"
+    )
 
 
 class ImproveResponse(BaseModel):
@@ -44,6 +47,13 @@ class ImproveResponse(BaseModel):
     mode: TextMode  # pyright: ignore[reportInvalidTypeForm]
     tokens_used: int
     model: str
+    provider: str
+
+
+class ModelsResponse(BaseModel):
+    """Available models response schema."""
+
+    models: list[str]
     provider: str
 
 
