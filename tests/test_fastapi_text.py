@@ -18,6 +18,28 @@ class TestImproveText:
 
         assert response.status_code == 403
 
+    def test_get_models_without_authentication(self, client: TestClient) -> None:
+        """Test that getting models requires authentication."""
+        response = client.get("/api/models")
+        assert response.status_code == 403
+
+    def test_get_models_with_authentication(
+        self, client: TestClient, auth_headers: dict[str, str]
+    ) -> None:
+        """Test getting available models."""
+        response = client.get("/api/models", headers=auth_headers)
+
+        assert response.status_code == 200
+        data = response.json()
+
+        # Verify response structure
+        assert "models" in data
+        assert "provider" in data
+        assert isinstance(data["models"], list)
+        assert len(data["models"]) > 0
+        # In test mode, the provider name is "Mock"
+        assert data["provider"] in ("Mock", "Gemini", "Ollama")
+
     def test_improve_with_correct_mode(
         self, client: TestClient, auth_headers: dict[str, str]
     ) -> None:
@@ -73,6 +95,27 @@ class TestImproveText:
         assert data["mode"] == "summarize"
         assert "text_ai" in data
         assert data["tokens_used"] > 0
+
+    def test_improve_with_specific_model(
+        self, client: TestClient, auth_headers: dict[str, str]
+    ) -> None:
+        """Test text improvement with a specific model."""
+        # First get available models
+        models_response = client.get("/api/models", headers=auth_headers)
+        assert models_response.status_code == 200
+        models = models_response.json()["models"]
+
+        # Use the first model
+        response = client.post(
+            "/api/",
+            json={"text": "Test text", "mode": "correct", "model": models[0]},
+            headers=auth_headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["model"] == models[0]
+        assert "text_ai" in data
 
     def test_improve_with_expand_mode(
         self, client: TestClient, auth_headers: dict[str, str]
