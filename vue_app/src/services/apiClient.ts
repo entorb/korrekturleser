@@ -7,7 +7,7 @@ import {
   OpenAPI,
   AuthenticationService,
   ConfigurationService,
-  TextImprovementService,
+  TextOperationsService,
   StatisticsService
 } from '@/api'
 import { config } from '@/config/env'
@@ -81,7 +81,7 @@ export const tokenManager = {
 export const api = {
   auth: AuthenticationService,
   config: ConfigurationService,
-  text: TextImprovementService,
+  text: TextOperationsService,
   statistics: StatisticsService
 }
 
