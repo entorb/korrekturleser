@@ -9,7 +9,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from fastapi_app.routers import auth, stats, text
+from fastapi_app.routers import auth, config, stats, text
 from shared.helper import init_logging, where_am_i
 
 ENV = where_am_i()
@@ -54,7 +54,8 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
-app.include_router(text.router, prefix="/api", tags=["Text Improvement"])
+app.include_router(config.router, prefix="/api/config", tags=["Configuration"])
+app.include_router(text.router, prefix="/api/text", tags=["Text Operations"])
 app.include_router(stats.router, prefix="/api/stats", tags=["Statistics"])
 
 

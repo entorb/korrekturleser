@@ -4,17 +4,18 @@
 
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { ImproveRequest, type ImproveResponse } from '@/api'
+import { TextRequest, type TextResponse } from '@/api'
 
 export const useTextStore = defineStore('text', () => {
-  const selectedMode = ref<ImproveRequest.mode>(ImproveRequest.mode.CORRECT)
+  const selectedMode = ref<TextRequest.mode>(TextRequest.mode.CORRECT)
   const selectedModel = ref<string>('')
   const availableModels = ref<string[]>([])
   const inputText = ref('')
   const outputText = ref('')
   const diffHtml = ref('')
-  const lastResult = ref<ImproveResponse | null>(null)
+  const lastResult = ref<TextResponse | null>(null)
   const error = ref<string | null>(null)
+  const llmProvider = ref<string>('')
 
   function setInputText(text: string) {
     inputText.value = text
@@ -24,7 +25,7 @@ export const useTextStore = defineStore('text', () => {
     outputText.value = text
   }
 
-  function setMode(mode: ImproveRequest.mode) {
+  function setMode(mode: TextRequest.mode) {
     selectedMode.value = mode
   }
 
@@ -40,12 +41,16 @@ export const useTextStore = defineStore('text', () => {
     diffHtml.value = html
   }
 
-  function setLastResult(result: ImproveResponse | null) {
+  function setLastResult(result: TextResponse | null) {
     lastResult.value = result
   }
 
   function setError(err: string | null) {
     error.value = err
+  }
+
+  function setLlmProvider(provider: string) {
+    llmProvider.value = provider
   }
 
   function clearOutput() {
@@ -61,7 +66,7 @@ export const useTextStore = defineStore('text', () => {
     diffHtml.value = ''
     lastResult.value = null
     error.value = null
-    selectedMode.value = ImproveRequest.mode.CORRECT
+    selectedMode.value = TextRequest.mode.CORRECT
   }
 
   return {
@@ -73,6 +78,7 @@ export const useTextStore = defineStore('text', () => {
     diffHtml,
     lastResult,
     error,
+    llmProvider,
     setInputText,
     setOutputText,
     setMode,
@@ -81,6 +87,7 @@ export const useTextStore = defineStore('text', () => {
     setDiffHtml,
     setLastResult,
     setError,
+    setLlmProvider,
     clearOutput,
     clearAll
   }
