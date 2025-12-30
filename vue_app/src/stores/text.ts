@@ -8,6 +8,8 @@ import { ImproveRequest, type ImproveResponse } from '@/api'
 
 export const useTextStore = defineStore('text', () => {
   const selectedMode = ref<ImproveRequest.mode>(ImproveRequest.mode.CORRECT)
+  const selectedModel = ref<string>('')
+  const availableModels = ref<string[]>([])
   const inputText = ref('')
   const outputText = ref('')
   const diffHtml = ref('')
@@ -24,6 +26,14 @@ export const useTextStore = defineStore('text', () => {
 
   function setMode(mode: ImproveRequest.mode) {
     selectedMode.value = mode
+  }
+
+  function setModel(model: string) {
+    selectedModel.value = model
+  }
+
+  function setAvailableModels(models: string[]) {
+    availableModels.value = models
   }
 
   function setDiffHtml(html: string) {
@@ -56,6 +66,8 @@ export const useTextStore = defineStore('text', () => {
 
   return {
     selectedMode,
+    selectedModel,
+    availableModels,
     inputText,
     outputText,
     diffHtml,
@@ -64,6 +76,8 @@ export const useTextStore = defineStore('text', () => {
     setInputText,
     setOutputText,
     setMode,
+    setModel,
+    setAvailableModels,
     setDiffHtml,
     setLastResult,
     setError,
