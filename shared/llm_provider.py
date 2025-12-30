@@ -4,6 +4,7 @@ import logging
 import random
 import time
 from collections.abc import Callable
+from functools import lru_cache
 from pathlib import Path
 from typing import TypeVar
 
@@ -105,6 +106,7 @@ class MockProvider(LLMProvider):
         return response, tokens
 
 
+@lru_cache(maxsize=1)
 def get_llm_provider(provider_name: str) -> LLMProvider:
     """Get LLM provider."""
     logger.debug("Getting LLM provider: %s", provider_name)
