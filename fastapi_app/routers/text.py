@@ -12,7 +12,6 @@ from fastapi_app.schemas import (
     UserInfoInternal,
 )
 from shared.config import LLM_MODEL, LLM_PROVIDER
-from shared.helper import where_am_i
 from shared.helper_ai import MODE_CONFIGS
 from shared.helper_db import db_insert_usage
 from shared.llm_provider import get_cached_llm_provider
@@ -20,7 +19,6 @@ from shared.llm_provider import get_cached_llm_provider
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-ENV = where_am_i()
 
 
 @router.post("/")
