@@ -11,10 +11,10 @@ from fastapi_app.schemas import (
     ImproveResponse,
     UserInfoInternal,
 )
-from shared.config import LLM_MODEL, LLM_PROVIDER
+from shared.config import LLM_PROVIDER
 from shared.helper_ai import MODE_CONFIGS
 from shared.helper_db import db_insert_usage
-from shared.llm_provider import get_cached_llm_provider
+from shared.llm_provider import get_llm_provider
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,9 @@ async def improve_text(
     try:
         # Get LLM provider with explicit error handling
         try:
-            llm_provider = get_cached_llm_provider(instruction=instruction)
+            llm_provider = get_llm_provider(LLM_PROVIDER)
+            models = llm_provider.get_models()
+            model = models[0]  # TODO: allow the user to select
         except (ValueError, ImportError) as e:
             msg = "Failed to get LLM provider:"
             logger.exception(msg)
@@ -57,7 +59,9 @@ async def improve_text(
             ) from e
 
         # Call LLM with timeout protection (if using async)
-        improved_text, tokens_used = llm_provider.call(request.text)
+        improved_text, tokens_used = llm_provider.call(
+            model=model, instruction=instruction, prompt=request.text
+        )
 
         # Validate response
         if not improved_text:
@@ -80,7 +84,7 @@ async def improve_text(
             text_ai=improved_text,
             mode=request.mode,
             tokens_used=tokens_used,
-            model=LLM_MODEL,
+            model=model,
             provider=LLM_PROVIDER,
         )
 
