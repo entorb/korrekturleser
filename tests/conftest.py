@@ -6,8 +6,8 @@ import os
 
 # CRITICAL: Set environment variables BEFORE any imports that use config
 # This ensures that shared.config loads with Mock LLM settings
-os.environ["LLM_LOCAL"] = "Mock"
-os.environ["LLM_LOCAL_MODEL"] = "random"
+os.environ["LLM_PROVIDER"] = "Mock"
+os.environ["LLM_MODEL"] = "random"
 
 import pytest
 from fastapi.testclient import TestClient
