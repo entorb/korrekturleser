@@ -34,8 +34,9 @@ onUnmounted(() => {
 async function fetchModels() {
   loadingModels.value = true
   try {
-    const response = await api.text.getAvailableModelsApiModelsGet()
+    const response = await api.config.getConfigApiConfigGet()
     textStore.setAvailableModels(response.models)
+    textStore.setLlmProvider(response.llm_provider)
     // Set first model as default if not already set
     if (!textStore.selectedModel && response.models.length > 0) {
       textStore.setModel(response.models[0]!)
@@ -236,7 +237,7 @@ function formatDate(dateStr: string): string {
                 </thead>
                 <tbody>
                   <tr
-                    v-for="item in stats.daily.slice(0, 30)"
+                    v-for="item in stats.daily"
                     :key="`${item.date}-${item.user_name}`"
                   >
                     <td>{{ formatDate(item.date) }}</td>

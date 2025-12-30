@@ -329,6 +329,7 @@ FROM user u
 JOIN history h ON h.user_id = u.id
 WHERE u.id = ?
 ORDER BY h.date DESC, u.name ASC
+LIMIT 100
 """
 
     if ENV != "PROD":

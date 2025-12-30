@@ -5,15 +5,15 @@
 /**
  * Text improvement response schema.
  */
-export type ImproveResponse = {
+export type TextResponse = {
     text_original: string;
     text_ai: string;
-    mode: ImproveResponse.mode;
+    mode: TextResponse.mode;
     tokens_used: number;
     model: string;
     provider: string;
 };
-export namespace ImproveResponse {
+export namespace TextResponse {
     export enum mode {
         CORRECT = 'correct',
         IMPROVE = 'improve',

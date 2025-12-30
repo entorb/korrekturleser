@@ -5,19 +5,23 @@
 /**
  * Text improvement request schema.
  */
-export type ImproveRequest = {
+export type TextRequest = {
     /**
      * Text to improve
      */
     text: string;
     /**
-     * Improvement mode
+     * AI text operation mode
      */
-    mode: ImproveRequest.mode;
-};
-export namespace ImproveRequest {
+    mode: TextRequest.mode;
     /**
-     * Improvement mode
+     * LLM model to use (optional, defaults to first available)
+     */
+    model?: (string | null);
+};
+export namespace TextRequest {
+    /**
+     * AI text operation mode
      */
     export enum mode {
         CORRECT = 'correct',
