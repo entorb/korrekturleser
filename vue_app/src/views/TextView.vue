@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
 import { useAuthStore } from '@/stores/auth'
 import { useTextStore } from '@/stores/text'
 import { api } from '@/services/apiClient'
@@ -13,6 +14,7 @@ import { copyToClipboard as copyText, readFromClipboard } from '@/utils/clipboar
 import 'diff2html/bundles/css/diff2html.min.css'
 
 const router = useRouter()
+const $q = useQuasar()
 const authStore = useAuthStore()
 const textStore = useTextStore()
 
@@ -198,11 +200,8 @@ function handleLogout() {
             color="orange-9"
           />
         </template>
-        <strong>Achtung:</strong>
-        <em
-          >Die Google KI wird deine Eingaben zum Trainieren verwenden. Nur für Texte verwenden, die
-          keine persönlichen oder geheimen Daten enthalten (zB Namen vorher entfernen).</em
-        >
+        Die Google KI wird deine Eingaben zum Trainieren verwenden. Nur für Texte verwenden, die
+        keine persönlichen oder geheimen Daten enthalten (z.B. Namen vorher entfernen).
       </q-banner>
 
       <q-card>
