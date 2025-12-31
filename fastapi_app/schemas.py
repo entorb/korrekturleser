@@ -4,7 +4,7 @@ import datetime as dt
 
 from pydantic import BaseModel, Field
 
-from shared.helper_ai import TextMode
+from shared.mode_configs import TextMode
 
 
 # Authentication schemas

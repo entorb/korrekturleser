@@ -12,9 +12,9 @@ from fastapi_app.schemas import (
     UserInfoInternal,
 )
 from shared.config import LLM_PROVIDER
-from shared.helper_ai import MODE_CONFIGS
 from shared.helper_db import db_insert_usage
 from shared.llm_provider import get_llm_provider
+from shared.mode_configs import MODE_CONFIGS
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ async def improve_text(
     instruction = mode_config.instruction
 
     logger.info(
-        "User %s requested %s for text length %d",
+        "User: %s | mode: %s | length %d",
         current_user.user_name,
         request.mode,
         len(request.text),
