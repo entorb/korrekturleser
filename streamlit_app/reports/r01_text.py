@@ -7,9 +7,9 @@ import streamlit as st
 from st_copy import copy_button
 
 from shared.config import LLM_PROVIDER
-from shared.helper_ai import MODE_CONFIGS
 from shared.helper_db import db_insert_usage
 from shared.llm_provider import get_llm_provider
+from shared.mode_configs import MODE_CONFIGS
 from shared.texts import GOOGLE_DISCLAIMER, LABEL_KI_TEXT, LABEL_MY_TEXT
 
 st.title("Textverbesserung")

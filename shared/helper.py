@@ -33,6 +33,7 @@ def init_logging() -> None:
     logging.getLogger("azure").setLevel(logging.WARNING)
     logging.getLogger("google_genai").setLevel(logging.WARNING)
     logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("mysql").setLevel(logging.WARNING)
     logging.getLogger("tornado").setLevel(logging.WARNING)
 
 

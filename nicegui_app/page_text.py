@@ -9,10 +9,10 @@ from nicegui import ui
 
 from nicegui_app.config_nice import BASE_URL
 from shared.config import LLM_PROVIDER
-from shared.helper_ai import MODE_CONFIGS
 from shared.helper_db import db_insert_usage
 from shared.helper_diff import create_diff_html as create_diff_table
 from shared.llm_provider import get_llm_provider
+from shared.mode_configs import MODE_CONFIGS
 from shared.texts import GOOGLE_DISCLAIMER, LABEL_KI_TEXT, LABEL_MY_TEXT
 
 from .helper_nicegui import SessionManager
