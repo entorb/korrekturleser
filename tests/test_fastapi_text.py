@@ -16,12 +16,12 @@ class TestImproveText:
             json={"text": "Hello world", "mode": "correct"},
         )
 
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     def test_get_models_without_authentication(self, client: TestClient) -> None:
         """Test that getting config requires authentication."""
         response = client.get("/api/config/")
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     def test_get_models_with_authentication(
         self, client: TestClient, auth_headers: dict[str, str]
@@ -37,8 +37,14 @@ class TestImproveText:
         assert "provider" in data
         assert isinstance(data["models"], list)
         assert len(data["models"]) > 0
-        # In test mode, the provider name is "Mock"
-        assert data["provider"] in ("Mock", "Gemini", "Ollama")
+        # Check that provider is one of the valid options
+        assert data["provider"] in (
+            "Mock",
+            "Gemini",
+            "Ollama",
+            "OpenAI",
+            "OpenAI_Azure",
+        )
 
     def test_improve_with_correct_mode(
         self, client: TestClient, auth_headers: dict[str, str]
