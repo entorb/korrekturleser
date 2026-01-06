@@ -8,11 +8,13 @@ dependencies = [
     "mysql-connector-python>=9.4.0",
     "nicegui>=3.0.4",
     "openai>=2.8.1",
+    "pandas==2.2.3",
+    "pyarrow==20.0.0",
     "pydantic>=2.10.0",
     "pyjwt>=2.10.0",
     "slowapi>=0.1.9",
     "st-copy>=1.1.2",
-    "streamlit==1.49.1",
+    "streamlit==1.52.2",
 ]
 name = "korrekturleser"
 version = "0.1.0"
@@ -25,11 +27,11 @@ pythonpath = ["shared", "streamlit_app", "fastapi_app"]
 
 [dependency-groups]
 dev = [
-    "ollama>=0.6.0",
-    "pre-commit>=4.3.0",
-    "pytest>=8.4.2",
+    "ollama>=0.6.1",
+    "pre-commit>=4.5.1",
+    "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
-    "ruff>=0.14.0",
+    "ruff>=0.14.10",
     "tomli-w>=1.2.0",
     "uvicorn[standard]>=0.34.0",
     "watchdog>=6.0.0",
