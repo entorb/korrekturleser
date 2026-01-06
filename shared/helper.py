@@ -90,11 +90,11 @@ def format_config_dataframe() -> pd.DataFrame:
     # Local import to avoid circular dependency
     import pandas as pd  # noqa: PLC0415
 
-    from shared.config import LLM_PROVIDER  # noqa: PLC0415
+    from shared.config import LLM_PROVIDER_DEFAULT  # noqa: PLC0415
 
     config_data = {
         "ENV": where_am_i(),
-        "LLM_PROVIDER": LLM_PROVIDER,
+        "LLM_PROVIDER_DEFAULT": LLM_PROVIDER_DEFAULT,
     }
     config_items = sorted([(k, str(v)) for k, v in config_data.items()])
     return pd.DataFrame(config_items, columns=["key", "value"])

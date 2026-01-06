@@ -75,13 +75,11 @@ class TestAuthentication:
 class TestUsageTracking:
     """Test usage tracking functions."""
 
-    @patch("shared.helper_db.LLM_PROVIDER", "Mocked")
     def test_insert_usage_mocked_llm(self) -> None:
         """Test usage insert is skipped when LLM is mocked."""
         # Should not raise any errors and should return early
         db_insert_usage(user_id=1, tokens=100)
 
-    @patch("shared.helper_db.LLM_PROVIDER", "Gemini")
     @patch("shared.helper_db.sqlite_connection")
     def test_insert_usage_local_mode(self, mock_sqlite: MagicMock) -> None:
         """Test usage insert writes to SQLite in local mode."""
@@ -105,7 +103,6 @@ class TestUsageTracking:
         assert params[1] == 1
         assert params[2] == 100
 
-    @patch("shared.helper_db.LLM_PROVIDER", "Gemini")
     @patch("shared.helper_db.ENV", "PROD")
     @patch("shared.helper_db.db_connection")
     def test_insert_usage_in_production(self, mock_connection: MagicMock) -> None:

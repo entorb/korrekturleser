@@ -7,7 +7,6 @@ import { ref, computed } from 'vue'
 import { api, tokenManager } from '@/services/apiClient'
 import type { TokenResponse } from '@/api'
 import { decodeJwt, isTokenExpired } from '@/utils/jwt'
-import { useTextStore } from './text'
 
 interface UserInfo {
   user_name: string
@@ -30,11 +29,6 @@ export const useAuthStore = defineStore('auth', () => {
 
       // Extract user info from JWT token
       loadUserFromToken()
-
-      // Fetch and update LLM provider from config
-      const textStore = useTextStore()
-      const config = await api.config.getConfigApiConfigGet()
-      textStore.setLlmProvider(config.llm_provider)
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Login failed'
       throw err

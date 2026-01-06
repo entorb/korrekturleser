@@ -48,9 +48,9 @@ axios.interceptors.response.use(
         tokenManager.clear()
 
         // Only redirect if not already on login page
-        if (globalThis.location.pathname !== '/korrekturleser2/login') {
+        if (globalThis.location.pathname !== '/korrekturleser-vue/login') {
           // Use replace to avoid back button issues
-          globalThis.location.replace('/korrekturleser2/login')
+          globalThis.location.replace('/korrekturleser-vue/login')
         }
       }
     }

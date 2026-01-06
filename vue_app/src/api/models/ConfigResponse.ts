@@ -6,7 +6,11 @@
  * Configuration response schema.
  */
 export type ConfigResponse = {
-    llm_provider: string;
+    provider: string;
+    /**
+     * List of available providers
+     */
+    providers: Array<string>;
     /**
      * List of available models
      */

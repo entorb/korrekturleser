@@ -13,8 +13,10 @@ load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 USER_ID_LOCAL = 1
 USER_NAME_LOCAL = "Torben"
 
-# LLM configuration
-LLM_PROVIDER = my_get_env("LLM_PROVIDER")
+lst = my_get_env("LLM_PROVIDERS")
+LLM_PROVIDERS = [item.strip() for item in lst.split(",")]
+
+LLM_PROVIDER_DEFAULT = LLM_PROVIDERS[0]
 
 # FastAPI parameters
 # JWT Configuration

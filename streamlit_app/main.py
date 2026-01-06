@@ -13,6 +13,7 @@ st.set_page_config(page_title="KI Korrekturleser", page_icon=":robot:", layout="
 # Add parent directory to path, required when deploying without uv
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+
 from shared.helper import init_logging, where_am_i
 from shared.helper_db import (
     db_select_user_from_geheimnis,
@@ -64,10 +65,6 @@ def main() -> None:  # noqa: D103
     if "USER_ID" not in st.session_state:
         # stops if user is unknown
         login()
-
-    # init session_state
-    if "ai_response" not in st.session_state:
-        st.session_state["ai_response"] = ""
 
     # run the page
     _ = create_navigation_menu()

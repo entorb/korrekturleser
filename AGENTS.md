@@ -47,7 +47,7 @@ open http://localhost:8504/docs
 
 ```sh
 scripts/vue.sh
-open http://localhost:5173/korrekturleser2/
+open http://localhost:5173/korrekturleser-vue/
 ```
 
 ### NiceGUI App (V3)
@@ -322,7 +322,7 @@ Two tables in MySQL:
 Edit `.env` to change LLM provider or model:
 
 ```python
-# Gemini, Ollama, Mock, OpenAI, OpenAI_AzureDefaultAzureCredential
+# Gemini, Ollama, Mock, OpenAI, OpenAI_Azure
 LLM_PROVIDER=Gemini
 ```
 
