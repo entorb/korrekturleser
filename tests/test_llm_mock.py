@@ -17,7 +17,7 @@ class TestMockLLMProvider:
     def test_environment_variables_are_set(self) -> None:
         """Test that test environment variables are set correctly."""
         # Verify that the conftest.py fixture set these variables
-        assert os.environ.get("LLM_PROVIDER") == MOCK_PROVIDER
+        assert os.environ.get("LLM_PROVIDERS") == MOCK_PROVIDER
         assert os.environ.get("LLM_MODEL") == MOCK_MODEL
 
     def test_config_uses_mock_provider(self) -> None:
