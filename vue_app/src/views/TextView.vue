@@ -26,12 +26,33 @@ const modeDescriptions = getModeDescriptions()
 
 // Show disclaimer for Gemini provider
 const showDisclaimer = computed(() => {
-  return textStore.llmProvider === 'Gemini'
+  return textStore.selectedProvider === 'Gemini'
 })
 
-onMounted(() => {
+onMounted(async () => {
   globalThis.addEventListener('keydown', handleKeyPress)
+  // Initialize providers and models
+  await fetchProvidersAndModels()
 })
+
+async function fetchProvidersAndModels() {
+  try {
+    const response = await api.config.getConfigApiConfigGet(textStore.selectedProvider || undefined)
+    textStore.setAvailableModels(response.models)
+    textStore.setAvailableProviders(response.providers)
+    // Set first model as default if not already set
+    if (!textStore.selectedModel && response.models.length > 0) {
+      textStore.setModel(response.models[0]!)
+    }
+    // Set first provider as default if not already set
+    if (!textStore.selectedProvider && response.providers.length > 0) {
+      textStore.setProvider(response.providers[0]!)
+    }
+  } catch (err) {
+    console.error('Failed to fetch models:', err)
+    textStore.setError('Fehler beim Laden der Modelle')
+  }
+}
 
 // Show diff for correct and improve modes only
 const showDiff = computed(() => {
@@ -102,14 +123,12 @@ async function handleProcessText() {
     const result = await api.text.improveTextApiTextPost({
       text: textStore.inputText,
       mode: textStore.selectedMode,
-      model: textStore.selectedModel || null
+      model: textStore.selectedModel || null,
+      provider: textStore.selectedProvider || null
     })
 
     textStore.setOutputText(result.text_ai)
     textStore.setLastResult(result)
-
-    // Update provider (in case it changed)
-    textStore.setLlmProvider(result.provider)
 
     if (
       textStore.selectedMode === TextRequest.mode.CORRECT ||
@@ -152,6 +171,22 @@ function handleLogout() {
   authStore.logout()
   router.push({ name: 'login' })
 }
+
+async function handleProviderChange() {
+  // When provider changes, fetch new models for that provider
+  try {
+    const response = await api.config.getConfigApiConfigGet(textStore.selectedProvider || undefined)
+    // Update available models from response
+    textStore.setAvailableModels(response.models)
+    // Reset selected model to first available model from new provider
+    if (response.models.length > 0) {
+      textStore.setModel(response.models[0]!)
+    }
+  } catch (err) {
+    console.error('Failed to fetch models:', err)
+    textStore.setError('Fehler beim Laden der Modelle')
+  }
+}
 </script>
 
 <template>
@@ -169,7 +204,7 @@ function handleLogout() {
           flat
           round
           dense
-          icon="settings"
+          icon="bar_chart"
           @click="goToStats"
         >
           <q-tooltip>Statistik (Esc)</q-tooltip>
@@ -200,8 +235,8 @@ function handleLogout() {
             color="orange-9"
           />
         </template>
-        Die Google KI wird deine Eingaben zum Trainieren verwenden. Nur für Texte verwenden, die
-        keine persönlichen oder geheimen Daten enthalten (z.B. Namen vorher entfernen).
+        Die Google Gemini KI wird deine Eingaben zum Trainieren verwenden. Nur für Texte verwenden,
+        die keine persönlichen oder geheimen Daten enthalten (z.B. Namen vorher entfernen).
       </q-banner>
 
       <q-card>
@@ -352,6 +387,31 @@ function handleLogout() {
               {{ textStore.lastResult.tokens_used }}
             </q-card-section>
           </q-card>
+
+          <!-- LLM Provider and Model Select -->
+          <div class="row q-col-gutter-md q-mt-md">
+            <div class="col-6">
+              <q-select
+                v-model="textStore.selectedProvider"
+                :options="textStore.availableProviders"
+                label="KI"
+                outlined
+                dense
+                :disable="textStore.availableProviders.length === 0"
+                @update:model-value="handleProviderChange"
+              />
+            </div>
+            <div class="col-6">
+              <q-select
+                v-model="textStore.selectedModel"
+                :options="textStore.availableModels"
+                label="Modell"
+                outlined
+                dense
+                :disable="textStore.availableModels.length === 0"
+              />
+            </div>
+          </div>
         </q-card-section>
       </q-card>
     </q-page>

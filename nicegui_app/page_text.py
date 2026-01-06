@@ -8,7 +8,7 @@ from typing import NamedTuple
 from nicegui import ui
 
 from nicegui_app.config_nice import BASE_URL
-from shared.config import LLM_PROVIDER
+from shared.config import LLM_PROVIDER_DEFAULT
 from shared.helper_db import db_insert_usage
 from shared.helper_diff import create_diff_html as create_diff_table
 from shared.llm_provider import get_llm_provider
@@ -182,7 +182,7 @@ def _update_diff_display(
 def _process_with_llm(mode: str, input_text: str) -> tuple[str, int, str]:
     """Process text with LLM and return response, tokens, and model name."""
     instruction = MODE_CONFIGS[mode].instruction
-    llm_provider = get_llm_provider(LLM_PROVIDER)
+    llm_provider = get_llm_provider(LLM_PROVIDER_DEFAULT)
     models = llm_provider.get_models()
     model = SessionManager.get_model() or models[0]
     text_response, tokens = llm_provider.call(
@@ -213,7 +213,7 @@ def create_text_page() -> None:
 def _create_main_content(state: ProcessingState) -> None:
     """Create the main content area with input and output columns."""
     with ui.column().classes("w-full p-6 gap-4"):
-        if LLM_PROVIDER == "Gemini":
+        if LLM_PROVIDER_DEFAULT == "Gemini":
             with ui.card().classes("w-full bg-blue-50"):
                 ui.markdown(GOOGLE_DISCLAIMER).classes("text-caption")
 
@@ -363,7 +363,7 @@ async def _execute_processing(
 
     ui_elements.result_info.visible = True
     ui_elements.result_label.text = (
-        f"LLM: {LLM_PROVIDER} | Model: {model} | Tokens: {tokens}"
+        f"LLM: {LLM_PROVIDER_DEFAULT} | Model: {model} | Tokens: {tokens}"
     )
 
     _update_diff_display(

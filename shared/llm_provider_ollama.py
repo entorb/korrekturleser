@@ -11,6 +11,7 @@ logger = logging.getLogger(Path(__file__).stem)
 
 PROVIDER = "Ollama"
 MODELS = [
+    "mistral",
     "llama3.2:1b",
     "llama3.2:3b",
     "deepseek-r1:1.5b",

@@ -5,7 +5,7 @@ from pathlib import Path
 
 from nicegui import app, ui
 
-from shared.config import LLM_PROVIDER
+from shared.config import LLM_PROVIDER_DEFAULT
 from shared.helper import format_config_dataframe, format_session_dataframe
 from shared.helper_db import (
     db_select_usage_stats_daily,
@@ -107,7 +107,7 @@ def create_stats_page() -> None:
         # Model selector
         with ui.card().classes("w-full mb-4"):
             ui.label("Settings").classes("text-h6 mb-2")
-            llm_provider = get_llm_provider(LLM_PROVIDER)
+            llm_provider = get_llm_provider(LLM_PROVIDER_DEFAULT)
             models = llm_provider.get_models()
             current_model = SessionManager.get_model() or models[0]
 

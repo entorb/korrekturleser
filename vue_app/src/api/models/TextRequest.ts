@@ -15,6 +15,10 @@ export type TextRequest = {
      */
     mode: TextRequest.mode;
     /**
+     * LLM provider to use (optional, defaults to default provider)
+     */
+    provider?: (string | null);
+    /**
      * LLM model to use (optional, defaults to first available)
      */
     model?: (string | null);

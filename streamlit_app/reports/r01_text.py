@@ -6,7 +6,7 @@ from pathlib import Path
 import streamlit as st
 from st_copy import copy_button
 
-from shared.config import LLM_PROVIDER
+from shared.config import LLM_PROVIDER_DEFAULT, LLM_PROVIDERS
 from shared.helper_db import db_insert_usage
 from shared.llm_provider import get_llm_provider
 from shared.mode_configs import MODE_CONFIGS
@@ -17,7 +17,39 @@ logger = logging.getLogger(Path(__file__).stem)
 
 USER_ID = st.session_state["USER_ID"]  # shortcut
 
-if LLM_PROVIDER == "Gemini":
+# LLM select
+if "LLM_PROVIDER" not in st.session_state:
+    st.session_state["LLM_PROVIDER"] = LLM_PROVIDER_DEFAULT
+
+default_index = LLM_PROVIDERS.index(st.session_state["LLM_PROVIDER"])
+sel_llm = st.sidebar.selectbox(
+    "LLM",
+    LLM_PROVIDERS,
+    index=default_index,
+)
+if sel_llm != st.session_state["LLM_PROVIDER"]:
+    st.session_state["LLM_PROVIDER"] = sel_llm
+    del st.session_state["LLM_MODEL"]
+
+LLM = st.session_state["LLM_PROVIDER"]  # shortcut
+
+llm_provider = get_llm_provider(LLM)
+
+# Model select
+MODELS = llm_provider.get_models()
+if "LLM_MODEL" not in st.session_state:
+    st.session_state["LLM_MODEL"] = MODELS[0]
+
+model = st.session_state["LLM_MODEL"]  # shortcut
+
+default_index = MODELS.index(model)
+sel_model = st.sidebar.selectbox("Modell", MODELS, index=default_index)
+if sel_model != model:
+    st.session_state["LLM_MODEL"] = sel_model
+MODEL = st.session_state["LLM_MODEL"]  # shortcut
+del sel_model, model, default_index, MODELS
+
+if LLM == "Gemini":
     st.markdown(GOOGLE_DISCLAIMER)
 
 
@@ -38,7 +70,7 @@ with st.form(LABEL_MY_TEXT):
         options=list(mode_options.keys()),
         key="mode_select",
     )
-    submit_button = cols[1].form_submit_button("Submit", type="primary")
+    submit_button = cols[1].form_submit_button("An KI senden", type="primary")
 
 if submit_button:
     # Determine which mode was selected
@@ -47,14 +79,12 @@ if submit_button:
 
     st.subheader(LABEL_KI_TEXT)
 
-    llm_provider = get_llm_provider(LLM_PROVIDER)
-    models = llm_provider.get_models()
-    model = st.session_state.get("LLM_MODEL", models[0])
-    text_response, tokens = llm_provider.call(
-        model=model, instruction=instruction, prompt=textarea_in
-    )
+    with st.spinner("Schmelze Gletscher..."):
+        text_response, tokens = llm_provider.call(
+            model=MODEL, instruction=instruction, prompt=textarea_in
+        )
 
-    db_insert_usage(user_id=USER_ID, tokens=tokens)
+        db_insert_usage(user_id=USER_ID, tokens=tokens)
     st.session_state["cnt_requests"] += 1
     st.session_state["cnt_tokens"] += tokens
 
@@ -77,8 +107,6 @@ if submit_button:
             icon="st",
         )
 
-    st.write(f"LLM: {LLM_PROVIDER} | Model: {model} | Tokens: {tokens}")
-
     # Show diff for correct and improve modes
     if selected_mode in ("correct", "improve"):
         st.subheader("Unterschied")
@@ -97,4 +125,5 @@ if submit_button:
 
     st.subheader("Anweisung")
     st.code(language="markdown", body=instruction)
-    st.write(text_response)
+
+    st.write(f"LLM: {LLM} | Model: {MODEL} | Tokens: {tokens}")

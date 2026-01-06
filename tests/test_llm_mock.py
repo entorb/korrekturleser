@@ -4,7 +4,7 @@
 
 import os
 
-from shared.config import LLM_PROVIDER
+from shared.config import LLM_PROVIDER_DEFAULT
 from shared.llm_provider import MockProvider, get_llm_provider
 
 MOCK_PROVIDER = "Mock"
@@ -22,18 +22,18 @@ class TestMockLLMProvider:
 
     def test_config_uses_mock_provider(self) -> None:
         """Test that config module picks up Mock provider."""
-        assert LLM_PROVIDER == "Mock"
+        assert LLM_PROVIDER_DEFAULT == "Mock"
 
     def test_llm_provider_is_mock_instance(self) -> None:
         """Test that get_cached_llm_provider returns MockProvider instance."""
-        provider = get_llm_provider(provider_name=LLM_PROVIDER)
+        provider = get_llm_provider(provider_name=LLM_PROVIDER_DEFAULT)
 
         # Verify it's actually a MockProvider instance
         assert isinstance(provider, MockProvider)
 
     def test_mock_provider_returns_expected_format(self) -> None:
         """Test that MockProvider returns expected response format."""
-        provider = get_llm_provider(provider_name=LLM_PROVIDER)
+        provider = get_llm_provider(provider_name=LLM_PROVIDER_DEFAULT)
         assert isinstance(provider, MockProvider)
         response_text, tokens_used = provider.call(
             "model", "instruction", "Test prompt"

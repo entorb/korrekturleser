@@ -34,11 +34,11 @@ class TestImproveText:
 
         # Verify response structure
         assert "models" in data
-        assert "llm_provider" in data
+        assert "provider" in data
         assert isinstance(data["models"], list)
         assert len(data["models"]) > 0
         # In test mode, the provider name is "Mock"
-        assert data["llm_provider"] in ("Mock", "Gemini", "Ollama")
+        assert data["provider"] in ("Mock", "Gemini", "Ollama")
 
     def test_improve_with_correct_mode(
         self, client: TestClient, auth_headers: dict[str, str]

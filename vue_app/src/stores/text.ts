@@ -10,12 +10,13 @@ export const useTextStore = defineStore('text', () => {
   const selectedMode = ref<TextRequest.mode>(TextRequest.mode.CORRECT)
   const selectedModel = ref<string>('')
   const availableModels = ref<string[]>([])
+  const selectedProvider = ref<string>('')
+  const availableProviders = ref<string[]>([])
   const inputText = ref('')
   const outputText = ref('')
   const diffHtml = ref('')
   const lastResult = ref<TextResponse | null>(null)
   const error = ref<string | null>(null)
-  const llmProvider = ref<string>('')
 
   function setInputText(text: string) {
     inputText.value = text
@@ -37,6 +38,14 @@ export const useTextStore = defineStore('text', () => {
     availableModels.value = models
   }
 
+  function setProvider(provider: string) {
+    selectedProvider.value = provider
+  }
+
+  function setAvailableProviders(providers: string[]) {
+    availableProviders.value = providers
+  }
+
   function setDiffHtml(html: string) {
     diffHtml.value = html
   }
@@ -47,10 +56,6 @@ export const useTextStore = defineStore('text', () => {
 
   function setError(err: string | null) {
     error.value = err
-  }
-
-  function setLlmProvider(provider: string) {
-    llmProvider.value = provider
   }
 
   function clearOutput() {
@@ -73,21 +78,23 @@ export const useTextStore = defineStore('text', () => {
     selectedMode,
     selectedModel,
     availableModels,
+    selectedProvider,
+    availableProviders,
     inputText,
     outputText,
     diffHtml,
     lastResult,
     error,
-    llmProvider,
     setInputText,
     setOutputText,
     setMode,
     setModel,
     setAvailableModels,
+    setProvider,
+    setAvailableProviders,
     setDiffHtml,
     setLastResult,
     setError,
-    setLlmProvider,
     clearOutput,
     clearAll
   }
