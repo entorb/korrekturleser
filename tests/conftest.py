@@ -6,7 +6,7 @@ import os
 
 # CRITICAL: Set environment variables BEFORE any imports that use config
 # This ensures that shared.config loads with Mock LLM settings
-os.environ["LLM_PROVIDER"] = "Mock"
+os.environ["LLM_PROVIDERS"] = "Mock"
 os.environ["LLM_MODEL"] = "random"
 
 import pytest
