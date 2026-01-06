@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import MySQLConnectionPool, PooledMySQLConnection
 
-from .config import LLM_PROVIDER
+from .config import LLM_PROVIDER_DEFAULT
 from .helper import my_get_env, verify_geheimnis, where_am_i
 
 # Load environment variables from .env file in project root
@@ -223,7 +223,7 @@ def db_select_user_from_geheimnis(geheimnis: str) -> tuple[int, str]:
 def db_insert_usage(user_id: int, tokens: int) -> None:
     """Insert/update usage stats in table history."""
     # Skip DB insert when using mocked LLM provider
-    if LLM_PROVIDER == "Mocked":
+    if LLM_PROVIDER_DEFAULT == "Mocked":
         logger.debug("Mocked LLM: Skipping usage insert")
         return
 

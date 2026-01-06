@@ -2,17 +2,14 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { useTextStore } from '@/stores/text'
 import { api } from '@/services/apiClient'
 import type { UsageStatsResponse } from '@/api'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const textStore = useTextStore()
 
 const stats = ref<UsageStatsResponse | null>(null)
 const isLoading = ref(false)
-const loadingModels = ref(false)
 const error = ref<string | null>(null)
 
 function handleKeyPress(event: KeyboardEvent) {
@@ -23,31 +20,12 @@ function handleKeyPress(event: KeyboardEvent) {
 
 onMounted(async () => {
   await loadStats()
-  await fetchModels()
   globalThis.addEventListener('keydown', handleKeyPress)
 })
 
 onUnmounted(() => {
   globalThis.removeEventListener('keydown', handleKeyPress)
 })
-
-async function fetchModels() {
-  loadingModels.value = true
-  try {
-    const response = await api.config.getConfigApiConfigGet()
-    textStore.setAvailableModels(response.models)
-    textStore.setLlmProvider(response.llm_provider)
-    // Set first model as default if not already set
-    if (!textStore.selectedModel && response.models.length > 0) {
-      textStore.setModel(response.models[0]!)
-    }
-  } catch (err) {
-    console.error('Failed to fetch models:', err)
-    error.value = 'Fehler beim Laden der Modelle'
-  } finally {
-    loadingModels.value = false
-  }
-}
 
 async function loadStats() {
   isLoading.value = true
@@ -142,28 +120,6 @@ function formatDate(dateStr: string): string {
 
           <!-- Stats Content -->
           <div v-else-if="stats">
-            <!-- Settings Section -->
-            <q-card
-              bordered
-              class="q-mb-md"
-            >
-              <q-card-section>
-                <div class="text-h6 q-mb-md">Einstellungen</div>
-                <div class="row q-col-gutter-md">
-                  <div class="col-12 col-md-6">
-                    <q-select
-                      v-model="textStore.selectedModel"
-                      :options="textStore.availableModels"
-                      label="Modell"
-                      outlined
-                      :loading="loadingModels"
-                      :disable="loadingModels || textStore.availableModels.length === 0"
-                    />
-                  </div>
-                </div>
-              </q-card-section>
-            </q-card>
-
             <!-- Total Usage Table -->
             <q-card
               bordered

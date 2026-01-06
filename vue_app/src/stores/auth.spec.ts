@@ -49,8 +49,9 @@ describe('Auth Store', () => {
       token_type: 'bearer'
     }
     const mockConfigResponse = {
-      llm_provider: 'Gemini',
-      models: ['gemini-2.5-flash', 'gemini-2.5-pro']
+      provider: 'Gemini',
+      models: ['gemini-2.5-flash', 'gemini-2.5-pro'],
+      providers: ['Gemini', 'OpenAI']
     }
     const mockPayload = {
       user_id: 1,

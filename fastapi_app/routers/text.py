@@ -11,7 +11,7 @@ from fastapi_app.schemas import (
     TextResponse,
     UserInfoInternal,
 )
-from shared.config import LLM_PROVIDER
+from shared.config import LLM_PROVIDER_DEFAULT
 from shared.helper_db import db_insert_usage
 from shared.llm_provider import get_llm_provider
 from shared.mode_configs import MODE_CONFIGS
@@ -48,7 +48,11 @@ async def improve_text(
     try:
         # Get LLM provider with explicit error handling
         try:
-            llm_provider = get_llm_provider(LLM_PROVIDER)
+            # Use provider from request, or default to default provider
+            selected_provider = (
+                request.provider if request.provider else LLM_PROVIDER_DEFAULT
+            )
+            llm_provider = get_llm_provider(selected_provider)
             models = llm_provider.get_models()
             # Use model from request, or default to first available
             model = (
@@ -90,7 +94,7 @@ async def improve_text(
             mode=request.mode,
             tokens_used=tokens_used,
             model=model,
-            provider=LLM_PROVIDER,
+            provider=selected_provider,
         )
 
     except HTTPException:

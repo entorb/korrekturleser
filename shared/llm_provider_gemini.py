@@ -24,7 +24,7 @@ MODELS = [
 @lru_cache(maxsize=1)
 def get_gemini_client() -> Client:
     """Get cached Gemini client."""
-    from google import genai  # pip install google-genai  # noqa: PLC0415
+    from google import genai
 
     api_key = my_get_env("GEMINI_API_KEY")
     return genai.Client(api_key=api_key)

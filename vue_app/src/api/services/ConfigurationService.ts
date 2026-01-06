@@ -11,15 +11,27 @@ export class ConfigurationService {
      * Get Config
      * Get application configuration.
      *
+     * Args:
+     * provider: Optional provider to get config for, defaults to default provider
+     *
      * Returns:
-     * ConfigResponse: Current LLM provider and available models
+     * ConfigResponse: Current LLM provider, available models, and all providers
+     * @param provider
      * @returns ConfigResponse Successful Response
      * @throws ApiError
      */
-    public static getConfigApiConfigGet(): CancelablePromise<ConfigResponse> {
+    public static getConfigApiConfigGet(
+        provider?: (string | null),
+    ): CancelablePromise<ConfigResponse> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/config/',
+            query: {
+                'provider': provider,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
         });
     }
 }

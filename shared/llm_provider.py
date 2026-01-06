@@ -1,7 +1,6 @@
 """Classes for different LLM providers."""
 
 import logging
-import random
 import time
 from collections.abc import Callable
 from functools import lru_cache
@@ -101,7 +100,7 @@ class MockProvider(LLMProvider):
 
     def call(self, model: str, instruction: str, prompt: str) -> tuple[str, int]:  # noqa: ARG002
         """Call the LLM."""
-        tokens = random.randint(50, 200)  # noqa: S311
+        tokens = 123
         response = f"Mocked {prompt} response"
         return response, tokens
 
@@ -119,7 +118,7 @@ def get_llm_provider(provider_name: str) -> LLMProvider:
     if provider_name == "Mock":
         return MockProvider()
 
-    if provider_name == "OpenAI_AzureDefaultAzureCredential":
+    if provider_name == "OpenAI_Azure":
         from .llm_provider_azure import AzureOpenAIProvider  # noqa: PLC0415
 
         return AzureOpenAIProvider()
@@ -144,12 +143,15 @@ if __name__ == "__main__":
     # uv run python -m shared.llm_provider
     instruction = "Talk like a pirate. Give a short answer. "
     prompt = "What is the capital of Germany?"
-    llm_provider = "Gemini"
-    llm_model = "gemini-2.5-flash-lite"
+    print(prompt)
+    llm_provider_name = "Ollama"
+    llm_model = "mistral"
 
-    llm_provider = get_llm_provider(provider_name=llm_provider)
+    llm_provider = get_llm_provider(provider_name=llm_provider_name)
     response, tokens = llm_provider.call(
         model=llm_model, instruction=instruction, prompt=prompt
     )
     print(f"Response: {response}")
     print(f"Tokens: {tokens}")
+    print(f"{llm_provider_name=}")
+    print(f"{llm_model=}")
