@@ -18,7 +18,7 @@ class TestUsageStats:
         """Test that stats require authentication."""
         response = client.get("/api/stats")
 
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @patch("shared.helper_db.sqlite_connection")
     def test_stats_with_valid_token(
