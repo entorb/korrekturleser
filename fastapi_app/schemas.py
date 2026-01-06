@@ -24,7 +24,10 @@ class TokenResponse(BaseModel):
 class ConfigResponse(BaseModel):
     """Configuration response schema."""
 
-    llm_provider: str
+    provider: str
+    providers: list[str] = Field(
+        ..., min_length=1, description="List of available providers"
+    )
     models: list[str] = Field(..., min_length=1, description="List of available models")
 
 
@@ -40,7 +43,10 @@ class TextRequest(BaseModel):
     """Text improvement request schema."""
 
     text: str = Field(..., min_length=1, description="Text to improve")
-    mode: TextMode = Field(..., description="AI text operation mode")  # pyright: ignore[reportInvalidTypeForm]
+    mode: TextMode = Field(..., description="AI text operation mode")
+    provider: str | None = Field(
+        None, description="LLM provider to use (optional, defaults to default provider)"
+    )
     model: str | None = Field(
         None, description="LLM model to use (optional, defaults to first available)"
     )
