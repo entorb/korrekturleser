@@ -1,7 +1,6 @@
 """OpenAI LLM provider class."""
 
 import logging
-from functools import lru_cache
 from pathlib import Path
 
 from openai import OpenAI
@@ -20,7 +19,6 @@ MODELS = [
 ]
 
 
-@lru_cache(maxsize=1)
 def get_openai_client() -> OpenAI:
     """Create and return an OpenAI client."""
     return OpenAI(api_key=my_get_env("OPENAI_API_KEY"))
