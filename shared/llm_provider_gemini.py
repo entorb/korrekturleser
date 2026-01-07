@@ -1,7 +1,6 @@
 """Gemini LLM provider class."""
 
 import logging
-from functools import lru_cache
 from pathlib import Path
 
 from google.genai import types as genai_types
@@ -21,10 +20,9 @@ MODELS = [
 ]
 
 
-@lru_cache(maxsize=1)
 def get_gemini_client() -> Client:
     """Get cached Gemini client."""
-    from google import genai
+    from google import genai  # noqa: PLC0415
 
     api_key = my_get_env("GEMINI_API_KEY")
     return genai.Client(api_key=api_key)
