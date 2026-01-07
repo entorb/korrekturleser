@@ -1,7 +1,6 @@
 """Azure LLM provider class."""
 
 import logging
-from functools import lru_cache
 from pathlib import Path
 
 from azure.identity import (
@@ -24,7 +23,6 @@ MODELS = [
 ]
 
 
-@lru_cache(maxsize=1)
 def get_openai_client_default_azure_creds() -> AzureOpenAI:
     """Create and return an Azure OpenAI client."""
     return AzureOpenAI(

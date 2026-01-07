@@ -115,7 +115,6 @@ All business logic and external integrations are shared between Streamlit and Fa
 - **`llm_provider.py`**: LLM abstraction layer with provider classes
   - `GeminiProvider`: Production LLM using Google Gemini API
   - `OllamaProvider`: Local development only (not available in PROD)
-  - Uses `@lru_cache` for connection pooling
   - Returns tuple: `(response_text, tokens_used)`
 
 - **`helper_db.py`**: Database operations with automatic environment detection

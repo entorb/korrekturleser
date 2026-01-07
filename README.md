@@ -192,7 +192,6 @@ All business logic is centralized in the shared layer, used by both Streamlit an
 - **`llm_provider.py`**: LLM abstraction layer
   - `GeminiProvider`: Production LLM (Google Gemini API)
   - `OllamaProvider`: Local development only
-  - Connection pooling with `@lru_cache`
 
 - **`helper_db.py`**: Database operations with automatic environment detection
   - Auto-detects local vs production environment
