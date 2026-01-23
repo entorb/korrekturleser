@@ -1,10 +1,17 @@
 #!/bin/sh
+# ensure we are in the root dir
 cd $(dirname $0)/..
+
+# exit upon error
+set -e
 
 # cleanup
 rm -f .DS_Store
 rm -f */.DS_Store
 
+# ruff
+uv run ruff format
+uv run ruff check
 
 # 1. Frontend
 # ensure that fastapi is running, else start it
@@ -38,3 +45,5 @@ ssh entorb@entorb.net "pip3.11 install --user -r korrekturleser/requirements.txt
 # ssh entorb@entorb.net "supervisorctl restart korrekturleser-streamlit"
 echo restarting korrekturleser-fastapi
 ssh entorb@entorb.net "supervisorctl restart korrekturleser-fastapi"
+
+echo DONE
