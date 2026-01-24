@@ -1,0 +1,25 @@
+# Dir
+__pycache__/
+.pytest_cache/
+/.coverage
+/.nicegui/
+/.venv/
+/.vite/
+/coverage
+/coverage_report/
+/cypress/screenshots
+/dist
+/node_modules
+
+# files
+.cspellcache
+.DS_Store
+.env
+.eslintcache
+*.swp
+CLAUDE.md
+coverage.xml
+db.sqlite
+GEMINI.md
+requirements.txt
+TODO.md
