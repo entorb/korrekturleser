@@ -373,7 +373,7 @@ async function handleProviderChange() {
             <q-card-section>
               <div
                 v-html="textStore.diffHtml"
-                style="overflow-x: auto"
+                class="diff-container"
               />
             </q-card-section>
 
@@ -417,3 +417,21 @@ async function handleProviderChange() {
     </q-page>
   </q-page-container>
 </template>
+
+<style>
+.d2h-code-line-ctn {
+  white-space: pre-wrap !important;
+  word-break: break-all !important;
+}
+
+.d2h-code-line {
+  white-space: pre-wrap !important;
+  word-break: break-all !important;
+}
+
+.d2h-code-side-line {
+  overflow-x: hidden !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+</style>
