@@ -161,7 +161,7 @@ def db_select_rows(query: str, param: tuple) -> list[tuple]:
         with db_connection() as con, con.cursor(dictionary=False) as cursor:
             cursor.execute(query, param)
             rows = cursor.fetchall()
-            return rows if rows else []  # type: ignore[return-value]
+            return rows or []  # type: ignore[return-value]
 
     except mysql.connector.Error:
         logger.exception("Database error during select_row for query: \n%s", query)

@@ -30,7 +30,7 @@ async def get_config(
         ConfigResponse: Current LLM provider, available models, and all providers
 
     """
-    selected_provider = provider if provider else LLM_PROVIDER_DEFAULT
+    selected_provider = provider or LLM_PROVIDER_DEFAULT
     llm_provider = get_llm_provider(selected_provider)
     return ConfigResponse(
         provider=selected_provider,
