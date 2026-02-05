@@ -49,9 +49,7 @@ async def improve_text(
         # Get LLM provider with explicit error handling
         try:
             # Use provider from request, or default to default provider
-            selected_provider = (
-                request.provider if request.provider else LLM_PROVIDER_DEFAULT
-            )
+            selected_provider = request.provider or LLM_PROVIDER_DEFAULT
             llm_provider = get_llm_provider(selected_provider)
             models = llm_provider.get_models()
             # Use model from request, or default to first available
