@@ -59,9 +59,7 @@ class AzureOpenAIProvider(LLMProvider):
 
         response = retry_with_exponential_backoff(_api_call, provider_name=PROVIDER)()
 
-        s = (
-            response.choices[0].message.content or ""
-        )
+        s = response.choices[0].message.content or ""
         tokens = (
             response.usage.total_tokens
             if hasattr(response, "usage") and response.usage
