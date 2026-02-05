@@ -50,9 +50,7 @@ class OpenAIProvider(LLMProvider):
         response = retry_with_exponential_backoff(_api_call, provider_name=PROVIDER)()
 
         s = (
-            response.choices[0].message.content
-            if response.choices[0].message.content
-            else ""
+            response.choices[0].message.content or ""
         )
         tokens = (
             response.usage.total_tokens

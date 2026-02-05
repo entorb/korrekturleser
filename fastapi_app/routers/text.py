@@ -50,7 +50,7 @@ async def improve_text(
         try:
             # Use provider from request, or default to default provider
             selected_provider = (
-                request.provider if request.provider else LLM_PROVIDER_DEFAULT
+                request.provider or LLM_PROVIDER_DEFAULT
             )
             llm_provider = get_llm_provider(selected_provider)
             models = llm_provider.get_models()
