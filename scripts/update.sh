@@ -23,6 +23,10 @@ uv sync --upgrade
 
 python scripts/gen_requirements.py
 
+uv run pre-commit autoupdate
+
+./scripts/run_ruff.sh
+./scripts/run_pre-commit.sh
 
 # 2. Vue
 
