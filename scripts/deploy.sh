@@ -14,8 +14,7 @@ uv run ruff format
 uv run ruff check
 
 # 1. Frontend
-# ensure that fastapi is running, else start it
-pnpm run generate-api || ./scripts/fastapi.sh & pnpm run generate-api
+pnpm run generate-api
 pnpm run check
 pnpm run build
 rsync -ruzv --no-links --delete --delete-excluded dist/* entorb@entorb.net:html/korrekturleser-vue/
@@ -24,8 +23,8 @@ rsync -ruzv --no-links --delete --delete-excluded dist/* entorb@entorb.net:html/
 # 2. Backends
 # config.toml -> config-prod.toml
 python3 scripts/config_convert.py
-./scripts/ruff.sh
-./scripts/pytest.sh
+./scripts/run_ruff.sh
+./scripts/run_pytest.sh
 
 # rsync -uz .streamlit/config-prod.toml entorb@entorb.net:korrekturleser/.streamlit/config.toml
 rsync -uz requirements.txt entorb@entorb.net:korrekturleser/
