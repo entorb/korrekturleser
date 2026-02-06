@@ -42,6 +42,7 @@ class OpenAIProvider(LLMProvider):
 
         def _api_call() -> ChatCompletion:
             response = client.chat.completions.create(
+                reasoning_effort="low",
                 model=model,
                 messages=messages,  # type: ignore
             )
