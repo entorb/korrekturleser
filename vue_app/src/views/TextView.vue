@@ -163,6 +163,18 @@ async function pasteFromClipboard() {
   }
 }
 
+function transferAiTextToInput() {
+  textStore.setInputText(textStore.outputText)
+  textStore.setOutputText('')
+}
+
+function resetInput() {
+  textStore.setInputText('')
+  textStore.setOutputText('')
+  textStore.setDiffHtml('')
+  textStore.setError(null)
+}
+
 function goToStats() {
   router.push({ name: 'stats' })
 }
@@ -243,6 +255,7 @@ async function handleProviderChange() {
         <q-card-section>
           <!-- Text Areas -->
           <div class="row q-col-gutter-md">
+            <!-- User Input -->
             <div :class="textStore.outputText ? 'col-6' : 'col-12'">
               <div class="row items-center justify-between q-mb-sm">
                 <q-icon
@@ -252,11 +265,22 @@ async function handleProviderChange() {
                 </q-icon>
                 Mein Text
                 <q-btn
-                  flat
-                  round
+                  color="primary"
                   dense
+                  icon="delete"
+                  round
                   size="sm"
-                  icon="content_paste"
+                  @click="resetInput"
+                >
+                  <q-tooltip>Empty</q-tooltip>
+                </q-btn>
+
+                <q-btn
+                  color="primary"
+                  dense
+                  icon="arrow_downward"
+                  round
+                  size="sm"
                   @click="pasteFromClipboard"
                 >
                   <q-tooltip>Einfügen</q-tooltip>
@@ -273,6 +297,7 @@ async function handleProviderChange() {
               />
             </div>
 
+            <!-- AI Output -->
             <div
               v-if="textStore.outputText"
               class="col-6"
@@ -285,11 +310,21 @@ async function handleProviderChange() {
                 </q-icon>
                 KI Text
                 <q-btn
-                  flat
-                  round
+                  color="primary"
                   dense
+                  icon="turn_left"
+                  round
                   size="sm"
-                  icon="content_copy"
+                  @click="transferAiTextToInput"
+                >
+                  <q-tooltip>Übertragen</q-tooltip>
+                </q-btn>
+                <q-btn
+                  color="primary"
+                  dense
+                  icon="arrow_upward"
+                  round
+                  size="sm"
                   @click="handleCopyToClipboard"
                 >
                   <q-tooltip>Kopieren</q-tooltip>
