@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.app.json",
   "exclude": [],
-  "include": ["vue_app/**/__tests__/*", "env.d.ts"],
+  "include": ["vue_app/**/__tests__/*", "vue_app/src/**/*.spec.ts", "env.d.ts"],
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vitest.tsbuildinfo",
     "lib": [],
