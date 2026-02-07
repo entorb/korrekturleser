@@ -3,6 +3,7 @@
  */
 
 import { useQuasar } from 'quasar'
+
 import { copyToClipboard as copyText, readFromClipboard } from '@/utils/clipboard'
 
 export function useClipboard() {

@@ -2,8 +2,8 @@
  * Diff generation utilities
  */
 
-import { html } from 'diff2html'
 import { createTwoFilesPatch } from 'diff'
+import { html } from 'diff2html'
 
 export function generateDiff(original: string, improved: string): string {
   const patch = createTwoFilesPatch('', '', original, improved, '', '', { context: 3 })

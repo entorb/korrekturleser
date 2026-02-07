@@ -2,8 +2,8 @@
  * Composable for markdown rendering
  */
 
-import { computed, type ComputedRef } from 'vue'
 import { marked } from 'marked'
+import { computed, type ComputedRef } from 'vue'
 
 export function useMarkdown(
   text: () => string,

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { api } from '@/services/apiClient'
+
 import type { UsageStatsResponse } from '@/api'
+import { api } from '@/services/apiClient'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const authStore = useAuthStore()

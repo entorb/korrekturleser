@@ -1,15 +1,13 @@
 // Plugins
-import Components from 'unplugin-vue-components/vite'
-import Vue from '@vitejs/plugin-vue'
-import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
-import VueRouter from 'unplugin-vue-router/vite'
-import { VitePWA } from 'vite-plugin-pwa'
-import legacy from '@vitejs/plugin-legacy'
-
-// Utilities
-import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
 
+import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
+import legacy from '@vitejs/plugin-legacy'
+import Vue from '@vitejs/plugin-vue'
+import Components from 'unplugin-vue-components/vite'
+import VueRouter from 'unplugin-vue-router/vite'
+import { defineConfig } from 'vite'
+import { VitePWA } from 'vite-plugin-pwa'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/

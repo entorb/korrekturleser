@@ -4,6 +4,7 @@
 
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+
 import { TextRequest, type TextResponse } from '@/api'
 
 export const useTextStore = defineStore('text', () => {

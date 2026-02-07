@@ -4,8 +4,9 @@
  */
 
 import { ref, computed } from 'vue'
-import { api } from '@/services/apiClient'
+
 import { TextRequest } from '@/api'
+import { api } from '@/services/apiClient'
 import { useTextStore } from '@/stores/text'
 import { generateDiff } from '@/utils/diff'
 
