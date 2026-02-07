@@ -5,6 +5,7 @@ import { Quasar } from 'quasar'
 import App from './App.vue'
 import router from './router'
 import quasarConfig from './plugins/quasar'
+import './assets/ios-fixes.css'
 
 const app = createApp(App)
 
