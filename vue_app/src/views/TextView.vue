@@ -104,7 +104,20 @@ function generateDiff(original: string, improved: string): string {
     renderNothingWhenEmpty: false
   })
 
-  return diffHtml
+  // Clean up the diff HTML: remove line numbers and +/- signs
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(diffHtml, 'text/html')
+
+  // Remove all line number columns (both types)
+  doc.querySelectorAll('.d2h-file-header').forEach(el => el.remove())
+  doc.querySelectorAll('.d2h-info').forEach(el => el.remove())
+  doc.querySelectorAll('.d2h-code-linenumber').forEach(el => el.remove())
+  doc.querySelectorAll('.d2h-code-side-linenumber').forEach(el => el.remove())
+
+  // Remove +/- sign prefix spans
+  doc.querySelectorAll('.d2h-code-line-prefix').forEach(el => el.remove())
+
+  return doc.body.innerHTML
 }
 
 onUnmounted(() => {
@@ -454,19 +467,33 @@ async function handleProviderChange() {
 </template>
 
 <style>
-.d2h-code-line-ctn {
-  white-space: pre-wrap !important;
-  word-break: break-all !important;
+/* Diff container optimization */
+.diff-container {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  font-size: 12px;
 }
 
-.d2h-code-line {
-  white-space: pre-wrap !important;
-  word-break: break-all !important;
-}
-
-.d2h-code-side-line {
+/* Code lines: full width and proper wrapping */
+.diff-container .d2h-code-side-line {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 2px 4px !important;
   overflow-x: hidden !important;
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
+}
+
+/* Table cells: full width */
+.diff-container .d2h-code-side-line td {
+  width: 100% !important;
+}
+
+/* Text wrapping for code content */
+.d2h-code-line-ctn,
+.d2h-code-line {
+  white-space: pre-wrap !important;
+  word-break: break-all !important;
 }
 </style>

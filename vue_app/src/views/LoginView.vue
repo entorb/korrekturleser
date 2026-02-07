@@ -11,8 +11,7 @@ const secret = ref('')
 async function handleLogin() {
   try {
     await authStore.login(secret.value)
-    // Use replace instead of push to avoid navigation issues on iOS
-    // and prevent back button from going back to login page
+    // Use replace to prevent back button from returning to login
     await router.replace({ name: 'text' })
   } catch (error) {
     // Error is already set in store
