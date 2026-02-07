@@ -15,11 +15,9 @@ const router = useRouter()
 const authStore = useAuthStore()
 const textStore = useTextStore()
 
-// Auto-generated from ImproveRequest.mode enum
 const modes = getAvailableModes()
 const modeDescriptions = getModeDescriptions()
 
-// Composables
 const { isProcessing, showDiff, showMarkdown, processText, transferAiTextToInput, resetInput } =
   useTextProcessing()
 
@@ -31,18 +29,12 @@ const { handleTextareaKeydown } = useKeyboardShortcuts({
 })
 
 const { copyToClipboard, pasteFromClipboard } = useClipboard()
-
 const { markdownHtml } = useMarkdown(() => textStore.outputText, showMarkdown)
 
-// Initialize providers and models on mount
-onMounted(async () => {
-  await fetchProvidersAndModels()
-})
-
-// Computed for textarea keydown handler
 const canSubmit = computed(() => !!textStore.inputText && !isProcessing.value)
 
-// Event handlers
+onMounted(() => fetchProvidersAndModels())
+
 async function handleCopyToClipboard() {
   await copyToClipboard(textStore.outputText)
 }
@@ -50,12 +42,8 @@ async function handleCopyToClipboard() {
 async function handlePasteFromClipboard() {
   const text = await pasteFromClipboard()
   if (text) {
-    textStore.setInputText(text)
+    textStore.inputText = text
   }
-}
-
-function goToStats() {
-  router.push({ name: 'stats' })
 }
 
 function handleLogout() {
@@ -80,7 +68,7 @@ function handleLogout() {
           round
           dense
           icon="bar_chart"
-          @click="goToStats"
+          @click="router.push({ name: 'stats' })"
         >
           <q-tooltip>Statistik (Esc)</q-tooltip>
         </q-btn>

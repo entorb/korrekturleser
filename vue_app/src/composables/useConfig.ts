@@ -8,68 +8,40 @@ import { useTextStore } from '@/stores/text'
 
 export function useConfig() {
   const textStore = useTextStore()
-  const hasValue = (value: string | null | undefined): value is string =>
-    typeof value === 'string' && value.trim().length > 0
 
-  // Show disclaimer for Gemini provider
-  const showDisclaimer = computed(() => {
-    return textStore.selectedProvider === 'Gemini'
-  })
+  const showDisclaimer = computed(() => textStore.selectedProvider === 'Gemini')
 
-  /**
-   * Fetch available providers and models
-   */
   async function fetchProvidersAndModels() {
     try {
       const response = await api.config.getConfigApiConfigGet(
         textStore.selectedProvider || undefined
       )
-      textStore.setAvailableModels(response.models)
-      textStore.setAvailableProviders(response.providers)
+      textStore.availableModels = response.models
+      textStore.availableProviders = response.providers
 
-      // Set first model as default if not already set
-      if (!hasValue(textStore.selectedModel) && response.models.length > 0) {
-        const firstModel = response.models[0]
-        if (typeof firstModel === 'string' && firstModel.length > 0) {
-          textStore.setModel(firstModel)
-        }
+      if (!textStore.selectedModel && response.models.length > 0) {
+        textStore.selectedModel = response.models[0] ?? ''
       }
-
-      // Set first provider as default if not already set
-      if (!hasValue(textStore.selectedProvider) && response.providers.length > 0) {
-        const firstProvider = response.providers[0]
-        if (typeof firstProvider === 'string' && firstProvider.length > 0) {
-          textStore.setProvider(firstProvider)
-        }
+      if (!textStore.selectedProvider && response.providers.length > 0) {
+        textStore.selectedProvider = response.providers[0] ?? ''
       }
-    } catch (err) {
-      console.error('Failed to fetch models:', err)
-      textStore.setError('Fehler beim Laden der Modelle')
+    } catch {
+      textStore.error = 'Fehler beim Laden der Modelle'
     }
   }
 
-  /**
-   * Handle provider change - fetch new models for selected provider
-   */
   async function handleProviderChange() {
     try {
       const response = await api.config.getConfigApiConfigGet(
         textStore.selectedProvider || undefined
       )
+      textStore.availableModels = response.models
 
-      // Update available models from response
-      textStore.setAvailableModels(response.models)
-
-      // Reset selected model to first available model from new provider
       if (response.models.length > 0) {
-        const firstModel = response.models[0]
-        if (typeof firstModel === 'string' && firstModel.length > 0) {
-          textStore.setModel(firstModel)
-        }
+        textStore.selectedModel = response.models[0] ?? ''
       }
-    } catch (err) {
-      console.error('Failed to fetch models:', err)
-      textStore.setError('Fehler beim Laden der Modelle')
+    } catch {
+      textStore.error = 'Fehler beim Laden der Modelle'
     }
   }
 

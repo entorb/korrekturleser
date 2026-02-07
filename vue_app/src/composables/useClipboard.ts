@@ -8,9 +8,6 @@ import { copyToClipboard as copyText, readFromClipboard } from '@/utils/clipboar
 export function useClipboard() {
   const $q = useQuasar()
 
-  /**
-   * Copy text to clipboard with user notification
-   */
   async function copyToClipboard(text: string) {
     try {
       await copyText(text)
@@ -20,21 +17,13 @@ export function useClipboard() {
     }
   }
 
-  /**
-   * Paste text from clipboard
-   * Returns the pasted text or empty string on failure
-   */
   async function pasteFromClipboard(): Promise<string> {
     try {
       return await readFromClipboard()
-    } catch (err) {
-      console.error('Failed to paste:', err)
+    } catch {
       return ''
     }
   }
 
-  return {
-    copyToClipboard,
-    pasteFromClipboard
-  }
+  return { copyToClipboard, pasteFromClipboard }
 }

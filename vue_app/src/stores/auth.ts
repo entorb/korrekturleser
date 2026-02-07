@@ -5,7 +5,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { api, tokenManager } from '@/services/apiClient'
-import type { TokenResponse } from '@/api'
 import { decodeJwt, isTokenExpired } from '@/utils/jwt'
 
 interface UserInfo {
@@ -24,10 +23,8 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
 
     try {
-      const response: TokenResponse = await api.auth.loginApiAuthLoginPost({ secret })
+      const response = await api.auth.loginApiAuthLoginPost({ secret })
       tokenManager.set(response.access_token)
-
-      // Extract user info from JWT token
       loadUserFromToken()
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Login failed'
@@ -39,25 +36,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   function loadUserFromToken(): void {
     const token = tokenManager.get()
-    if (token === null || token.length === 0) {
-      return
-    }
-
-    // Check if token is expired
-    if (isTokenExpired(token)) {
+    if (token == null || isTokenExpired(token)) {
       logout()
       return
     }
 
-    // Decode JWT to get user info
     const payload = decodeJwt(token)
-    if (payload) {
-      user.value = {
-        user_name: payload.username
-      }
-    } else {
-      logout()
-    }
+    user.value = payload ? { user_name: payload.username } : null
   }
 
   function logout(): void {

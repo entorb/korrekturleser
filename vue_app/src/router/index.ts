@@ -30,13 +30,11 @@ const router = createRouter({
   ]
 })
 
-// Navigation guard to check authentication
 router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore()
   const requiresAuth = to.meta['requiresAuth'] !== false
 
-  // Try to restore session if token exists but user is not authenticated
-  if (!authStore.isAuthenticated && tokenManager.exists()) {
+  if (!authStore.isAuthenticated && tokenManager.get() != null) {
     authStore.loadUserFromToken()
   }
 
