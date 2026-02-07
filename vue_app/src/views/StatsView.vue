@@ -13,8 +13,19 @@ const isLoading = ref(false)
 const error = ref<string | null>(null)
 
 function handleKeyPress(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
-    goBack()
+  if (event.key === 'Escape') router.push({ name: 'text' })
+}
+
+async function loadStats() {
+  isLoading.value = true
+  error.value = null
+
+  try {
+    stats.value = await api.statistics.getAllStatsApiStatsGet()
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Fehler beim Laden der Statistiken'
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -27,39 +38,15 @@ onUnmounted(() => {
   globalThis.removeEventListener('keydown', handleKeyPress)
 })
 
-async function loadStats() {
-  isLoading.value = true
-  error.value = null
-
-  try {
-    stats.value = await api.statistics.getAllStatsApiStatsGet()
-  } catch (err: unknown) {
-    error.value = err instanceof Error ? err.message : 'Fehler beim Laden der Statistiken'
-    console.error('Stats error:', err)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-function goBack() {
-  router.push({ name: 'text' })
-}
-
 function handleLogout() {
   authStore.logout()
   router.push({ name: 'login' })
 }
 
-function formatNumber(num: number | string | undefined): string {
-  if (num === undefined || num === null) return '0'
-  const numValue = typeof num === 'string' ? Number.parseInt(num, 10) : num
-  return numValue.toLocaleString()
-}
+const formatNumber = (num: number | string | undefined = 0): string =>
+  (typeof num === 'string' ? Number.parseInt(num, 10) : num || 0).toLocaleString()
 
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr)
-  return date.toLocaleDateString('de-DE')
-}
+const formatDate = (dateStr: string): string => new Date(dateStr).toLocaleDateString('de-DE')
 </script>
 
 <template>
@@ -78,7 +65,7 @@ function formatDate(dateStr: string): string {
           round
           dense
           icon="arrow_back"
-          @click="goBack"
+          @click="router.push({ name: 'text' })"
         >
           <q-tooltip>Zurück (Esc)</q-tooltip>
         </q-btn>

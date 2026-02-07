@@ -15,13 +15,9 @@ interface JwtPayload {
 export function decodeJwt(token: string): JwtPayload | null {
   try {
     const parts = token.split('.')
-    const payload = parts[1]
-    if (parts.length !== 3 || payload === undefined || payload.length === 0) {
-      return null
-    }
+    if (parts.length !== 3 || parts[1] == null) return null
 
-    // Decode the payload (second part)
-    const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
+    const decoded = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
     return JSON.parse(decoded) as JwtPayload
   } catch {
     return null
@@ -33,10 +29,6 @@ export function decodeJwt(token: string): JwtPayload | null {
  */
 export function isTokenExpired(token: string): boolean {
   const payload = decodeJwt(token)
-  if (!payload || typeof payload.exp !== 'number' || Number.isNaN(payload.exp)) {
-    return true
-  }
-
-  // exp is in seconds, Date.now() is in milliseconds
+  if (payload?.exp == null || !Number.isFinite(payload.exp)) return true
   return payload.exp * 1000 < Date.now()
 }

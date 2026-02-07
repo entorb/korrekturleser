@@ -13,30 +13,24 @@ export function useTextProcessing() {
   const textStore = useTextStore()
   const isProcessing = ref(false)
 
-  // Show diff for correct and improve modes only
-  const showDiff = computed(() => {
-    return (
+  const showDiff = computed(
+    () =>
       textStore.outputText &&
       (textStore.selectedMode === TextRequest.mode.CORRECT ||
         textStore.selectedMode === TextRequest.mode.IMPROVE)
-    )
-  })
+  )
 
-  // Show markdown rendering for summarize mode
-  const showMarkdown = computed(() => {
-    return textStore.outputText && textStore.selectedMode === TextRequest.mode.SUMMARIZE
-  })
+  const showMarkdown = computed(
+    () => textStore.outputText && textStore.selectedMode === TextRequest.mode.SUMMARIZE
+  )
 
-  /**
-   * Process text with AI
-   */
   async function processText() {
     if (!textStore.inputText) return
 
     isProcessing.value = true
-    textStore.setError(null)
-    textStore.setOutputText('')
-    textStore.setDiffHtml('')
+    textStore.error = null
+    textStore.outputText = ''
+    textStore.diffHtml = ''
 
     try {
       const result = await api.text.improveTextApiTextPost({
@@ -46,41 +40,22 @@ export function useTextProcessing() {
         provider: textStore.selectedProvider || null
       })
 
-      textStore.setOutputText(result.text_ai)
-      textStore.setLastResult(result)
+      textStore.outputText = result.text_ai
+      textStore.lastResult = result
 
-      // Generate diff for correct/improve modes
-      if (
-        textStore.selectedMode === TextRequest.mode.CORRECT ||
-        textStore.selectedMode === TextRequest.mode.IMPROVE
-      ) {
-        const diffHtml = generateDiff(`${textStore.inputText}\n\n`, `${result.text_ai}\n\n`)
-        textStore.setDiffHtml(diffHtml)
+      if (showDiff.value === true) {
+        textStore.diffHtml = generateDiff(`${textStore.inputText}\n\n`, `${result.text_ai}\n\n`)
       }
     } catch (err) {
-      textStore.setError(err instanceof Error ? err.message : 'Fehler bei der Textverarbeitung')
-      console.error('Text processing error:', err)
+      textStore.error = err instanceof Error ? err.message : 'Fehler bei der Textverarbeitung'
     } finally {
       isProcessing.value = false
     }
   }
 
-  /**
-   * Transfer AI output to input field
-   */
   function transferAiTextToInput() {
-    textStore.setInputText(textStore.outputText)
-    textStore.setOutputText('')
-  }
-
-  /**
-   * Reset all input and output
-   */
-  function resetInput() {
-    textStore.setInputText('')
-    textStore.setOutputText('')
-    textStore.setDiffHtml('')
-    textStore.setError(null)
+    textStore.inputText = textStore.outputText
+    textStore.outputText = ''
   }
 
   return {
@@ -89,6 +64,6 @@ export function useTextProcessing() {
     showMarkdown,
     processText,
     transferAiTextToInput,
-    resetInput
+    resetInput: textStore.clearAll
   }
 }

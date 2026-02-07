@@ -13,9 +13,8 @@ async function handleLogin() {
     await authStore.login(secret.value)
     // Use replace to prevent back button from returning to login
     await router.replace({ name: 'text' })
-  } catch (error) {
+  } catch {
     // Error is already set in store
-    console.error('Login failed:', error)
   }
 }
 </script>

@@ -9,25 +9,15 @@ export function useMarkdown(
   text: () => string,
   shouldRender: ComputedRef<boolean | string | number>
 ) {
-  /**
-   * Convert markdown to HTML
-   */
   const markdownHtml = computed(async () => {
     const renderValue = shouldRender.value
     const shouldShow =
-      typeof renderValue === 'boolean'
-        ? renderValue
-        : typeof renderValue === 'string'
-          ? renderValue.trim().length > 0
-          : typeof renderValue === 'number'
-            ? renderValue !== 0
-            : false
+      (typeof renderValue === 'boolean' && renderValue) ||
+      (typeof renderValue === 'string' && renderValue.trim().length > 0) ||
+      (typeof renderValue === 'number' && renderValue !== 0)
 
-    if (!shouldShow) return ''
-    return marked(text())
+    return shouldShow ? marked(text()) : ''
   })
 
-  return {
-    markdownHtml
-  }
+  return { markdownHtml }
 }
