@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { useTextStore } from '@/stores/text'
-import { getAvailableModes, getModeDescriptions } from '@/config/modes'
-import { useTextProcessing } from '@/composables/useTextProcessing'
+
+import { useClipboard } from '@/composables/useClipboard'
 import { useConfig } from '@/composables/useConfig'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
-import { useClipboard } from '@/composables/useClipboard'
 import { useMarkdown } from '@/composables/useMarkdown'
+import { useTextProcessing } from '@/composables/useTextProcessing'
+import { getAvailableModes, getModeDescriptions } from '@/config/modes'
+import { useAuthStore } from '@/stores/auth'
+import { useTextStore } from '@/stores/text'
 import 'diff2html/bundles/css/diff2html.min.css'
 
 const router = useRouter()
@@ -196,8 +197,8 @@ function handleLogout() {
                 style="min-height: 360px"
               >
                 <div
-                  v-html="markdownHtml"
                   class="markdown-content"
+                  v-html="markdownHtml"
                 />
               </q-card>
             </div>
@@ -233,8 +234,8 @@ function handleLogout() {
                 icon="auto_fix_high"
                 :loading="isProcessing"
                 :disable="!textStore.inputText"
-                @click="processText"
                 size="lg"
+                @click="processText"
               >
                 <q-tooltip>KI verarbeiten</q-tooltip>
               </q-btn>
@@ -258,8 +259,8 @@ function handleLogout() {
           >
             <q-card-section>
               <div
-                v-html="textStore.diffHtml"
                 class="diff-container"
+                v-html="textStore.diffHtml"
               />
             </q-card-section>
 

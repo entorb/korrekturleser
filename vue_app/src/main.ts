@@ -1,10 +1,10 @@
-import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { Quasar } from 'quasar'
+import { createApp } from 'vue'
 
 import App from './App.vue'
-import router from './router'
 import quasarConfig from './plugins/quasar'
+import router from './router'
 import './assets/ios-fixes.css'
 
 const app = createApp(App)
