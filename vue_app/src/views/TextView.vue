@@ -1,191 +1,57 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useQuasar } from 'quasar'
 import { useAuthStore } from '@/stores/auth'
 import { useTextStore } from '@/stores/text'
-import { api } from '@/services/apiClient'
-import { TextRequest } from '@/api'
 import { getAvailableModes, getModeDescriptions } from '@/config/modes'
-import { html } from 'diff2html'
-import { createTwoFilesPatch } from 'diff'
-import { marked } from 'marked'
-import { copyToClipboard as copyText, readFromClipboard } from '@/utils/clipboard'
+import { useTextProcessing } from '@/composables/useTextProcessing'
+import { useConfig } from '@/composables/useConfig'
+import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
+import { useClipboard } from '@/composables/useClipboard'
+import { useMarkdown } from '@/composables/useMarkdown'
 import 'diff2html/bundles/css/diff2html.min.css'
 
 const router = useRouter()
-const $q = useQuasar()
 const authStore = useAuthStore()
 const textStore = useTextStore()
-
-const isProcessing = ref(false)
 
 // Auto-generated from ImproveRequest.mode enum
 const modes = getAvailableModes()
 const modeDescriptions = getModeDescriptions()
 
-// Show disclaimer for Gemini provider
-const showDisclaimer = computed(() => {
-  return textStore.selectedProvider === 'Gemini'
+// Composables
+const { isProcessing, showDiff, showMarkdown, processText, transferAiTextToInput, resetInput } =
+  useTextProcessing()
+
+const { showDisclaimer, fetchProvidersAndModels, handleProviderChange } = useConfig()
+
+const { handleTextareaKeydown } = useKeyboardShortcuts({
+  onEscape: () => router.push({ name: 'stats' }),
+  onCtrlEnter: processText
 })
 
+const { copyToClipboard, pasteFromClipboard } = useClipboard()
+
+const { markdownHtml } = useMarkdown(() => textStore.outputText, showMarkdown)
+
+// Initialize providers and models on mount
 onMounted(async () => {
-  globalThis.addEventListener('keydown', handleKeyPress)
-  // Initialize providers and models
   await fetchProvidersAndModels()
 })
 
-async function fetchProvidersAndModels() {
-  try {
-    const response = await api.config.getConfigApiConfigGet(textStore.selectedProvider || undefined)
-    textStore.setAvailableModels(response.models)
-    textStore.setAvailableProviders(response.providers)
-    // Set first model as default if not already set
-    if (!textStore.selectedModel && response.models.length > 0) {
-      textStore.setModel(response.models[0]!)
-    }
-    // Set first provider as default if not already set
-    if (!textStore.selectedProvider && response.providers.length > 0) {
-      textStore.setProvider(response.providers[0]!)
-    }
-  } catch (err) {
-    console.error('Failed to fetch models:', err)
-    textStore.setError('Fehler beim Laden der Modelle')
-  }
-}
+// Computed for textarea keydown handler
+const canSubmit = computed(() => !!textStore.inputText && !isProcessing.value)
 
-// Show diff for correct and improve modes only
-const showDiff = computed(() => {
-  return (
-    textStore.outputText &&
-    (textStore.selectedMode === TextRequest.mode.CORRECT ||
-      textStore.selectedMode === TextRequest.mode.IMPROVE)
-  )
-})
-
-// Show markdown rendering for summarize mode
-const showMarkdown = computed(() => {
-  return textStore.outputText && textStore.selectedMode === TextRequest.mode.SUMMARIZE
-})
-
-// Convert markdown to HTML
-const markdownHtml = computed(() => {
-  if (!showMarkdown.value) return ''
-  return marked(textStore.outputText)
-})
-
-function handleKeyPress(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
-    goToStats()
-  }
-}
-
-function handleTextareaKeydown(event: KeyboardEvent) {
-  if (
-    event.key === 'Enter' &&
-    (event.ctrlKey || event.metaKey) // ctrl+enter or command+enter
-  ) {
-    event.preventDefault()
-    if (textStore.inputText && !isProcessing.value) {
-      handleProcessText()
-    }
-  }
-}
-
-function generateDiff(original: string, improved: string): string {
-  const patch = createTwoFilesPatch('', '', original, improved, '', '', {
-    context: 3
-  })
-
-  const diffHtml = html(patch, {
-    drawFileList: false,
-    matching: 'words',
-    outputFormat: 'side-by-side',
-    renderNothingWhenEmpty: false
-  })
-
-  // Clean up the diff HTML: remove line numbers and +/- signs
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(diffHtml, 'text/html')
-
-  // Remove all line number columns (both types)
-  doc.querySelectorAll('.d2h-file-header').forEach(el => el.remove())
-  doc.querySelectorAll('.d2h-info').forEach(el => el.remove())
-  doc.querySelectorAll('.d2h-code-linenumber').forEach(el => el.remove())
-  doc.querySelectorAll('.d2h-code-side-linenumber').forEach(el => el.remove())
-
-  // Remove +/- sign prefix spans
-  doc.querySelectorAll('.d2h-code-line-prefix').forEach(el => el.remove())
-
-  return doc.body.innerHTML
-}
-
-onUnmounted(() => {
-  globalThis.removeEventListener('keydown', handleKeyPress)
-})
-
-async function handleProcessText() {
-  if (!textStore.inputText) return
-
-  isProcessing.value = true
-  textStore.setError(null)
-  textStore.setOutputText('')
-  textStore.setDiffHtml('')
-
-  try {
-    const result = await api.text.improveTextApiTextPost({
-      text: textStore.inputText,
-      mode: textStore.selectedMode,
-      model: textStore.selectedModel || null,
-      provider: textStore.selectedProvider || null
-    })
-
-    textStore.setOutputText(result.text_ai)
-    textStore.setLastResult(result)
-
-    if (
-      textStore.selectedMode === TextRequest.mode.CORRECT ||
-      textStore.selectedMode === TextRequest.mode.IMPROVE
-    ) {
-      const diffHtml = generateDiff(textStore.inputText + '\n\n', result.text_ai + '\n\n')
-      textStore.setDiffHtml(diffHtml)
-    }
-  } catch (err) {
-    textStore.setError(err instanceof Error ? err.message : 'Fehler bei der Textverarbeitung')
-    console.error('Text processing error:', err)
-  } finally {
-    isProcessing.value = false
-  }
-}
-
+// Event handlers
 async function handleCopyToClipboard() {
-  try {
-    await copyText(textStore.outputText)
-    $q.notify({ type: 'positive', message: 'Kopiert!' })
-  } catch {
-    $q.notify({ type: 'negative', message: 'Kopieren fehlgeschlagen' })
-  }
+  await copyToClipboard(textStore.outputText)
 }
 
-async function pasteFromClipboard() {
-  try {
-    const text = await readFromClipboard()
+async function handlePasteFromClipboard() {
+  const text = await pasteFromClipboard()
+  if (text) {
     textStore.setInputText(text)
-  } catch (err) {
-    console.error('Failed to paste:', err)
   }
-}
-
-function transferAiTextToInput() {
-  textStore.setInputText(textStore.outputText)
-  textStore.setOutputText('')
-}
-
-function resetInput() {
-  textStore.setInputText('')
-  textStore.setOutputText('')
-  textStore.setDiffHtml('')
-  textStore.setError(null)
 }
 
 function goToStats() {
@@ -195,22 +61,6 @@ function goToStats() {
 function handleLogout() {
   authStore.logout()
   router.push({ name: 'login' })
-}
-
-async function handleProviderChange() {
-  // When provider changes, fetch new models for that provider
-  try {
-    const response = await api.config.getConfigApiConfigGet(textStore.selectedProvider || undefined)
-    // Update available models from response
-    textStore.setAvailableModels(response.models)
-    // Reset selected model to first available model from new provider
-    if (response.models.length > 0) {
-      textStore.setModel(response.models[0]!)
-    }
-  } catch (err) {
-    console.error('Failed to fetch models:', err)
-    textStore.setError('Fehler beim Laden der Modelle')
-  }
 }
 </script>
 
@@ -294,7 +144,7 @@ async function handleProviderChange() {
                   icon="arrow_downward"
                   round
                   size="sm"
-                  @click="pasteFromClipboard"
+                  @click="handlePasteFromClipboard"
                 >
                   <q-tooltip>Einfügen</q-tooltip>
                 </q-btn>
@@ -306,7 +156,7 @@ async function handleProviderChange() {
                 outlined
                 :disable="isProcessing"
                 :input-style="{ minHeight: '360px' }"
-                @keydown="handleTextareaKeydown"
+                @keydown="(e: KeyboardEvent) => handleTextareaKeydown(e, canSubmit)"
               />
             </div>
 
@@ -395,7 +245,7 @@ async function handleProviderChange() {
                 icon="auto_fix_high"
                 :loading="isProcessing"
                 :disable="!textStore.inputText"
-                @click="handleProcessText"
+                @click="processText"
                 size="lg"
               >
                 <q-tooltip>KI verarbeiten</q-tooltip>

@@ -39,7 +39,7 @@ OpenAPI.TOKEN = async () => {
 // Add axios interceptor to handle 401 responses (expired/invalid tokens)
 axios.interceptors.response.use(
   response => response,
-  error => {
+  async error => {
     // If we get a 401 Unauthorized, clear the token and redirect to login
     if (error.response?.status === 401) {
       const currentToken = tokenManager.get()
