@@ -35,13 +35,16 @@ jobs:
         with:
           python-version-file: '.python-version'
 
+      - name: Run ruff
+        run: |
+          uv run ruff format
+          uv run ruff check
+
       # --cov --cov-report=xml:coverage.xml
       - name: Run pytest unittests
         run: |
           cp .env.example .env
           uv run --frozen pytest tests/
-      - name: Run pre-commit hooks
-        uses: pre-commit/action@v3.0.1
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -73,7 +76,7 @@ jobs:
       - name: Run unit tests
         run: pnpm run test-cov
 
-      # pre-commit after at the end
+      # pre-commit as last step
       - name: Run pre-commit hooks
         uses: pre-commit/action@v3.0.1
 
