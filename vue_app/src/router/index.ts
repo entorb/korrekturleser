@@ -12,19 +12,19 @@ const router = createRouter({
     {
       path: '/',
       name: 'text',
-      component: () => import('@/views/TextView.vue'),
+      component: async () => import('@/views/TextView.vue'),
       meta: { requiresAuth: true }
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/views/LoginView.vue'),
+      component: async () => import('@/views/LoginView.vue'),
       meta: { requiresAuth: false }
     },
     {
       path: '/stats',
       name: 'stats',
-      component: () => import('@/views/StatsView.vue'),
+      component: async () => import('@/views/StatsView.vue'),
       meta: { requiresAuth: true }
     }
   ]
@@ -33,7 +33,7 @@ const router = createRouter({
 // Navigation guard to check authentication
 router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore()
-  const requiresAuth = to.meta.requiresAuth !== false
+  const requiresAuth = to.meta['requiresAuth'] !== false
 
   // Try to restore session if token exists but user is not authenticated
   if (!authStore.isAuthenticated && tokenManager.exists()) {
