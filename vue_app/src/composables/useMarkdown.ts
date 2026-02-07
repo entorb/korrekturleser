@@ -13,7 +13,17 @@ export function useMarkdown(
    * Convert markdown to HTML
    */
   const markdownHtml = computed(async () => {
-    if (!shouldRender.value) return ''
+    const renderValue = shouldRender.value
+    const shouldShow =
+      typeof renderValue === 'boolean'
+        ? renderValue
+        : typeof renderValue === 'string'
+          ? renderValue.trim().length > 0
+          : typeof renderValue === 'number'
+            ? renderValue !== 0
+            : false
+
+    if (!shouldShow) return ''
     return marked(text())
   })
 

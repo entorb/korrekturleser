@@ -21,7 +21,7 @@ OpenAPI.BASE = config.apiBaseUrl
 OpenAPI.TOKEN = async () => {
   const token = localStorage.getItem('access_token')
 
-  if (!token) {
+  if (token === null || token.length === 0) {
     return ''
   }
 
@@ -43,7 +43,7 @@ axios.interceptors.response.use(
     // If we get a 401 Unauthorized, clear the token and redirect to login
     if (error.response?.status === 401) {
       const currentToken = tokenManager.get()
-      if (currentToken) {
+      if (typeof currentToken === 'string' && currentToken.length > 0) {
         // Token exists but is invalid/expired, clear it
         tokenManager.clear()
 

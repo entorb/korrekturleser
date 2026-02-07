@@ -8,7 +8,7 @@
  */
 export async function copyToClipboard(text: string): Promise<void> {
   // Try modern Clipboard API first (iOS 13.4+)
-  if (navigator.clipboard?.writeText) {
+  if ('clipboard' in navigator && typeof navigator.clipboard.writeText === 'function') {
     try {
       await navigator.clipboard.writeText(text)
       return
@@ -51,7 +51,7 @@ export async function copyToClipboard(text: string): Promise<void> {
  */
 export async function readFromClipboard(): Promise<string> {
   // Try modern Clipboard API first (iOS 13.4+)
-  if (navigator.clipboard?.readText) {
+  if ('clipboard' in navigator && typeof navigator.clipboard.readText === 'function') {
     try {
       return await navigator.clipboard.readText()
     } catch (err) {

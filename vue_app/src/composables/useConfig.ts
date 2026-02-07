@@ -8,6 +8,8 @@ import { useTextStore } from '@/stores/text'
 
 export function useConfig() {
   const textStore = useTextStore()
+  const hasValue = (value: string | null | undefined): value is string =>
+    typeof value === 'string' && value.trim().length > 0
 
   // Show disclaimer for Gemini provider
   const showDisclaimer = computed(() => {
@@ -26,17 +28,17 @@ export function useConfig() {
       textStore.setAvailableProviders(response.providers)
 
       // Set first model as default if not already set
-      if (!textStore.selectedModel && response.models.length > 0) {
+      if (!hasValue(textStore.selectedModel) && response.models.length > 0) {
         const firstModel = response.models[0]
-        if (firstModel) {
+        if (typeof firstModel === 'string' && firstModel.length > 0) {
           textStore.setModel(firstModel)
         }
       }
 
       // Set first provider as default if not already set
-      if (!textStore.selectedProvider && response.providers.length > 0) {
+      if (!hasValue(textStore.selectedProvider) && response.providers.length > 0) {
         const firstProvider = response.providers[0]
-        if (firstProvider) {
+        if (typeof firstProvider === 'string' && firstProvider.length > 0) {
           textStore.setProvider(firstProvider)
         }
       }
@@ -61,7 +63,7 @@ export function useConfig() {
       // Reset selected model to first available model from new provider
       if (response.models.length > 0) {
         const firstModel = response.models[0]
-        if (firstModel) {
+        if (typeof firstModel === 'string' && firstModel.length > 0) {
           textStore.setModel(firstModel)
         }
       }

@@ -39,7 +39,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   function loadUserFromToken(): void {
     const token = tokenManager.get()
-    if (!token) {
+    if (token === null || token.length === 0) {
       return
     }
 
