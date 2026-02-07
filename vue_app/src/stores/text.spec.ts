@@ -21,48 +21,39 @@ describe('Text Store', () => {
 
   it('updates input text', () => {
     const store = useTextStore()
-
-    store.setInputText('Hello world')
-
+    store.inputText = 'Hello world'
     expect(store.inputText).toBe('Hello world')
   })
 
   it('updates output text', () => {
     const store = useTextStore()
-
-    store.setOutputText('Corrected text')
-
+    store.outputText = 'Corrected text'
     expect(store.outputText).toBe('Corrected text')
   })
 
   it('changes mode', () => {
     const store = useTextStore()
-
-    store.setMode(TextRequest.mode.IMPROVE)
-
+    store.selectedMode = TextRequest.mode.IMPROVE
     expect(store.selectedMode).toBe(TextRequest.mode.IMPROVE)
   })
 
   it('sets diff HTML', () => {
     const store = useTextStore()
-
-    store.setDiffHtml('<div>diff</div>')
-
+    store.diffHtml = '<div>diff</div>'
     expect(store.diffHtml).toBe('<div>diff</div>')
   })
 
   it('clears output while preserving input', () => {
     const store = useTextStore()
 
-    // Set some data
-    store.setInputText('Input text')
-    store.setOutputText('Output text')
-    store.setDiffHtml('<div>diff</div>')
-    store.setError('Some error')
+    store.inputText = 'Input text'
+    store.outputText = 'Output text'
+    store.diffHtml = '<div>diff</div>'
+    store.error = 'Some error'
 
     store.clearOutput()
 
-    expect(store.inputText).toBe('Input text') // Should NOT be cleared
+    expect(store.inputText).toBe('Input text')
     expect(store.outputText).toBe('')
     expect(store.diffHtml).toBe('')
     expect(store.lastResult).toBeNull()
@@ -72,11 +63,10 @@ describe('Text Store', () => {
   it('clears all data including input', () => {
     const store = useTextStore()
 
-    // Set some data
-    store.setInputText('Input text')
-    store.setOutputText('Output text')
-    store.setMode(TextRequest.mode.SUMMARIZE)
-    store.setDiffHtml('<div>diff</div>')
+    store.inputText = 'Input text'
+    store.outputText = 'Output text'
+    store.selectedMode = TextRequest.mode.SUMMARIZE
+    store.diffHtml = '<div>diff</div>'
 
     store.clearAll()
 
@@ -85,7 +75,7 @@ describe('Text Store', () => {
     expect(store.diffHtml).toBe('')
     expect(store.lastResult).toBeNull()
     expect(store.error).toBeNull()
-    expect(store.selectedMode).toBe(TextRequest.mode.CORRECT) // Reset to default
+    expect(store.selectedMode).toBe(TextRequest.mode.CORRECT)
   })
 
   it('sets last result', () => {
@@ -99,7 +89,7 @@ describe('Text Store', () => {
       provider: 'Gemini'
     }
 
-    store.setLastResult(mockResult)
+    store.lastResult = mockResult
 
     expect(store.lastResult).toEqual(mockResult)
   })

@@ -8,55 +8,15 @@ import { TextRequest, type TextResponse } from '@/api'
 
 export const useTextStore = defineStore('text', () => {
   const selectedMode = ref<TextRequest.mode>(TextRequest.mode.CORRECT)
-  const selectedModel = ref<string>('')
+  const selectedModel = ref('')
   const availableModels = ref<string[]>([])
-  const selectedProvider = ref<string>('')
+  const selectedProvider = ref('')
   const availableProviders = ref<string[]>([])
   const inputText = ref('')
   const outputText = ref('')
   const diffHtml = ref('')
   const lastResult = ref<TextResponse | null>(null)
   const error = ref<string | null>(null)
-
-  function setInputText(text: string) {
-    inputText.value = text
-  }
-
-  function setOutputText(text: string) {
-    outputText.value = text
-  }
-
-  function setMode(mode: TextRequest.mode) {
-    selectedMode.value = mode
-  }
-
-  function setModel(model: string) {
-    selectedModel.value = model
-  }
-
-  function setAvailableModels(models: string[]) {
-    availableModels.value = models
-  }
-
-  function setProvider(provider: string) {
-    selectedProvider.value = provider
-  }
-
-  function setAvailableProviders(providers: string[]) {
-    availableProviders.value = providers
-  }
-
-  function setDiffHtml(html: string) {
-    diffHtml.value = html
-  }
-
-  function setLastResult(result: TextResponse | null) {
-    lastResult.value = result
-  }
-
-  function setError(err: string | null) {
-    error.value = err
-  }
 
   function clearOutput() {
     outputText.value = ''
@@ -67,10 +27,7 @@ export const useTextStore = defineStore('text', () => {
 
   function clearAll() {
     inputText.value = ''
-    outputText.value = ''
-    diffHtml.value = ''
-    lastResult.value = null
-    error.value = null
+    clearOutput()
     selectedMode.value = TextRequest.mode.CORRECT
   }
 
@@ -85,16 +42,6 @@ export const useTextStore = defineStore('text', () => {
     diffHtml,
     lastResult,
     error,
-    setInputText,
-    setOutputText,
-    setMode,
-    setModel,
-    setAvailableModels,
-    setProvider,
-    setAvailableProviders,
-    setDiffHtml,
-    setLastResult,
-    setError,
     clearOutput,
     clearAll
   }
