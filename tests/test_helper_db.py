@@ -1,7 +1,5 @@
 """Tests for shared/helper_db.py database functions."""
 
-# ruff: noqa: PLR2004
-
 import datetime as dt
 from unittest.mock import MagicMock, patch
 
