@@ -1,7 +1,5 @@
 """Tests for FastAPI text improvement endpoints."""
 
-# ruff: noqa: PLR2004
-
 import pytest
 from fastapi.testclient import TestClient
 

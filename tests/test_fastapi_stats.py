@@ -1,7 +1,5 @@
 """Tests for FastAPI statistics endpoints."""
 
-# ruff: noqa: PLR2004
-
 from datetime import UTC, datetime, timedelta
 from unittest.mock import MagicMock, patch
 

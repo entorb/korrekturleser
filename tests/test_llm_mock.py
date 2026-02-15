@@ -1,7 +1,5 @@
 """Tests to verify that Mock LLM provider is used in tests."""
 
-# ruff: noqa: PLR2004
-
 import os
 
 from shared.config import LLM_PROVIDER_DEFAULT

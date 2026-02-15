@@ -1,7 +1,5 @@
 """Shared pytest fixtures for all tests."""
 
-# ruff: noqa: PLR2004
-
 import os
 
 # CRITICAL: Set environment variables BEFORE any imports that use config

@@ -1,7 +1,5 @@
 """Tests for FastAPI authentication endpoints."""
 
-# ruff: noqa: PLR2004
-
 from datetime import UTC, datetime, timedelta
 
 import jwt
