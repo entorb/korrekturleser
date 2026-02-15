@@ -1,7 +1,5 @@
 """Test script to verify mock mode for local development."""
 
-# ruff: noqa: D103
-
 import logging
 
 from shared.helper_db import db_select_user_from_geheimnis
