@@ -42,4 +42,4 @@ testpaths = ["tests"]
 source = ["shared", "streamlit_app", "fastapi_app"]
 
 [tool.coverage.report]
-exclude_lines = ["pragma: no cover", "if __name__ == .__main__.:"]
+exclude_lines = ["pragma: no cover", "if __name__ == \"__main__\":"]
