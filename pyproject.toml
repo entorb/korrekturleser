@@ -14,7 +14,7 @@ dependencies = [
     "nicegui>=3.7.1",
     "openai>=2.21.0",
     "pandas==2.2.3",
-    "pyarrow==20.0.0",
+    "pyarrow==23.0.1",
     "pydantic>=2.12.5",
     "pyjwt>=2.11.0",
     "slowapi>=0.1.9",
