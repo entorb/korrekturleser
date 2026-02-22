@@ -2,6 +2,7 @@
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
+import { TextRequest } from '@/api'
 import { useClipboard } from '@/composables/useClipboard'
 import { useConfig } from '@/composables/useConfig'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
@@ -32,7 +33,12 @@ const { handleTextareaKeydown } = useKeyboardShortcuts({
 const { copyToClipboard, pasteFromClipboard } = useClipboard()
 const { markdownHtml } = useMarkdown(() => textStore.outputText, showMarkdown)
 
-const canSubmit = computed(() => !!textStore.inputText && !isProcessing.value)
+const canSubmit = computed(
+  () =>
+    !!textStore.inputText &&
+    !isProcessing.value &&
+    (textStore.selectedMode !== TextRequest.mode.CUSTOM || !!textStore.customInstruction)
+)
 
 onMounted(() => fetchProvidersAndModels())
 
@@ -226,6 +232,16 @@ function handleLogout() {
                   {{ modeDescriptions[textStore.selectedMode] || textStore.selectedMode }}
                 </template>
               </q-select>
+              <q-input
+                v-if="textStore.selectedMode === 'custom'"
+                v-model="textStore.customInstruction"
+                type="textarea"
+                label="Anweisung"
+                placeholder="Deine Anweisung..."
+                outlined
+                class="q-mt-sm"
+                :input-style="{ minHeight: '80px' }"
+              />
             </div>
             <div>
               <q-btn
