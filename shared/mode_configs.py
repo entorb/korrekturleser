@@ -26,10 +26,9 @@ _INSTRUCTION_TRANSLATE = """
 Input
 - Text
 Tasks
-- Übersetzen den Text in <LANG> Sprache
-Output
-- Text
-- Format: einfacher Text, keine Markdown-Formatierung.
+- Übersetze den Text in Sprache: <LANG>
+Output Format
+- plain Text, keine Markdown-Formatierung
 """
 
 # Consolidated mode configurations
@@ -41,13 +40,13 @@ MODE_CONFIGS = {
 Input
 - zu verbessernder Text
 Task
-- Korrekturlesen: Rechtschreibung, Grammatik und Zeichensetzung korrigieren.
+- Korrekturlesen: Rechtschreibung, Grammatik und Zeichensetzung korrigieren
 Output
 - korrigierter Text
-- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc.
+- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc
 - keine Kommentare
-- Struktur und Zeilenumbrüche nicht ändern.
-- Format: reiner Text, keine Markdown-Formatierung.
+- Struktur und Zeilenumbrüche nicht ändern
+- Format: plain Text, keine Markdown-Formatierung
 """,
     ),
     "improve": ModeConfig(
@@ -57,13 +56,13 @@ Output
 Input
 - zu verbessernder Text
 Task
-- Korrekturlesen: Rechtschreibung, Grammatik und Zeichensetzung korrigieren.
+- Korrekturlesen: Rechtschreibung, Grammatik und Zeichensetzung korrigieren
 - Text verbessern
 Output
 - verbesserter Text
-- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc.
+- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc
 - keine Kommentare
-- Format: einfacher Text, keine Markdown-Formatierung.
+- Format: plain Text, keine Markdown-Formatierung
 """,
     ),
     "summarize": ModeConfig(
@@ -77,7 +76,7 @@ Task
 Output
 - immer Kurz-Zusammenfassung in max. 3 Stichpunkten
 - bei längerem Text zusätzlich ausführlichere Zusammenfassung in Stichpunkten
-- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc.
+- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc
 - keine Kommentare
 - Format: Markdown mit Abschnitten und Stichpunkten
 """,
@@ -92,9 +91,9 @@ Tasks
 - Erstelle einen Text/Brief aus Stichpunkten
 Output
 - Text
-- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc.
+- in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc
 - keine Kommentare
-- Format: einfacher Text, keine Markdown-Formatierung.
+- Format: plain Text, keine Markdown-Formatierung.
 """,
     ),
     "translate_de": ModeConfig(
@@ -107,10 +106,29 @@ Output
         description="Übersetzen -> EN",
         instruction=_INSTRUCTION_TRANSLATE.replace("<LANG>", "Englische", 1),
     ),
+    "custom": ModeConfig(
+        mode="custom",
+        description="Freitext",
+        instruction="""
+Input
+- Text
+Tasks
+- <CUSTOM_INSTRUCTION>
+Output
+- Veränderter Text
+- Format: plain Text, keine Markdown-Formatierung.
+""",
+    ),
 }
 
 
 # Type alias for valid text modes (for use in schemas and type hints)
 TextMode = Literal[
-    "correct", "improve", "summarize", "expand", "translate_de", "translate_en"
+    "correct",
+    "improve",
+    "summarize",
+    "expand",
+    "translate_de",
+    "translate_en",
+    "custom",
 ]
