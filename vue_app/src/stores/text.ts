@@ -18,6 +18,7 @@ export const useTextStore = defineStore('text', () => {
   const diffHtml = ref('')
   const lastResult = ref<TextResponse | null>(null)
   const error = ref<string | null>(null)
+  const customInstruction = ref('')
 
   function clearOutput() {
     outputText.value = ''
@@ -30,6 +31,7 @@ export const useTextStore = defineStore('text', () => {
     inputText.value = ''
     clearOutput()
     selectedMode.value = TextRequest.mode.CORRECT
+    customInstruction.value = ''
   }
 
   return {
@@ -43,6 +45,7 @@ export const useTextStore = defineStore('text', () => {
     diffHtml,
     lastResult,
     error,
+    customInstruction,
     clearOutput,
     clearAll
   }
