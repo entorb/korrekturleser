@@ -21,6 +21,7 @@ export namespace TextResponse {
         EXPAND = 'expand',
         TRANSLATE_DE = 'translate_de',
         TRANSLATE_EN = 'translate_en',
+        CUSTOM = 'custom',
     }
 }
 
