@@ -54,28 +54,47 @@ if LLM == "Gemini":
 
 
 st.subheader(LABEL_MY_TEXT)
+
+# Mode selection outside form so changing it rerenders the page immediately
+mode_options = {config.description: mode for mode, config in MODE_CONFIGS.items()}
+cols = st.columns((1, 3))
+selected_description = cols[0].selectbox(
+    "Aufgabe",
+    options=list(mode_options.keys()),
+    key="mode_select",
+)
+
 with st.form(LABEL_MY_TEXT):
-    cols = st.columns((5, 1), vertical_alignment="top")
-    textarea_in = cols[0].text_area(
+
+    textarea_in = st.text_area(
         label=LABEL_MY_TEXT,
         height="content",
-        label_visibility="collapsed",
+        # label_visibility="collapsed",
         key="textarea_in",
     )
 
-    # Mode selection and submit button
-    mode_options = {config.description: mode for mode, config in MODE_CONFIGS.items()}
-    selected_description = cols[1].selectbox(
-        "Aufgabe",
-        options=list(mode_options.keys()),
-        key="mode_select",
-    )
-    submit_button = cols[1].form_submit_button("An KI senden", type="primary")
+    custom_instruction = ""
+    if selected_description == MODE_CONFIGS["custom"].description:
+        custom_instruction = st.text_area(
+            "Anweisung",
+            key="custom_instruction",
+            # placeholder="Deine Anweisung...",
+        )
+
+    submit_button = st.form_submit_button("An KI senden", type="primary")
 
 if submit_button:
     # Determine which mode was selected
     selected_mode = mode_options[selected_description]
     instruction = MODE_CONFIGS[selected_mode].instruction
+
+    if selected_mode == "custom":
+        if not custom_instruction.strip():
+            st.error("Bitte eine Anweisung eingeben.")
+            st.stop()
+        instruction = instruction.replace(
+            "<CUSTOM_INSTRUCTION>", custom_instruction.strip()
+        )
 
     st.subheader(LABEL_KI_TEXT)
 

@@ -38,6 +38,15 @@ async def improve_text(
 
     instruction = mode_config.instruction
 
+    if request.mode == "custom":
+        if not request.custom_instruction or not request.custom_instruction.strip():
+            raise HTTPException(
+                status_code=400, detail="custom_instruction is required for custom mode"
+            )
+        instruction = instruction.replace(
+            "<CUSTOM_INSTRUCTION>", request.custom_instruction.strip()
+        )
+
     logger.info(
         "User: %s | mode: %s | length %d",
         current_user.user_name,
