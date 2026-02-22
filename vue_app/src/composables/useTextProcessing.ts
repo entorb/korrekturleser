@@ -37,6 +37,10 @@ export function useTextProcessing() {
       const result = await api.text.improveTextApiTextPost({
         text: textStore.inputText,
         mode: textStore.selectedMode,
+        custom_instruction:
+          textStore.selectedMode === TextRequest.mode.CUSTOM
+            ? textStore.customInstruction || null
+            : null,
         model: textStore.selectedModel || null,
         provider: textStore.selectedProvider || null
       })

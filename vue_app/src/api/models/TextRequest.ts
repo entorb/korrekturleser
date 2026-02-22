@@ -15,6 +15,10 @@ export type TextRequest = {
      */
     mode: TextRequest.mode;
     /**
+     * Custom instruction for 'custom' mode
+     */
+    custom_instruction?: (string | null);
+    /**
      * LLM provider to use (optional, defaults to default provider)
      */
     provider?: (string | null);
@@ -34,6 +38,7 @@ export namespace TextRequest {
         EXPAND = 'expand',
         TRANSLATE_DE = 'translate_de',
         TRANSLATE_EN = 'translate_en',
+        CUSTOM = 'custom',
     }
 }
 

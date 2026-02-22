@@ -44,6 +44,9 @@ class TextRequest(BaseModel):
 
     text: str = Field(..., min_length=1, description="Text to improve")
     mode: TextMode = Field(..., description="AI text operation mode")
+    custom_instruction: str | None = Field(
+        None, description="Custom instruction for 'custom' mode"
+    )
     provider: str | None = Field(
         None, description="LLM provider to use (optional, defaults to default provider)"
     )
