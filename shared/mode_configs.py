@@ -108,7 +108,7 @@ Output
     ),
     "custom": ModeConfig(
         mode="custom",
-        description="Freitext",
+        description="Freitext Anweisung",
         instruction="""
 Input
 - Text
