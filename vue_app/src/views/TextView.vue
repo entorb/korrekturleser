@@ -235,12 +235,11 @@ function handleLogout() {
               <q-input
                 v-if="textStore.selectedMode === 'custom'"
                 v-model="textStore.customInstruction"
-                type="textarea"
                 label="Anweisung"
                 placeholder="Deine Anweisung..."
                 outlined
                 class="q-mt-sm"
-                :input-style="{ minHeight: '80px' }"
+                @keydown="(e: KeyboardEvent) => handleTextareaKeydown(e, canSubmit)"
               />
             </div>
             <div>
