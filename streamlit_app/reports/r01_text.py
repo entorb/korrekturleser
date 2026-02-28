@@ -65,7 +65,6 @@ selected_description = cols[0].selectbox(
 )
 
 with st.form(LABEL_MY_TEXT):
-
     textarea_in = st.text_area(
         label=LABEL_MY_TEXT,
         height="content",

@@ -17,7 +17,7 @@ const MODE_DESCRIPTIONS: Record<TextRequest.mode, string> = {
   [TextRequest.mode.EXPAND]: 'Stichwörter -> Text',
   [TextRequest.mode.TRANSLATE_DE]: 'Übersetzen -> DE',
   [TextRequest.mode.TRANSLATE_EN]: 'Übersetzen -> EN',
-  [TextRequest.mode.CUSTOM]: 'Freitext'
+  [TextRequest.mode.CUSTOM]: 'Freitext Anweisung'
 }
 
 /**
