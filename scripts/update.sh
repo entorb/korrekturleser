@@ -38,6 +38,8 @@ rm -rf node_modules
 
 pnpm up
 pnpm run check
+echo now start scripts/run_fastapi.sh
+read ok
 pnpm run generate-api
 
 echo DONE
