@@ -393,7 +393,7 @@ export default [
   {
     files: [
       '**/components.d.ts',
-      '**/typed-router.d.ts',
+      '**/route-map.d.ts',
       '**/env.d.ts',
       '**/auto-imports.d.ts',
       '**/vuetify-import.d.ts',
