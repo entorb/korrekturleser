@@ -67,8 +67,15 @@ jobs:
       - name: Run type check
         run: pnpm run types
 
-      - name: Run code formatter
-        run: pnpm run format
+      # - name: Run formatter
+      #   run: pnpm run format
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+
+      - name: Run Biome
+        run: biome ci .
 
       - name: Run linter
         run: pnpm run lint

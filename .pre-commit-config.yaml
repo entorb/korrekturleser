@@ -20,7 +20,7 @@ repos:
     rev: v6.0.0
     hooks:
       - id: check-added-large-files
-        args: ['--maxkb=500']
+        args: ["--maxkb=500"]
       - id: check-ast
       - id: check-builtin-literals
       - id: check-case-conflict
@@ -48,12 +48,12 @@ repos:
       - id: forbid-new-submodules
       # - id: forbid-submodules
       - id: mixed-line-ending
-        args: ['--fix=lf']
+        args: ["--fix=lf"]
       - id: name-tests-test
-        args: ['--pytest-test-first']
+        args: ["--pytest-test-first"]
       # - id: no-commit-to-branch
       #   args: [--branch, staging]
-      # using prettier instead
+      # using biome instead
       # - id: pretty-format-json
       #   args: ["--autofix", "--no-ensure-ascii", "--no-sort-keys"]
       - id: requirements-txt-fixer
@@ -80,7 +80,7 @@ repos:
     rev: v0.48.0
     hooks:
       - id: markdownlint
-        args: ['--disable', 'MD013']
+        args: ["--disable", "MD013"]
 
   # disabled because of GH Action cannot find the de-DE lang
   # # code spell check via cspell

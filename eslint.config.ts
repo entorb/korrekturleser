@@ -1,6 +1,5 @@
 import tsPlugin from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
-import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 import pluginCypress from 'eslint-plugin-cypress'
 import pluginImport from 'eslint-plugin-import'
 import sonarjs from 'eslint-plugin-sonarjs'
@@ -13,19 +12,26 @@ export default [
   // Global ignores
   {
     ignores: [
-      '**/*.d.ts',
+      '.venv',
       '**/.cache',
+      '**/.cspellcache',
+      '**/.DS_Store',
+      '**/.env',
       '**/.pnpm',
+      '**/.venv',
       '**/.vite',
+      '**/*.d.ts',
+      '**/*.tsbuildinfo',
+      '**/CLAUDE.md',
       '**/coverage',
       '**/cypress/downloads',
       '**/cypress/screenshots',
       '**/cypress/videos',
       '**/dist',
+      '**/GEMINI.md',
       '**/node_modules',
       '**/pnpm-lock.yaml',
       '**/public',
-      '.venv',
       'scripts/**',
       'vue_app/src/api/*'
     ]
@@ -53,16 +59,9 @@ export default [
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
-      ...(sonarjs.configs?.recommended &&
-      typeof sonarjs.configs.recommended === 'object' &&
-      'rules' in sonarjs.configs.recommended
-        ? sonarjs.configs.recommended.rules
-        : {}),
+      ...((sonarjs.configs?.recommended as { rules?: Record<string, unknown> })?.rules ?? {}),
       // Type safety
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        { prefer: 'type-imports', fixStyle: 'separate-type-imports' }
-      ],
+      // '@typescript-eslint/consistent-type-imports' — covered by Biome useImportType
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/naming-convention': [
@@ -80,8 +79,8 @@ export default [
           }
         }
       ],
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-non-null-assertion': 'warn',
+      // '@typescript-eslint/no-explicit-any' — covered by Biome noExplicitAny
+      // '@typescript-eslint/no-non-null-assertion' — covered by Biome noNonNullAssertion
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
@@ -89,43 +88,23 @@ export default [
       // Code quality
       '@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
-      // Import organization
-      'import/first': 'error',
-      'import/newline-after-import': 'error',
-      'import/no-cycle': 'error',
-      'import/no-duplicates': 'error',
+      // Import organization — 'import/first', 'import/newline-after-import', 'import/no-duplicates', 'import/order' covered by Biome organizeImports
+      'import/no-cycle': 'off', // Slow rule (~33% of lint time) — caught by SonarCloud in CI
       'import/no-self-import': 'error',
       'import/no-useless-path-segments': 'error',
-      'import/order': [
-        'error',
-        {
-          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
-          pathGroups: [
-            {
-              pattern: '@/**',
-              group: 'internal'
-            }
-          ],
-          alphabetize: {
-            order: 'asc',
-            caseInsensitive: true
-          },
-          'newlines-between': 'always'
-        }
-      ],
       // General best practices
       'array-callback-return': 'error',
       eqeqeq: ['error', 'always', { null: 'ignore' }],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'no-constructor-return': 'error',
-      'no-debugger': 'warn',
+      // 'no-constructor-return' — covered by Biome noConstructorReturn
+      // 'no-debugger' — covered by Biome noDebugger
       'no-else-return': ['error', { allowElseIf: false }],
       'no-lonely-if': 'error',
       'no-promise-executor-return': 'error',
-      'no-var': 'error',
+      // 'no-var' — covered by Biome (recommended)
       'object-shorthand': ['error', 'always'],
-      'prefer-arrow-callback': 'error',
-      'prefer-const': 'error',
+      // 'prefer-arrow-callback' — covered by Biome useArrowFunction
+      // 'prefer-const' — covered by Biome useConst
       'prefer-destructuring': [
         'warn',
         {
@@ -133,27 +112,29 @@ export default [
           object: true
         }
       ],
-      'prefer-template': 'warn',
+      // 'prefer-template' — covered by Biome useTemplate
       'require-atomic-updates': 'error',
       // SonarJS
       'sonarjs/cognitive-complexity': ['warn', 20],
+      'sonarjs/no-commented-code': 'off', // Slow rule (~56% of lint time) — caught by SonarCloud in CI
       'sonarjs/no-duplicate-string': ['warn', { threshold: 4 }],
       'sonarjs/no-identical-functions': 'warn',
       'sonarjs/pseudo-random': 'off',
-      'sonarjs/slow-regex': 'error',
-      'sonarjs/todo-tag': 'warn'
+      'sonarjs/todo-tag': 'off'
     }
   },
 
   // TypeScript files with type-aware linting (requires tsconfig project)
+  // Note: Each app has its own tsconfig.app.json — ESLint resolves the nearest one via tsconfigRootDir
   {
-    files: ['vue_app/src/**/*.{ts,mts,tsx}', '*.config.{ts,mts}'],
+    files: ['apps/*/src/**/*.{ts,mts,tsx}', 'packages/shared/src/**/*.{ts,mts,tsx}'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        project: ['./tsconfig.app.json', './tsconfig.node.json']
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname
       }
     },
     plugins: {
@@ -161,17 +142,14 @@ export default [
     },
     rules: {
       // Type-aware rules (require parserOptions.project)
-      '@typescript-eslint/consistent-type-exports': [
-        'error',
-        { fixMixedExportsWithInlineTypeSpecifier: true }
-      ],
+      // '@typescript-eslint/consistent-type-exports' — covered by Biome useExportType
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/await-thenable': 'error',
       '@typescript-eslint/no-unnecessary-condition': 'warn',
       '@typescript-eslint/no-redundant-type-constituents': 'warn',
       '@typescript-eslint/prefer-nullish-coalescing': 'warn',
-      '@typescript-eslint/prefer-optional-chain': 'error',
+      // '@typescript-eslint/prefer-optional-chain' — covered by Biome useOptionalChain
       '@typescript-eslint/prefer-reduce-type-parameter': 'error',
       '@typescript-eslint/prefer-return-this-type': 'error',
       '@typescript-eslint/promise-function-async': 'warn',
@@ -217,43 +195,23 @@ export default [
     },
     rules: {
       // TypeScript rules for Vue
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-non-null-assertion': 'warn',
+      // '@typescript-eslint/no-explicit-any' — covered by Biome noExplicitAny
+      // '@typescript-eslint/no-non-null-assertion' — covered by Biome noNonNullAssertion
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
       ],
-      // Import organization
-      'import/first': 'error',
-      'import/newline-after-import': 'error',
-      'import/no-cycle': 'error',
-      'import/no-duplicates': 'error',
+      // Import organization — 'import/first', 'import/newline-after-import', 'import/no-duplicates', 'import/order' covered by Biome organizeImports
+      'import/no-cycle': 'off', // Slow rule — caught by SonarCloud in CI
       'import/no-self-import': 'error',
       'import/no-useless-path-segments': 'error',
-      'import/order': [
-        'error',
-        {
-          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
-          pathGroups: [
-            {
-              pattern: '@/**',
-              group: 'internal'
-            }
-          ],
-          alphabetize: {
-            order: 'asc',
-            caseInsensitive: true
-          },
-          'newlines-between': 'always'
-        }
-      ],
       // SonarJS
       'sonarjs/cognitive-complexity': ['warn', 20],
+      'sonarjs/no-commented-code': 'off', // Slow rule — caught by SonarCloud in CI
       'sonarjs/no-duplicate-string': ['warn', { threshold: 4 }],
       'sonarjs/no-identical-functions': 'warn',
       'sonarjs/pseudo-random': 'off',
-      'sonarjs/slow-regex': 'error',
-      'sonarjs/todo-tag': 'warn',
+      'sonarjs/todo-tag': 'off',
       // Vue 3 Composition API best practices
       'vue/block-lang': ['error', { script: { lang: 'ts' } }],
       'vue/block-order': ['error', { order: ['script', 'template', 'style'] }],
@@ -344,48 +302,15 @@ export default [
     }
   },
 
-  // Vue files with type-aware linting
-  {
-    files: ['vue_app/src/**/*.vue'],
-    languageOptions: {
-      parserOptions: {
-        parser: tsParser,
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-        extraFileExtensions: ['.vue'],
-        project: null // Disable type-aware linting for Vue files due to tsconfig issues
-      }
-    },
-    plugins: {
-      '@typescript-eslint': tsPlugin
-    },
-    rules: {
-      // Note: Type-aware rules disabled for Vue files
-      // Enable them once tsconfig properly includes .vue files
-    }
-  },
-
   // Vue composables - relax some rules
   {
-    files: ['vue_app/src/composables/**/*.ts'],
+    files: [
+      'apps/*/src/composables/**/*.ts',
+      'packages/shared/src/composables/**/*.ts',
+      'vue_app/src/composables/**/*.ts'
+    ],
     rules: {
       'require-atomic-updates': 'off' // False positives in Vue composables with async/await
-    }
-  },
-
-  // Clipboard utilities - allow deprecated execCommand (still needed for fallback)
-  {
-    files: ['vue_app/src/utils/clipboard.ts'],
-    rules: {
-      'sonarjs/deprecation': 'off' // document.execCommand is deprecated but needed for fallback
-    }
-  },
-
-  // Allow v-html in TextView.vue for markdown and diff rendering (trusted content)
-  {
-    files: ['vue_app/src/views/TextView.vue'],
-    rules: {
-      'vue/no-v-html': 'off'
     }
   },
 
@@ -396,7 +321,6 @@ export default [
       '**/route-map.d.ts',
       '**/env.d.ts',
       '**/auto-imports.d.ts',
-      '**/vuetify-import.d.ts',
       'vite.config.d.ts',
       'vitest.config.d.ts'
     ],
@@ -424,13 +348,12 @@ export default [
 
   // Vitest test files - relaxed rules
   {
-    files: ['**/*.{test,spec}.{js,ts,jsx,tsx}', 'vue_app/**/__tests__/**/*.{js,ts,jsx,tsx}'],
+    files: ['**/*.{test,spec}.{js,ts,jsx,tsx}', 'apps/**/__tests__/**/*.{js,ts,jsx,tsx}'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
         ecmaVersion: 'latest',
-        sourceType: 'module',
-        project: ['./tsconfig.vitest.json']
+        sourceType: 'module'
       },
       globals: {
         ...globals.node,
@@ -465,13 +388,11 @@ export default [
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
       ],
       '@typescript-eslint/strict-boolean-expressions': 'off',
-      // Relaxed import rules for tests
-      'import/newline-after-import': 'off',
+      // Relaxed import rules for tests — 'import/newline-after-import', 'import/order' now covered by Biome
       'import/no-cycle': 'off',
-      'import/order': 'off',
       // Relaxed code quality for tests
       'no-console': 'off',
-      'prefer-template': 'off',
+      // 'prefer-template' — covered by Biome useTemplate
       // Relaxed SonarJS for tests
       'sonarjs/cognitive-complexity': 'off',
       'sonarjs/no-duplicate-string': 'off',
@@ -480,7 +401,7 @@ export default [
       'sonarjs/todo-tag': 'off',
       // Vitest-specific rules
       'vitest/consistent-test-it': ['error', { fn: 'it', withinDescribe: 'it' }],
-      'vitest/expect-expect': 'warn',
+      'vitest/expect-expect': ['warn', { assertFunctionNames: ['expect', 'fc.assert'] }],
       'vitest/no-disabled-tests': 'warn',
       'vitest/no-focused-tests': 'error',
       'vitest/prefer-to-be': 'error',
@@ -518,19 +439,15 @@ export default [
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
       '@typescript-eslint/prefer-optional-chain': 'off',
-      // Relaxed import rules for E2E tests
-      'import/first': 'off',
-      'import/newline-after-import': 'off',
+      // Relaxed import rules for E2E tests — most now covered by Biome
       'import/no-cycle': 'off',
-      'import/no-duplicates': 'off',
-      'import/order': 'off',
       // Relaxed code quality for E2E tests
       'array-callback-return': 'off',
       'no-console': 'off',
-      'no-debugger': 'off',
+      // 'no-debugger' — covered by Biome noDebugger
       'no-unused-expressions': 'off',
-      'prefer-const': 'off',
-      'prefer-template': 'off',
+      // 'prefer-const' — covered by Biome useConst
+      // 'prefer-template' — covered by Biome useTemplate
       // Relaxed SonarJS for E2E tests
       'sonarjs/cognitive-complexity': 'off',
       'sonarjs/no-duplicate-string': 'off',
@@ -538,8 +455,5 @@ export default [
       'sonarjs/slow-regex': 'off',
       'sonarjs/todo-tag': 'off'
     }
-  },
-
-  // Apply skip formatting last (removes conflicting formatting rules)
-  skipFormatting
+  }
 ]

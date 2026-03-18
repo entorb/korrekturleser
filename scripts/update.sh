@@ -37,6 +37,7 @@ uv run pre-commit run --all-files
 rm -rf node_modules
 
 pnpm up
+pnpm exec biome migrate --write
 pnpm run check
 echo now start scripts/run_fastapi.sh
 read ok
