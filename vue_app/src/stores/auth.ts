@@ -25,8 +25,19 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       const response = await api.auth.loginApiAuthLoginPost({ secret })
-      tokenManager.set(response.access_token)
-      loadUserFromToken()
+      const token = response.access_token
+      tokenManager.set(token)
+
+      // Decode the token we just received directly, instead of
+      // re-reading from localStorage via loadUserFromToken().
+      // This avoids a potential race where the token is saved but
+      // loadUserFromToken() silently fails to decode it, leaving
+      // isAuthenticated=false and the login page "stuck".
+      const payload = decodeJwt(token)
+      if (payload == null) {
+        throw new Error('Failed to decode authentication token')
+      }
+      user.value = { user_name: payload.username }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Login failed'
       throw err
