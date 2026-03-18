@@ -114,7 +114,9 @@ const formatDate = (dateStr: string): string => new Date(dateStr).toLocaleDateSt
               class="q-mb-md"
             >
               <q-card-section>
-                <div class="text-h6">Gesamt</div>
+                <div class="text-h6">
+                  Gesamt
+                </div>
               </q-card-section>
               <q-markup-table>
                 <thead>
@@ -152,7 +154,9 @@ const formatDate = (dateStr: string): string => new Date(dateStr).toLocaleDateSt
             <!-- Daily Usage Table -->
             <q-card bordered>
               <q-card-section>
-                <div class="text-h6">Täglich</div>
+                <div class="text-h6">
+                  Täglich
+                </div>
               </q-card-section>
               <q-markup-table>
                 <thead>

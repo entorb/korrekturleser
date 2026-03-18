@@ -119,8 +119,7 @@ function handleLogout() {
                 <q-icon
                   name="account_circle"
                   size="md"
-                >
-                </q-icon>
+                />
                 Mein Text
                 <q-btn
                   color="primary"
@@ -164,8 +163,7 @@ function handleLogout() {
                 <q-icon
                   name="auto_fix_high"
                   size="md"
-                >
-                </q-icon>
+                />
                 KI Text
                 <q-btn
                   color="primary"
@@ -202,10 +200,12 @@ function handleLogout() {
                 class="q-pa-md"
                 style="min-height: 360px"
               >
+                <!-- eslint-disable vue/no-v-html -- sanitized markdown from marked library -->
                 <div
                   class="markdown-content"
                   v-html="markdownHtml"
                 />
+                <!-- eslint-enable vue/no-v-html -->
               </q-card>
             </div>
           </div>
@@ -273,10 +273,12 @@ function handleLogout() {
             class="q-mt-lg"
           >
             <q-card-section>
+              <!-- eslint-disable vue/no-v-html -- trusted diff HTML from diff2html library -->
               <div
                 class="diff-container"
                 v-html="textStore.diffHtml"
               />
+              <!-- eslint-enable vue/no-v-html -->
             </q-card-section>
 
             <!-- Result Info -->
