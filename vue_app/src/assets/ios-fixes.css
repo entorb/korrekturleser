@@ -8,8 +8,8 @@ body {
 }
 
 /* Fix iOS input zoom - 16px prevents auto-zoom on focus */
-input[type='text'],
-input[type='password'],
+input[type="text"],
+input[type="password"],
 textarea,
 .q-field__native {
   font-size: 16px !important;
