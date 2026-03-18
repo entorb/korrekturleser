@@ -1,6 +1,6 @@
 # Vue App - Copilot Coding Guidelines
 
-Modern Vue 3 + TypeScript 2025 best practices. ESLint and Prettier handle formatting - this guide covers architectural decisions.
+Modern Vue 3 + TypeScript 2025 best practices. ESLint and Biome handle formatting - this guide covers architectural decisions.
 
 ## Store Architecture (Pinia)
 
