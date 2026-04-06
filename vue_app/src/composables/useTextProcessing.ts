@@ -3,7 +3,7 @@
  * Handles AI text improvement, diff generation, and markdown rendering
  */
 
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 
 import { TextRequest } from '@/api'
 import { api } from '@/services/apiClient'

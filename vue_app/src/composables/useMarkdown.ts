@@ -3,7 +3,7 @@
  */
 
 import { marked } from 'marked'
-import { computed, type ComputedRef } from 'vue'
+import { type ComputedRef, computed } from 'vue'
 
 export function useMarkdown(
   text: () => string,
@@ -16,7 +16,7 @@ export function useMarkdown(
       (typeof renderValue === 'string' && renderValue.trim().length > 0) ||
       (typeof renderValue === 'number' && renderValue !== 0)
 
-    return shouldShow ? marked(text()) : ''
+    return shouldShow ? await marked(text()) : ''
   })
 
   return { markdownHtml }

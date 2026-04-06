@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { setActivePinia, createPinia } from 'pinia'
-import { useTextStore } from './text'
+import { createPinia, setActivePinia } from 'pinia'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { TextRequest } from '@/api'
+import { useTextStore } from './text'
 
 describe('Text Store', () => {
   beforeEach(() => {
