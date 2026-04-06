@@ -12,14 +12,24 @@ const secret = ref('')
 async function handleLogin() {
   try {
     await authStore.login(secret.value)
-    // Use replace to prevent back button from returning to login
+  } catch {
+    // Login itself failed — error is already set in store
+    return
+  }
+
+  // Login succeeded — navigate to main page.
+  // If the lazy-loaded chunk fails (e.g. stale deploy / 404), the router
+  // will throw instead of returning a NavigationFailure object.  In that
+  // case we fall back to a hard navigation so the browser fetches fresh
+  // assets.
+  try {
     const failure = await router.replace({ name: 'text' })
     if (failure) {
-      // Navigation was aborted/redirected — force reload as fallback
       globalThis.location.replace(router.resolve({ name: 'text' }).href)
     }
   } catch {
-    // Error is already set in store
+    // Chunk-load error — hard navigate to get fresh assets
+    globalThis.location.replace(router.resolve({ name: 'text' }).href)
   }
 }
 </script>
