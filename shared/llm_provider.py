@@ -108,7 +108,7 @@ def get_llm_provider(provider_name: str) -> LLMProvider:
     """Get LLM provider."""
     logger.debug("Getting LLM provider: %s", provider_name)
 
-    if provider_name == "Gemini":
+    if provider_name == "Google":
         from .llm_provider_gemini import GeminiProvider  # noqa: PLC0415
 
         return GeminiProvider()
@@ -131,6 +131,11 @@ def get_llm_provider(provider_name: str) -> LLMProvider:
 
         return OllamaProvider()
 
+    if provider_name == "Mistral":
+        from .llm_provider_mistral import MistralProvider  # noqa: PLC0415
+
+        return MistralProvider()
+
     msg = f"Unknown LLM provider: {provider_name}"
     logger.error(msg)
     raise ValueError(msg)
@@ -142,8 +147,8 @@ if __name__ == "__main__":
     instruction = "Talk like a pirate. Give a short answer. "
     prompt = "What is the capital of Germany?"
     print(prompt)
-    llm_provider_name = "Ollama"
-    llm_model = "mistral"
+    llm_provider_name = "Mistral"
+    llm_model = "mistral-medium-latest"
 
     llm_provider = get_llm_provider(provider_name=llm_provider_name)
     response, tokens = llm_provider.call(

@@ -55,7 +55,7 @@ The application can be run locally with an SQLite database:
   - Usage tracking saves to SQLite
   - Stats queries return real data from SQLite
   - Skips database writes when `LLM_PROVIDER == "Mocked"`
-- **LLM Operations**: Work normally - only Gemini API key required
+- **LLM Operations**: Work normally - only Mistral or Gemini or OpenAI API key required
 
 ## Running the Applications
 

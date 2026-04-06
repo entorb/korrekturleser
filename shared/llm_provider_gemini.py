@@ -1,4 +1,4 @@
-"""Gemini LLM provider class."""
+"""Google Gemini LLM provider class."""
 
 import logging
 from pathlib import Path
@@ -12,7 +12,7 @@ from .llm_provider import LLMProvider, retry_with_exponential_backoff
 
 logger = logging.getLogger(Path(__file__).stem)
 
-PROVIDER = "Gemini"
+PROVIDER = "Google"
 MODELS = [
     "gemini-2.5-flash-lite",
     "gemini-2.5-flash",

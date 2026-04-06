@@ -10,7 +10,7 @@ import { useTextStore } from '@/stores/text'
 export function useConfig() {
   const textStore = useTextStore()
 
-  const showDisclaimer = computed(() => textStore.selectedProvider === 'Gemini')
+  const showDisclaimer = computed(() => textStore.selectedProvider === 'Google')
 
   async function fetchProvidersAndModels() {
     try {

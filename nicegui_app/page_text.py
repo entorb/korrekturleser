@@ -213,7 +213,7 @@ def create_text_page() -> None:
 def _create_main_content(state: ProcessingState) -> None:
     """Create the main content area with input and output columns."""
     with ui.column().classes("w-full p-6 gap-4"):
-        if LLM_PROVIDER_DEFAULT == "Gemini":
+        if LLM_PROVIDER_DEFAULT == "Google":
             with ui.card().classes("w-full bg-blue-50"):
                 ui.markdown(GOOGLE_DISCLAIMER).classes("text-caption")
 

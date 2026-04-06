@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**KI Korrekturleser** is an AI-powered text proofreading and improvement application for a small user group (~10 users). It provides grammar correction, text improvement, summarization, expansion, and translation features using Gemini AI.
+**KI Korrekturleser** is an AI-powered text proofreading and improvement application for a small user group (~10 users). It provides grammar correction, text improvement, summarization, expansion, and translation features using LLM AIs from Google Gemini, Mistral, OpenAI.
 
 The project consists of four applications:
 
@@ -306,13 +306,6 @@ Two tables in MySQL:
 
 Edit `.env` to change LLM provider or model:
 
-```python
-# Gemini, Ollama, Mock, OpenAI, OpenAI_Azure
-LLM_PROVIDER=Gemini
-```
-
-Ollama is available for local development only (automatically disabled in PROD).
-
 ### Adding New Improvement Modes
 
 To add a new mode, follow these steps:
@@ -332,9 +325,10 @@ To add a new mode, follow these steps:
    ```
 
    This command:
-   - Generates TypeScript API client from OpenAPI spec
-   - Runs `scripts/generate_mode_descriptions.py` to extract mode descriptions from `MODE_CONFIGS`
-   - Creates/updates `vue_app/src/config/modes.ts` with TypeScript mode types and descriptions
+
+- Generates TypeScript API client from OpenAPI spec
+- Runs `scripts/generate_mode_descriptions.py` to extract mode descriptions from `MODE_CONFIGS`
+- Creates/updates `vue_app/src/config/modes.ts` with TypeScript mode types and descriptions
 
 This workflow ensures mode configurations are centralized in `shared/helper_ai.py` (single source of truth) and automatically propagated to the frontend.
 
