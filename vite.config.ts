@@ -56,7 +56,7 @@ export default defineConfig({
       manifest: {
         name: 'KI Korrekturleser - AI Text Correction',
         short_name: 'Korrekturleser',
-        description: 'AI-powered text proofreading and improvement with Gemini',
+        description: 'AI-powered text proofreading and improvement by LLM',
         theme_color: '#1976d2',
         background_color: '#ffffff',
         display: 'standalone',
