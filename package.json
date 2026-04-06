@@ -8,7 +8,7 @@
     "cy:open": "cypress open --e2e",
     "cy:run": "cypress run --e2e",
     "dev": "vite",
-    "format": "biome format --write .",
+    "format": "biome check --write .",
     "generate-api": "openapi --input http://localhost:9002/openapi.json --output vue_app/src/api --client axios && uv run python scripts/gen_mode_descriptions.py",
     "lint": "eslint . --cache --fix --ignore-pattern .gitignore",
     "preview": "vite preview",
