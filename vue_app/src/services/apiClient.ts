@@ -3,11 +3,11 @@
  */
 
 import {
-  OpenAPI,
   AuthenticationService,
   ConfigurationService,
-  TextOperationsService,
-  StatisticsService
+  OpenAPI,
+  StatisticsService,
+  TextOperationsService
 } from '@/api'
 import { config } from '@/config/env'
 import { isTokenExpired } from '@/utils/jwt'
@@ -32,9 +32,9 @@ export const tokenManager = {
 
 // Setup token injection for authenticated requests
 // Checks token expiry before each request
-OpenAPI.TOKEN = async () => {
+OpenAPI.TOKEN = () => {
   const token = tokenManager.get()
-  return token != null && !isTokenExpired(token) ? token : ''
+  return Promise.resolve(token != null && !isTokenExpired(token) ? token : '')
 }
 
 // Export services
