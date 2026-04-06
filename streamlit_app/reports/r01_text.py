@@ -49,7 +49,7 @@ if sel_model != model:
 MODEL = st.session_state["LLM_MODEL"]  # shortcut
 del sel_model, model, default_index, MODELS
 
-if LLM == "Gemini":
+if LLM == "Google":
     st.markdown(GOOGLE_DISCLAIMER)
 
 
