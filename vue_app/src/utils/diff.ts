@@ -17,13 +17,11 @@ export function generateDiff(original: string, improved: string): string {
   const doc = new DOMParser().parseFromString(diffHtml, 'text/html')
 
   // Remove unnecessary elements
-  doc
-    .querySelectorAll(
-      '.d2h-file-header, .d2h-info, .d2h-code-linenumber, .d2h-code-side-linenumber, .d2h-code-line-prefix'
-    )
-    .forEach(el => {
-      el.remove()
-    })
+  for (const el of doc.querySelectorAll(
+    '.d2h-file-header, .d2h-info, .d2h-code-linenumber, .d2h-code-side-linenumber, .d2h-code-line-prefix'
+  )) {
+    el.remove()
+  }
 
   return doc.body.innerHTML
 }

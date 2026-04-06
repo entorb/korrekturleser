@@ -37,7 +37,7 @@ function lazyLoad(loader: () => Promise<unknown>) {
           globalThis.location.reload()
           // Return a never-resolving promise so the router doesn't
           // continue rendering while the page reloads.
-           
+
           return new Promise(() => {
             /* intentionally pending forever */
           })
