@@ -2,7 +2,7 @@
  * Quasar plugin configuration
  */
 
-import { Notify, Dialog, Loading } from 'quasar'
+import { Dialog, Loading, Notify } from 'quasar'
 import iconSet from 'quasar/icon-set/material-icons'
 
 // Import Quasar css

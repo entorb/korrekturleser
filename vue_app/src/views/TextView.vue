@@ -35,9 +35,9 @@ const { markdownHtml } = useMarkdown(() => textStore.outputText, showMarkdown)
 
 const canSubmit = computed(
   () =>
-    !!textStore.inputText &&
+    Boolean(textStore.inputText) &&
     !isProcessing.value &&
-    (textStore.selectedMode !== TextRequest.mode.CUSTOM || !!textStore.customInstruction)
+    (textStore.selectedMode !== TextRequest.mode.CUSTOM || Boolean(textStore.customInstruction))
 )
 
 onMounted(() => fetchProvidersAndModels())
