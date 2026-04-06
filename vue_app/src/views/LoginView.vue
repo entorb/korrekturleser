@@ -33,7 +33,9 @@ async function handleLogin() {
       <div style="width: 100%; max-width: 500px; padding: 20px">
         <q-card>
           <q-card-section>
-            <div class="text-h4 text-center">KI Korrekturleser</div>
+            <div class="text-h4 text-center">
+              KI Korrekturleser
+            </div>
             <div class="text-subtitle2 text-center text-grey-7">
               KI-gestützte Textkorrektur und -verbesserung
             </div>
@@ -62,7 +64,11 @@ async function handleLogin() {
                 class="q-mb-md"
               />
 
-              <q-banner v-if="authStore.error" class="bg-negative text-white q-mb-md" rounded>
+              <q-banner
+                v-if="authStore.error"
+                class="bg-negative text-white q-mb-md"
+                rounded
+              >
                 {{ authStore.error }}
               </q-banner>
 

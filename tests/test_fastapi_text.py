@@ -38,7 +38,8 @@ class TestImproveText:
         # Check that provider is one of the valid options
         assert data["provider"] in (
             "Mock",
-            "Gemini",
+            "Google",
+            "Mistral",
             "Ollama",
             "OpenAI",
             "OpenAI_Azure",
