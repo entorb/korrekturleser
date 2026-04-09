@@ -9,14 +9,14 @@ export function useMarkdown(
   text: () => string,
   shouldRender: ComputedRef<boolean | string | number>
 ) {
-  const markdownHtml = computed(async () => {
+  const markdownHtml = computed(() => {
     const renderValue = shouldRender.value
     const shouldShow =
       (typeof renderValue === 'boolean' && renderValue) ||
       (typeof renderValue === 'string' && renderValue.trim().length > 0) ||
       (typeof renderValue === 'number' && renderValue !== 0)
 
-    return shouldShow ? await marked(text()) : ''
+    return shouldShow ? marked.parse(text()) : ''
   })
 
   return { markdownHtml }
