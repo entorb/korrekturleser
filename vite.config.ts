@@ -112,8 +112,10 @@ export default defineConfig({
     }),
     // Support iPhone 7+ with iOS 15+ (Safari 15+)
     legacy({
-      targets: ['iOS >= 15', 'Safari >= 15'],
-      modernPolyfills: true
+      modernTargets: ['iOS >= 15', 'Safari >= 15', 'Chrome >= 87', 'Firefox >= 78', 'Edge >= 88'],
+      targets: ['iOS >= 15', 'Safari >= 15', 'Chrome >= 87', 'Firefox >= 78', 'Edge >= 88'],
+      modernPolyfills: true,
+      renderLegacyChunks: false
     })
   ],
   define: { 'process.env': {} },
