@@ -142,17 +142,17 @@ def db_connection() -> Generator[
             con.close()  # Returns connection to pool
 
 
-def db_select_1row(query: str, param: tuple) -> tuple | None:
-    """Fetch a single row from the DB as a tuple."""
-    try:
-        with db_connection() as con, con.cursor(dictionary=False) as cursor:
-            cursor.execute(query, param)
-            row = cursor.fetchone()
-            return row  # type: ignore[return-value]
+# def db_select_1row(query: str, param: tuple) -> tuple | None:
+#     """Fetch a single row from the DB as a tuple."""
+#     try:
+#         with db_connection() as con, con.cursor(dictionary=False) as cursor:
+#             cursor.execute(query, param)
+#             row = cursor.fetchone()
+#             return row  # type: ignore[return-value]
 
-    except mysql.connector.Error:
-        logger.exception("Database error during select_1row for query: \n%s", query)
-        raise
+#     except mysql.connector.Error:
+#         logger.exception("Database error during select_1row for query: \n%s", query)
+#         raise
 
 
 def db_select_rows(query: str, param: tuple) -> list[tuple]:
