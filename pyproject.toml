@@ -44,3 +44,10 @@ source = ["shared", "streamlit_app", "fastapi_app"]
 
 [tool.coverage.report]
 exclude_lines = ["pragma: no cover", "if __name__ == \"__main__\":"]
+
+[tool.vulture]
+ignore_decorators = ["@app.get", "@router.get", "@router.post"]
+# "nicegui_app"
+paths = ["fastapi_app", "shared", "streamlit_app"]
+exclude = ["fastapi_app/gunicorn_conf.py", "fastapi_app/schemas.py"]
+ignore_names = ["CSS_HEADER", "LOGGER", "MOCK_USERS", "TextMode", "visible"]
