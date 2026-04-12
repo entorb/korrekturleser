@@ -5,33 +5,33 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "azure-identity>=1.25.2",
+    "azure-identity>=1.25.3",
     "bcrypt>=5.0.0",
     "dotenv>=0.9.9",
-    "fastapi>=0.135.1",
-    "google-genai>=1.66.0",
+    "fastapi>=0.135.3",
+    "google-genai>=1.72.0",
     "mistralai>=2.3.0",
     "mysql-connector-python==9.4.0",
-    "nicegui>=3.8.0",
-    "openai>=2.26.0",
+    "nicegui>=3.10.0",
+    "openai>=2.31.0",
     "pandas==2.2.3",
     "pyarrow==20.0.0",
     "pydantic>=2.12.5",
-    "pyjwt>=2.11.0",
+    "pyjwt>=2.12.1",
     "slowapi>=0.1.9",
     "st-copy>=1.1.2",
-    "streamlit>=1.55.0",
+    "streamlit>=1.56.0",
 ]
 
 [dependency-groups]
 dev = [
     "ollama>=0.6.1",
     "pre-commit>=4.5.1",
-    "pytest>=9.0.2",
-    "pytest-cov>=7.0.0",
-    "ruff>=0.15.5",
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.10",
     "tomli-w>=1.2.0",
-    "uvicorn>=0.41.0",
+    "uvicorn>=0.44.0",
     "watchdog>=6.0.0",
 ]
 
