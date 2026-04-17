@@ -22,3 +22,5 @@ coverage.xml
 db.sqlite
 GEMINI.md
 requirements.txt
+/template
+cspell-words-missing.txt

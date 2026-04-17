@@ -8,16 +8,20 @@ set -e
 
 # 1. Python
 
-uv remove pandas pyarrow google-genai mysql-connector-python st_copy streamlit azure-identity bcrypt dotenv fastapi nicegui openai pydantic pyjwt slowapi
-uv remove --dev ruff ollama pre-commit pytest pytest-cov tomli-w watchdog uvicorn
+DEPS=$(uv run python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); print(' '.join(p.split('>')[0].split('<')[0].split('=')[0].split('!')[0] for p in d['project']['dependencies']))")
+DEV_DEPS=$(uv run python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); print(' '.join(p.split('>')[0].split('<')[0].split('=')[0].split('!')[0] for p in d['dependency-groups']['dev']))")
+DEPS_VERSIONED=$(uv run python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); print(' '.join(d['project']['dependencies']))")
+DEV_DEPS_VERSIONED=$(uv run python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); print(' '.join(d['dependency-groups']['dev']))")
 
-uv lock --upgrade
-uv sync --upgrade
+# 1. remove all
+uv remove $DEPS
+uv remove --dev $DEV_DEPS
 
-# pin to old versions due to Uberspace restrictions
-uv add pandas==2.2.3 pyarrow==20.0.0 mysql-connector-python==9.4.0 google-genai st_copy streamlit azure-identity bcrypt dotenv fastapi nicegui openai pydantic pyjwt slowapi
-uv add --dev ruff ollama pre-commit pytest pytest-cov tomli-w watchdog uvicorn
+# 2. re-add with pinned versions from pyproject.toml (sets constraints)
+uv add $DEPS_VERSIONED
+uv add --dev $DEV_DEPS_VERSIONED
 
+# 3. upgrade within constraints
 uv lock --upgrade
 uv sync --upgrade
 

@@ -26,4 +26,5 @@ ignorePaths:
   - 'node_modules'
   - 'package*.json'
   - 'pnpm-lock.yaml'
+  - 'pnpm-workspace.yaml'
   - 'uv.lock'
