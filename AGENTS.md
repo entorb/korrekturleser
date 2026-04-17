@@ -67,20 +67,21 @@ This ensures a single source of truth for mode configurations in the Python back
 
 **IMPORTANT**: These should be executed after each AI assistant step.
 
-#### Python backends
+#### After each task
 
-```sh
-uv run ruff format
-uv run ruff check --fix --unsafe-fixes
-uv run pytest
-```
+- BE tasks: `scripts/chk_py_format.sh`
+- FE tasks: `scripts/chk_js_format.sh`
 
-#### Frontend
+#### After each major feature
 
-```sh
-# Runs in parallel: format, lint, types, spell, test
-pnpm run types
-```
+Run the full check suite: `scripts/run_checks.sh`
+
+#### If any check fails
+
+1. Fix the reported issues.
+2. Re-run **only** the failing check(s) to verify the fix, e.g.: `scripts/chk_js_format.sh`
+3. Repeat until that single check passes.
+4. Re-Run the full check suite: `scripts/run_checks.sh` to ensure all checks pass.
 
 ## Architecture
 

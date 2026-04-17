@@ -27,8 +27,8 @@ rsync -ruzv --no-links --delete --delete-excluded dist/* entorb@entorb.net:html/
 # 2. Backends
 # config.toml -> config-prod.toml
 python3 scripts/config_convert.py
-./scripts/run_ruff.sh
-./scripts/run_pytest.sh
+./scripts/chk_ruff.sh
+./scripts/chk_pytest.sh
 
 # rsync -uz .streamlit/config-prod.toml entorb@entorb.net:korrekturleser/.streamlit/config.toml
 rsync -uz requirements.txt entorb@entorb.net:korrekturleser/
