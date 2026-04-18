@@ -7,6 +7,6 @@ uv run ruff format
 uv run ruff check --fix
 
 if [ $? -ne 0 ]; then
-    echo "Additional fixes available — you can try: uv run ruff check --fix --unsafe-fixes"
+    echo "Issues remaininge, you can try: uv run ruff check --fix --unsafe-fixes"
     exit 1
 fi
