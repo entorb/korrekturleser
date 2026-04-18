@@ -4,5 +4,6 @@
 cd $(dirname $0)/..
 
 pnpm run types
+# pnpm exec vue-tsc --build
 
 if [ $? -ne 0 ]; then exit 1; fi
