@@ -75,11 +75,11 @@ jobs:
         run: pnpm exec biome ci .
 
       - name: Run js linter ESLint
-        run: pnpm run lint
+        run: pnpm exec eslint . --cache --ignore-pattern .gitignore
 
       - name: Run py test Pytest
         run: |
-          uv run --frozen pytest tests/ \
+          uv run --frozen pytest \
             --cov \
             --cov-report=xml:coverage.xml \
             --quiet \
@@ -96,7 +96,7 @@ jobs:
         run: pnpm run types
 
       - name: Run py dead code Vulture
-        run: uv run --frozen vulture fastapi_app
+        run: uv run --frozen vulture
 
       - name: Run pre-commit
         run: uv run --frozen pre-commit run --all-files

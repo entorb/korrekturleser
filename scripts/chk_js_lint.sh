@@ -4,5 +4,6 @@
 cd $(dirname $0)/..
 
 pnpm run lint
+# pnpm exec eslint . --cache --fix --ignore-pattern .gitignore
 
 if [ $? -ne 0 ]; then exit 1; fi
