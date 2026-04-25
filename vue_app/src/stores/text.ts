@@ -5,10 +5,10 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-import { TextRequest, type TextResponse } from '@/api'
+import type { TextRequest, TextResponse } from '@/api'
 
 export const useTextStore = defineStore('text', () => {
-  const selectedMode = ref<TextRequest.mode>(TextRequest.mode.CORRECT)
+  const selectedMode = ref<TextRequest['mode']>('correct')
   const selectedModel = ref('')
   const availableModels = ref<string[]>([])
   const selectedProvider = ref('')
@@ -30,7 +30,7 @@ export const useTextStore = defineStore('text', () => {
   function clearAll() {
     inputText.value = ''
     clearOutput()
-    selectedMode.value = TextRequest.mode.CORRECT
+    selectedMode.value = 'correct'
     customInstruction.value = ''
   }
 
