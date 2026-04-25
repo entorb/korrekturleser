@@ -24,7 +24,10 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
 
     try {
-      const response = await api.auth.loginApiAuthLoginPost({ secret })
+      const { data: response } = await api.auth.loginApiAuthLoginPost({ body: { secret } })
+      if (!response) {
+        throw new Error('Login failed')
+      }
       const token = response.access_token
       tokenManager.set(token)
 
