@@ -10,3 +10,4 @@ overrides:
   serialize-javascript@<7.0.5: '>=7.0.5'
   serialize-javascript@<=7.0.2: '>=7.0.3'
   smol-toml@<1.6.1: '>=1.6.1'
+  uuid@<14.0.0: '>=14.0.0'
