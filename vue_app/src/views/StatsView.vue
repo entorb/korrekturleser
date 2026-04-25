@@ -22,7 +22,7 @@ async function loadStats() {
   error.value = null
 
   try {
-    stats.value = await api.statistics.getAllStatsApiStatsGet()
+    stats.value = (await api.statistics.getAllStatsApiStatsGet()).data ?? null
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Fehler beim Laden der Statistiken'
   } finally {
