@@ -2,7 +2,6 @@
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { TextRequest } from '@/api'
 import { useClipboard } from '@/composables/useClipboard'
 import { useConfig } from '@/composables/useConfig'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
@@ -37,7 +36,7 @@ const canSubmit = computed(
   () =>
     Boolean(textStore.inputText) &&
     !isProcessing.value &&
-    (textStore.selectedMode !== TextRequest.mode.CUSTOM || Boolean(textStore.customInstruction))
+    (textStore.selectedMode !== 'custom' || Boolean(textStore.customInstruction))
 )
 
 onMounted(() => fetchProvidersAndModels())

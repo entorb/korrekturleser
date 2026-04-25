@@ -3,17 +3,19 @@
  */
 
 import {
-  AuthenticationService,
-  ConfigurationService,
-  OpenAPI,
-  StatisticsService,
-  TextOperationsService
+  getAllStatsApiStatsGet,
+  getConfigApiConfigGet,
+  improveTextApiTextPost,
+  loginApiAuthLoginPost
 } from '@/api'
+import { client } from '@/api/client.gen'
 import { config } from '@/config/env'
 import { isTokenExpired } from '@/utils/jwt'
 
-// Configure the generated OpenAPI client
-OpenAPI.BASE = config.apiBaseUrl
+// Configure the generated client
+client.setConfig({
+  baseURL: config.apiBaseUrl
+})
 
 // Token management helpers
 export const tokenManager = {
@@ -32,15 +34,17 @@ export const tokenManager = {
 
 // Setup token injection for authenticated requests
 // Checks token expiry before each request
-OpenAPI.TOKEN = () => {
-  const token = tokenManager.get()
-  return Promise.resolve(token != null && !isTokenExpired(token) ? token : '')
-}
+client.setConfig({
+  auth() {
+    const token = tokenManager.get()
+    return token != null && !isTokenExpired(token) ? token : ''
+  }
+})
 
-// Export services
+// Export SDK functions
 export const api = {
-  auth: AuthenticationService,
-  config: ConfigurationService,
-  text: TextOperationsService,
-  statistics: StatisticsService
+  auth: { loginApiAuthLoginPost },
+  config: { getConfigApiConfigGet },
+  text: { improveTextApiTextPost },
+  statistics: { getAllStatsApiStatsGet }
 }

@@ -5,7 +5,7 @@
 
 import { computed, ref } from 'vue'
 
-import { TextRequest } from '@/api'
+import type { TextRequest, TextResponse } from '@/api'
 import { api } from '@/services/apiClient'
 import { useTextStore } from '@/stores/text'
 import { generateDiff } from '@/utils/diff'
@@ -17,13 +17,32 @@ export function useTextProcessing() {
   const showDiff = computed(
     () =>
       textStore.outputText &&
-      (textStore.selectedMode === TextRequest.mode.CORRECT ||
-        textStore.selectedMode === TextRequest.mode.IMPROVE)
+      (textStore.selectedMode === 'correct' || textStore.selectedMode === 'improve')
   )
 
   const showMarkdown = computed(
-    () => textStore.outputText && textStore.selectedMode === TextRequest.mode.SUMMARIZE
+    () => textStore.outputText && textStore.selectedMode === 'summarize'
   )
+
+  function buildTextRequest(): TextRequest {
+    return {
+      text: textStore.inputText,
+      mode: textStore.selectedMode,
+      custom_instruction:
+        textStore.selectedMode === 'custom' ? textStore.customInstruction || null : null,
+      model: textStore.selectedModel || null,
+      provider: textStore.selectedProvider || null
+    }
+  }
+
+  function handleResult(result: TextResponse) {
+    textStore.outputText = result.text_ai
+    textStore.lastResult = result
+
+    if (showDiff.value) {
+      textStore.diffHtml = generateDiff(`${textStore.inputText}\n\n`, `${result.text_ai}\n\n`)
+    }
+  }
 
   async function processText() {
     if (!textStore.inputText) return
@@ -34,23 +53,12 @@ export function useTextProcessing() {
     textStore.diffHtml = ''
 
     try {
-      const result = await api.text.improveTextApiTextPost({
-        text: textStore.inputText,
-        mode: textStore.selectedMode,
-        custom_instruction:
-          textStore.selectedMode === TextRequest.mode.CUSTOM
-            ? textStore.customInstruction || null
-            : null,
-        model: textStore.selectedModel || null,
-        provider: textStore.selectedProvider || null
-      })
+      const body = buildTextRequest()
+      const { data: result } = await api.text.improveTextApiTextPost({ body })
 
-      textStore.outputText = result.text_ai
-      textStore.lastResult = result
+      if (!result) throw new Error('No response from API')
 
-      if (showDiff.value === true) {
-        textStore.diffHtml = generateDiff(`${textStore.inputText}\n\n`, `${result.text_ai}\n\n`)
-      }
+      handleResult(result)
     } catch (err) {
       textStore.error = err instanceof Error ? err.message : 'Fehler bei der Textverarbeitung'
     } finally {

@@ -14,9 +14,10 @@ export function useConfig() {
 
   async function fetchProvidersAndModels() {
     try {
-      const response = await api.config.getConfigApiConfigGet(
-        textStore.selectedProvider || undefined
-      )
+      const { data: response } = await api.config.getConfigApiConfigGet({
+        query: { provider: textStore.selectedProvider || null }
+      })
+      if (!response) return
       textStore.availableModels = response.models
       textStore.availableProviders = response.providers
 
@@ -33,9 +34,10 @@ export function useConfig() {
 
   async function handleProviderChange() {
     try {
-      const response = await api.config.getConfigApiConfigGet(
-        textStore.selectedProvider || undefined
-      )
+      const { data: response } = await api.config.getConfigApiConfigGet({
+        query: { provider: textStore.selectedProvider || null }
+      })
+      if (!response) return
       textStore.availableModels = response.models
 
       if (response.models.length > 0) {
