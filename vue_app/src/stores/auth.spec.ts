@@ -59,8 +59,12 @@ describe('Auth Store', () => {
       exp: Math.floor(Date.now() / 1000) + 3600
     }
 
-    vi.mocked(api.auth.loginApiAuthLoginPost).mockResolvedValue(mockLoginResponse)
-    vi.mocked(api.config.getConfigApiConfigGet).mockResolvedValue(mockConfigResponse)
+    vi.mocked(api.auth.loginApiAuthLoginPost).mockResolvedValue({
+      data: mockLoginResponse
+    } as never)
+    vi.mocked(api.config.getConfigApiConfigGet).mockResolvedValue({
+      data: mockConfigResponse
+    } as never)
     vi.mocked(tokenManager.get).mockReturnValue('test-token')
     vi.mocked(isTokenExpired).mockReturnValue(false)
     vi.mocked(decodeJwt).mockReturnValue(mockPayload)

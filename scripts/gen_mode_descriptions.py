@@ -19,14 +19,14 @@ def generate_typescript_file() -> str:
     """Generate TypeScript code with mode descriptions."""
     # Extract mode descriptions
     mode_entries = []
+    all_modes = []
     for mode_key, config in MODE_CONFIGS.items():
-        # Convert Python string to TypeScript enum key
-        # e.g., "correct" -> "CORRECT"
-        enum_key = mode_key.upper()
         description = config.description
-        mode_entries.append(f"  [TextRequest.mode.{enum_key}]: '{description}'")
+        mode_entries.append(f"  {mode_key}: '{description}'")
+        all_modes.append(f"  '{mode_key}'")
 
     mode_descriptions = ",\n".join(mode_entries)
+    modes_list = ",\n".join(all_modes)
 
     # Generate TypeScript file content
     ts_content = f"""/**
@@ -38,24 +38,32 @@ def generate_typescript_file() -> str:
  * To regenerate: pnpm generate-api
  */
 
-import {{ TextRequest }} from '@/api'
+import type {{ TextRequest }} from '@/api'
+
+/** All supported mode values */
+export type TextMode = TextRequest['mode']
+
+/** All available mode values */
+const ALL_MODES: TextMode[] = [
+{modes_list}
+]
 
 // Mode descriptions mapping (auto-generated from backend)
-const MODE_DESCRIPTIONS: Record<TextRequest.mode, string> = {{
+const MODE_DESCRIPTIONS: Record<TextMode, string> = {{
 {mode_descriptions}
 }}
 
 /**
  * Get all available modes (auto-generated from enum)
  */
-export function getAvailableModes(): TextRequest.mode[] {{
-  return Object.values(TextRequest.mode)
+export function getAvailableModes(): TextMode[] {{
+  return ALL_MODES
 }}
 
 /**
  * Get description for a mode
  */
-export function getModeDescription(mode: TextRequest.mode): string {{
+export function getModeDescription(mode: TextMode): string {{
   return MODE_DESCRIPTIONS[mode] || mode
 }}
 
