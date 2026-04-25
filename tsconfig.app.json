@@ -4,7 +4,7 @@
   "exclude": ["vue_app/**/__tests__/*"],
   "compilerOptions": {
     "alwaysStrict": true,
-    "exactOptionalPropertyTypes": true,
+    "exactOptionalPropertyTypes": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,

@@ -5,6 +5,7 @@ bordercolor
 borderopacity
 chatcompletionresponse
 checkpw
+Colada
 creds
 deepseek
 deskcolor

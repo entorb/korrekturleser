@@ -7,30 +7,44 @@
  * To regenerate: pnpm generate-api
  */
 
-import { TextRequest } from '@/api'
+import type { TextRequest } from '@/api'
+
+/** All supported mode values */
+export type TextMode = TextRequest['mode']
+
+/** All available mode values */
+const ALL_MODES: TextMode[] = [
+  'correct',
+  'improve',
+  'summarize',
+  'expand',
+  'translate_de',
+  'translate_en',
+  'custom'
+]
 
 // Mode descriptions mapping (auto-generated from backend)
-const MODE_DESCRIPTIONS: Record<TextRequest.mode, string> = {
-  [TextRequest.mode.CORRECT]: 'Korrigiere',
-  [TextRequest.mode.IMPROVE]: 'Verbessere',
-  [TextRequest.mode.SUMMARIZE]: 'Text -> Stichwörter',
-  [TextRequest.mode.EXPAND]: 'Stichwörter -> Text',
-  [TextRequest.mode.TRANSLATE_DE]: 'Übersetzen -> DE',
-  [TextRequest.mode.TRANSLATE_EN]: 'Übersetzen -> EN',
-  [TextRequest.mode.CUSTOM]: 'Freitext Anweisung'
+const MODE_DESCRIPTIONS: Record<TextMode, string> = {
+  correct: 'Korrigiere',
+  improve: 'Verbessere',
+  summarize: 'Text -> Stichwörter',
+  expand: 'Stichwörter -> Text',
+  translate_de: 'Übersetzen -> DE',
+  translate_en: 'Übersetzen -> EN',
+  custom: 'Freitext Anweisung'
 }
 
 /**
  * Get all available modes (auto-generated from enum)
  */
-export function getAvailableModes(): TextRequest.mode[] {
-  return Object.values(TextRequest.mode)
+export function getAvailableModes(): TextMode[] {
+  return ALL_MODES
 }
 
 /**
  * Get description for a mode
  */
-export function getModeDescription(mode: TextRequest.mode): string {
+export function getModeDescription(mode: TextMode): string {
   return MODE_DESCRIPTIONS[mode] || mode
 }
 
