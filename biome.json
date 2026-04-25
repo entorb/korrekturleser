@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.12/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.4.13/schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
   "files": {
     "ignoreUnknown": true,
@@ -22,8 +22,7 @@
       "!**/pnpm-lock.yaml",
       "!**/public",
       "!**/scripts",
-      "!**/sonar-report.xml",
-      "!vue_app/src/api/*"
+      "!**/sonar-report.xml"
     ]
   },
   "formatter": {
@@ -309,6 +308,30 @@
             "useNumericSeparators": "off"
           },
           "nursery": { "useGlobalThis": "off" }
+        }
+      }
+    },
+    {
+      "includes": ["**/api/**/*.gen.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off",
+            "useGuardForIn": "off",
+            "useIterableCallbackReturn": "off"
+          },
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off",
+            "noForEach": "off",
+            "noUselessSwitchCase": "off"
+          },
+          "style": {
+            "noNonNullAssertion": "off",
+            "useExplicitLengthCheck": "off",
+            "useForOf": "off",
+            "noSubstr": "off",
+            "noParameterAssign": "off"
+          }
         }
       }
     }
