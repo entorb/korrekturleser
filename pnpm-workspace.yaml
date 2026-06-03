@@ -4,6 +4,20 @@ onlyBuiltDependencies:
   - cypress
   - esbuild
 
+minimumReleaseAge: 20160 # 2 weeks (in minutes)
+minimumReleaseAgeExclude:
+  - '@biomejs/biome'
+  - '@biomejs/cli-darwin-arm64'
+  - '@biomejs/cli-darwin-x64'
+  - '@biomejs/cli-linux-arm64-musl'
+  - '@biomejs/cli-linux-arm64'
+  - '@biomejs/cli-linux-x64-musl'
+  - '@biomejs/cli-linux-x64'
+  - '@biomejs/cli-win32-arm64'
+  - '@biomejs/cli-win32-x64'
+  - qs@6.15.2
+  - tmp@0.2.6
+
 overrides:
   minimatch@>=10.0.0 <10.2.1: '>=10.2.1'
   minimatch@>=10.0.0 <10.2.3: '>=10.2.3'
@@ -11,3 +25,9 @@ overrides:
   serialize-javascript@<=7.0.2: '>=7.0.3'
   smol-toml@<1.6.1: '>=1.6.1'
   uuid@<14.0.0: '>=14.0.0'
+
+allowBuilds:
+  '@parcel/watcher': true
+  core-js: true
+  cypress: true
+  esbuild: true
