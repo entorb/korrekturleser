@@ -1,0 +1,9 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "tags": ["-lintignore"],
+  "entry": ["scripts/*.sh"],
+  "project": ["vue_app/src/**/*.ts", "vue_app/src/**/*.vue"],
+  "ignore": ["vue_app/src/api/**", "vue_app/src/route-map.d.ts"],
+  "ignoreBinaries": ["uv"],
+  "ignoreDependencies": ["@cspell/dict-de-de"]
+}
