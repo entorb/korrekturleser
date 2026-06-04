@@ -1,4 +1,4 @@
-# Dir
+# dirs
 __pycache__/
 .pytest_cache/
 /.coverage
@@ -10,17 +10,16 @@ __pycache__/
 /cypress/screenshots
 /dist
 /node_modules
+/template
 
 # files
 .cspellcache
 .DS_Store
 .env
 .eslintcache
+*.log
 *.swp
-CLAUDE.md
 coverage.xml
-db.sqlite
-GEMINI.md
-requirements.txt
-/template
 cspell-words-missing.txt
+db.sqlite
+requirements.txt
