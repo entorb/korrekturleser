@@ -9,10 +9,6 @@ set -e
 rm -f .DS_Store
 rm -f */.DS_Store
 
-# ruff
-uv run ruff check
-uv run ruff format
-
 # start fastapi
 uv run uvicorn fastapi_app.main:app --host localhost --port 9002 --reload &
 DEV_PID=$!
@@ -20,6 +16,8 @@ DEV_PID=$!
 # 1. Frontend
 pnpm run generate-api
 pnpm run check
+# ./scripts/chk_py_format.sh
+# ./scripts/chk_py_test.sh
 pnpm run build
 rsync -ruzv --no-links --delete --delete-excluded dist/* entorb@entorb.net:html/korrekturleser-vue/
 
@@ -27,8 +25,8 @@ rsync -ruzv --no-links --delete --delete-excluded dist/* entorb@entorb.net:html/
 # 2. Backends
 # config.toml -> config-prod.toml
 python3 scripts/config_convert.py
-./scripts/chk_ruff.sh
-./scripts/chk_pytest.sh
+./scripts/chk_py_format.sh
+./scripts/chk_py_test.sh
 
 # rsync -uz .streamlit/config-prod.toml entorb@entorb.net:korrekturleser/.streamlit/config.toml
 rsync -uz requirements.txt entorb@entorb.net:korrekturleser/
