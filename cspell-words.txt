@@ -22,6 +22,8 @@ gensalt
 hashpw
 htmlcov
 inkscape
+knip
+lintignore
 loglevel
 mediumint
 mistralai
