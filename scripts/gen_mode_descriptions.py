@@ -61,13 +61,6 @@ export function getAvailableModes(): TextMode[] {{
 }}
 
 /**
- * Get description for a mode
- */
-export function getModeDescription(mode: TextMode): string {{
-  return MODE_DESCRIPTIONS[mode] || mode
-}}
-
-/**
  * Get all mode descriptions as a record
  */
 export function getModeDescriptions(): Record<string, string> {{
