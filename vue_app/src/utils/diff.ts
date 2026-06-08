@@ -6,7 +6,9 @@ import { createTwoFilesPatch } from 'diff'
 import { html } from 'diff2html'
 
 export function generateDiff(original: string, improved: string): string {
-  const patch = createTwoFilesPatch('', '', original, improved, '', '', { context: 3 })
+  const patch = createTwoFilesPatch('Original', 'Verbessert', original, improved, '', '', {
+    context: 3
+  })
   const diffHtml = html(patch, {
     drawFileList: false,
     matching: 'words',
