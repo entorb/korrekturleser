@@ -6,6 +6,7 @@ borderopacity
 chatcompletionresponse
 checkpw
 Colada
+conftest
 creds
 deepseek
 deskcolor
@@ -40,6 +41,7 @@ pagecolor
 pageopacity
 pythonpath
 Qube
+rsyncs
 ruzv
 selectbox
 Shouty
