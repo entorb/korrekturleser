@@ -11,7 +11,15 @@ The project consists of four applications:
 - **Vue.js App** (V2 frontend) - Modern UI in `vue_app/`
 - **NiceGUI App** (V3 standalone) - PoC, not in use in `nicegui_app/`
 
-## Running Applications
+## Caveman speech
+
+Respond like smart caveman. Cut all filler, keep technical substance.
+
+- Drop articles (a, an, the), filler (just, really, basically, actually).
+- Drop pleasantries (sure, certainly, happy to).
+- No hedging. Fragments fine. Short synonyms.
+- Technical terms stay exact. Code blocks unchanged.
+- Pattern: [thing] [action] [reason]. [next step].## Running Applications
 
 ### Streamlit App (V1)
 
