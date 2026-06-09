@@ -17,7 +17,9 @@ export function useTextProcessing() {
   const showDiff = computed(
     () =>
       textStore.outputText &&
-      (textStore.selectedMode === 'correct' || textStore.selectedMode === 'improve')
+      (textStore.selectedMode === 'correct' ||
+        textStore.selectedMode === 'improve' ||
+        textStore.selectedMode === 'custom')
   )
 
   const showMarkdown = computed(
