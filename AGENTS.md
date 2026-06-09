@@ -7,10 +7,10 @@ Respond like smart caveman. Cut filler. Fragments fine. Technical terms exact.
 ```sh
 uv sync                  # Python deps
 pnpm install             # JS deps
-cp .env.example .env     # then edit LLM_PROVIDERS=Mock for local
+cp .env.example .env     # set LLM_PROVIDERS=Mock for local
 ```
 
-Local DB auto-creates `db.sqlite` with mock user (secret `test`, Torben, ID:1). Prod detection: check `/home/entorb/korrekturleser` exists.
+Local DB auto-creates `db.sqlite` (user Torben, secret `test`, ID:1). Prod detection: check `/home/entorb/korrekturleser` exists.
 
 ## Run apps
 
@@ -32,57 +32,48 @@ pnpm generate-api        # terminal 2 — reads localhost:9002/openapi.json
 
 `pnpm generate-api` does two things:
 1. Generates `vue_app/src/api/` via `@hey-api/openapi-ts`
-2. Runs `scripts/gen_mode_descriptions.py` → produces `vue_app/src/config/modes.ts`
+2. Runs `scripts/gen_mode_descriptions.py` → `vue_app/src/config/modes.ts`
 
-Both outputs are auto-generated — DO NOT edit manually.
+Both are auto-generated — DO NOT edit manually.
 
-## After each change
+To add a mode: edit `shared/mode_configs.py` (add `ModeConfig` entry + `TextMode` literal), then regenerate.
 
-| Scope | Command |
-|-------|---------|
-| Python | `scripts/chk_py_format.sh` (ruff format + check) |
-| JS/TS/Vue | `scripts/chk_js_format.sh` (biome) |
-| Full suite | `scripts/run_checks.sh` (runs all `chk_*.sh` sequentially) |
+## Checks
 
-Frontend check pipeline: `pnpm check` runs (in parallel): `format types lint spell test knip`.
+| Scope | Quick fix | Full suite |
+|-------|-----------|------------|
+| Python format | `scripts/chk_py_format.sh` (ruff format + check --fix) | `scripts/chk_py_test.sh` (pytest) |
+| JS/TS/Vue format | `scripts/chk_js_format.sh` (biome) | `scripts/chk_js_test.sh` (vitest) |
+| JS types | `scripts/chk_js_types.sh` (vue-tsc) | `pnpm check` (parallel: format, lint, types, spell, test, knip) |
+| JS lint | `scripts/chk_js_lint.sh` (eslint) | `scripts/run_checks.sh` (runs all `chk_*.sh` sequentially) |
 
-If a check fails → fix → rerun only that check → repeat → finally rerun full suite.
+CI (`.github/workflows/check.yml`) runs full stack on push/PR to main: ruff → biome → eslint → pytest → vitest → cspell → vue-tsc → knip → vulture → pre-commit → audits.
+
+When a check fails → fix → rerun that check only → repeat → final `scripts/run_checks.sh` or `pnpm check`.
 
 ## Architecture
 
-- **`shared/`** — single source of truth for business logic (DB, LLM providers, mode configs, config). Used by both Streamlit and FastAPI.
-- **`fastapi_app/`** — REST API with JWT auth (24h tokens). 4 routers: auth, config, text, stats.
-- **`vue_app/`** — Vue 3 + Quasar + Pinia + TypeScript.
-- **`streamlit_app/`** — V1 PoC (legacy).
-- **`nicegui_app/`** — V3 standalone (PoC, not in active use).
-
-### Mode config (single source of truth)
-
-File: `shared/mode_configs.py` — defines `MODE_CONFIGS` dict + `TextMode` Literal.
-
-To add a mode:
-1. Add `ModeConfig` entry to `MODE_CONFIGS`
-2. Add mode string to `TextMode` Literal
-3. Regenerate: `pnpm generate-api` (needs FastAPI running)
+- **`shared/`** — single source of truth (DB, LLM providers, mode configs, config). Used by all apps.
+- **`fastapi_app/`** — REST API at root `/be/korrekturleser-fastapi`. JWT auth (24h, HS256). 4 routers: auth, config, text, stats. Rate limiter (slowapi) PROD only. CORS: PROD → `entorb.net`, local → localhost:4173/5173.
+- **`vue_app/`** — Vue 3 + Quasar + Pinia + TypeScript. See `vue_app/AGENTS.md` for conventions.
+- **`streamlit_app/`** — V1 legacy PoC.
+- **`nicegui_app/`** — V3 PoC (not active).
 
 ### Database
 
-Auto-detects PROD vs local. Local: SQLite (`db.sqlite`) mirrors MySQL schema. Prod: MySQL via connection pool. Mocked LLM (`LLM_PROVIDERS=Mock`) skips all DB writes.
-
-### Vue FE conventions
-
-Separate `vue_app/AGENTS.md` covers Pinia store style (direct mutations, no setters), error handling, component patterns.
+Auto-detects PROD vs local. Local: SQLite (`db.sqlite`) mirrors MySQL schema. Prod: MySQL via `MySQLConnectionPool` (pool size=3). `LLM_PROVIDERS=Mock` skips all DB writes.
 
 ## Testing
 
 | Stack | Command | Notes |
 |-------|---------|-------|
-| Python | `uv run pytest --quiet --tb=short` | `tests/conftest.py` sets `LLM_PROVIDERS=Mock` before any import |
-| Vue | `pnpm test` (vitest) | `vue_app/__tests__/` |
+| Python | `uv run pytest --quiet --tb=short` | `tests/conftest.py` sets `LLM_PROVIDERS=Mock` + `LLM_MODEL=random` before imports |
+| Vue | `pnpm test` (vitest) | jsdom, `vue_app/__tests__/` |
 | Vue + coverage | `pnpm test-cov` | |
+| E2E | `pnpm cy:run` (Cypress) | |
 
-Python tests use FastAPI `TestClient` with session-scoped auth fixtures. E2E: `pnpm cy:run` (Cypress).
+Python tests: FastAPI `TestClient`, session-scoped fixtures (`client`, `auth_token`, `auth_headers`).
 
 ## Deployment
 
-Target: Uberspace shared hosting via SCP. Script: `scripts/deploy.sh` — builds Vue, runs checks, rsyncs to `entorb@entorb.net`. Prod runs under gunicorn (see `deployment.md`).
+Target: Uberspace via SCP. Script: `scripts/deploy.sh` — starts FastAPI locally, generates API client, runs checks, builds Vue, syncs to `entorb@entorb.net`. Prod under gunicorn (see `deployment.md`).
