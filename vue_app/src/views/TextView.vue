@@ -279,17 +279,17 @@ function handleLogout() {
               />
               <!-- eslint-enable vue/no-v-html -->
             </q-card-section>
-
-            <!-- Result Info -->
-            <q-card-section
-              v-if="textStore.lastResult"
-              class="text-caption text-grey-7"
-            >
-              LLM: {{ textStore.lastResult.provider }} | Model: {{ textStore.lastResult.model }} |
-              Tokens:
-              {{ textStore.lastResult.tokens_used }}
-            </q-card-section>
           </q-card>
+
+          <!-- Result Info -->
+          <div
+            v-if="textStore.lastResult"
+            class="text-caption text-grey-7 q-mt-sm"
+          >
+            LLM: {{ textStore.lastResult.provider }} | Model: {{ textStore.lastResult.model }} |
+            Tokens:
+            {{ textStore.lastResult.tokens_used }}
+          </div>
 
           <!-- LLM Provider and Model Select -->
           <div class="row q-col-gutter-md q-mt-md">
