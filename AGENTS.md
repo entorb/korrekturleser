@@ -15,7 +15,7 @@ Local DB auto-creates `db.sqlite` (user Torben, secret `test`, ID:1). Prod detec
 ## Run apps
 
 | App | Script | URL |
-|-----|--------|-----|
+| --- | ------ | --- |
 | FastAPI (V2 BE) | `scripts/run_fastapi.sh` | `localhost:9002` |
 | Vue.js (V2 FE) | `scripts/run_vue.sh` | `localhost:5173/korrekturleser-vue/` |
 | Streamlit (V1) | `scripts/run_streamlit.sh` | `localhost:8503/korrekturleser-streamlit/` |
@@ -31,6 +31,7 @@ pnpm generate-api        # terminal 2 — reads localhost:9002/openapi.json
 ```
 
 `pnpm generate-api` does two things:
+
 1. Generates `vue_app/src/api/` via `@hey-api/openapi-ts`
 2. Runs `scripts/gen_mode_descriptions.py` → `vue_app/src/config/modes.ts`
 
@@ -41,7 +42,7 @@ To add a mode: edit `shared/mode_configs.py` (add `ModeConfig` entry + `TextMode
 ## Checks
 
 | Scope | Quick fix | Full suite |
-|-------|-----------|------------|
+| ----- | --------- | ---------- |
 | Python format | `scripts/chk_py_format.sh` (ruff format + check --fix) | `scripts/chk_py_test.sh` (pytest) |
 | JS/TS/Vue format | `scripts/chk_js_format.sh` (biome) | `scripts/chk_js_test.sh` (vitest) |
 | JS types | `scripts/chk_js_types.sh` (vue-tsc) | `pnpm check` (parallel: format, lint, types, spell, test, knip) |
@@ -66,7 +67,7 @@ Auto-detects PROD vs local. Local: SQLite (`db.sqlite`) mirrors MySQL schema. Pr
 ## Testing
 
 | Stack | Command | Notes |
-|-------|---------|-------|
+| ----- | ------- | ----- |
 | Python | `uv run pytest --quiet --tb=short` | `tests/conftest.py` sets `LLM_PROVIDERS=Mock` + `LLM_MODEL=random` before imports |
 | Vue | `pnpm test` (vitest) | jsdom, `vue_app/__tests__/` |
 | Vue + coverage | `pnpm test-cov` | |
