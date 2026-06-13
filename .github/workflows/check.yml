@@ -65,13 +65,14 @@ jobs:
           uv run --frozen --no-build ruff format --check
           uv run --frozen --no-build ruff check --no-fix --output-format=github
 
+      # - name: Run formatter
+      #   run: pnpm run format
       # - name: Setup Biome
       #   uses: biomejs/setup-biome@v2
       #   with:
       #     version: latest
 
-      - name: Run js format Biome
-        # run: biome ci .
+      - name: Run Biome
         run: pnpm exec biome ci .
 
       - name: Run js linter ESLint
