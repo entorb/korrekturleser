@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.0/schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
   "files": {
     "ignoreUnknown": true,
@@ -62,7 +62,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "a11y": {
         "noAccessKey": "error",
         "noAriaHiddenOnFocusable": "error",
@@ -144,8 +144,6 @@
       "nursery": {
         "noFloatingPromises": "warn",
         "noMisusedPromises": "warn",
-        "noNestedPromises": "warn",
-        "useGlobalThis": "error",
         "useImportsFirst": "error"
       },
       "performance": {
@@ -187,7 +185,8 @@
         "useSingleVarDeclarator": "error",
         "useTemplate": "warn",
         "useThrowNewError": "error",
-        "useTrimStartEnd": "error"
+        "useTrimStartEnd": "error",
+        "useGlobalThis": "error"
       },
       "suspicious": {
         "noAssignInExpressions": "error",
@@ -213,7 +212,8 @@
         "useErrorMessage": "error",
         "useGuardForIn": "error",
         "useIsArray": "error",
-        "useNumberToFixedDigitsArgument": "error"
+        "useNumberToFixedDigitsArgument": "error",
+        "noNestedPromises": "warn"
       }
     }
   },
@@ -231,7 +231,8 @@
           "suspicious": {
             "noExplicitAny": "off",
             "noEmptyBlockStatements": "off",
-            "noSkippedTests": "warn"
+            "noSkippedTests": "warn",
+            "noNestedPromises": "off"
           },
           "complexity": {
             "noExcessiveCognitiveComplexity": "off",
@@ -239,8 +240,7 @@
           },
           "nursery": {
             "noFloatingPromises": "off",
-            "noMisusedPromises": "off",
-            "noNestedPromises": "off"
+            "noMisusedPromises": "off"
           },
           "style": {
             "noNonNullAssertion": "off",
@@ -255,7 +255,8 @@
         "rules": {
           "suspicious": {
             "noExplicitAny": "off",
-            "noEmptyBlockStatements": "off"
+            "noEmptyBlockStatements": "off",
+            "noNestedPromises": "off"
           },
           "complexity": {
             "noExcessiveCognitiveComplexity": "off",
@@ -263,8 +264,7 @@
           },
           "nursery": {
             "noFloatingPromises": "off",
-            "noMisusedPromises": "off",
-            "noNestedPromises": "off"
+            "noMisusedPromises": "off"
           },
           "style": {
             "noNonNullAssertion": "off",
@@ -305,9 +305,10 @@
           "style": {
             "useSingleVarDeclarator": "off",
             "useTemplate": "off",
-            "useNumericSeparators": "off"
+            "useNumericSeparators": "off",
+            "useGlobalThis": "off"
           },
-          "nursery": { "useGlobalThis": "off" }
+          "nursery": {}
         }
       }
     },
