@@ -58,7 +58,7 @@ jobs:
           cp .env.example .env
 
       - name: Run md format
-        run: pnpm exec markdownlint-cli2 "**/*.md" "#node_modules" "#.venv"
+        run: pnpm exec markdownlint-cli2 "**/*.md"
 
       - name: Run py format Ruff
         run: |
