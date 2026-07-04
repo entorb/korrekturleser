@@ -90,9 +90,9 @@ repos:
   #   hooks:
   #     - id: cspell
 
-  # Vulture: find dead code
-  - repo: https://github.com/jendrikseipp/vulture
-    rev: v2.16
-    hooks:
-      - id: vulture
-        pass_filenames: false
+  # # Vulture: find dead code: moved to GH action
+  # - repo: https://github.com/jendrikseipp/vulture
+  #   rev: v2.16
+  #   hooks:
+  #     - id: vulture
+  #       pass_filenames: false
