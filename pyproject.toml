@@ -1,0 +1,60 @@
+[project]
+name = "korrekturleser"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "azure-identity>=1.25.3",
+    "bcrypt>=5.0.0",
+    "dotenv>=0.9.9",
+    "fastapi>=0.135.3",
+    "google-genai>=1.72.0",
+    "mistralai>=2.3.0",
+    "mysql-connector-python==9.4.0",
+    "nicegui>=3.10.0",
+    "openai>=2.31.0",
+    "pandas==2.2.3",
+    "pyarrow==20.0.0",
+    "pydantic>=2.12.5",
+    "pyjwt>=2.12.1",
+    "slowapi>=0.1.9",
+    "st-copy>=1.1.2",
+    "streamlit>=1.56.0",
+]
+
+[dependency-groups]
+dev = [
+    "ollama>=0.6.1",
+    "pre-commit>=4.5.1",
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.10",
+    "tomli-w>=1.2.0",
+    "uvicorn>=0.44.0",
+    "vulture>=2.16",
+    "watchdog>=6.0.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["shared", "streamlit_app", "fastapi_app"]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["shared", "streamlit_app", "fastapi_app"]
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "if __name__ == \"__main__\":"]
+
+[tool.uv]
+# pyarrow cannot be updated beyond 20.0.0 (pinned by pandas==2.2.3 compatibility)
+
+[tool.uv.audit]
+ignore = ["GHSA-rgxp-2hwp-jwgg"]
+
+[tool.vulture]
+ignore_decorators = ["@app.get", "@router.get", "@router.post"]
+# "nicegui_app"
+paths = ["fastapi_app", "shared", "streamlit_app"]
+exclude = ["fastapi_app/gunicorn_conf.py", "fastapi_app/schemas.py"]
+ignore_names = ["CSS_HEADER", "LOGGER", "MOCK_USERS", "TextMode", "visible"]
