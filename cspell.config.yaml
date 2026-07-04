@@ -27,4 +27,5 @@ ignorePaths:
   - 'package*.json'
   - 'pnpm-lock.yaml'
   - 'pnpm-workspace.yaml'
+  - 'pyproject.toml'
   - 'uv.lock'
