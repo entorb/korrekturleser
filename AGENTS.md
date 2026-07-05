@@ -40,16 +40,16 @@ To add a mode: edit `shared/mode_configs.py` (add `ModeConfig` entry + `TextMode
 
 ## Checks
 
-| Scope | Quick fix | Full suite |
-| ----- | --------- | ---------- |
-| Python format | `scripts/chk_py_format.sh` (ruff format + check --fix) | `scripts/chk_py_test.sh` (pytest) |
-| JS/TS/Vue format | `scripts/chk_js_format.sh` (biome) | `scripts/chk_js_test.sh` (vitest) |
-| JS types | `scripts/chk_js_types.sh` (vue-tsc) | `pnpm check` (parallel: format, lint, types, spell, test, knip) |
-| JS lint | `scripts/chk_js_lint.sh` (eslint) | `scripts/run_checks.sh` (runs all `chk_*.sh` sequentially) |
+run after each modification
 
-CI (`.github/workflows/check.yml`) runs full stack on push/PR to main: ruff → biome → eslint → pytest → vitest → cspell → vue-tsc → knip → vulture → pre-commit → audits.
+- Python: `uv run ruff format && uv run ruff check --fix --unsafe-fixes`
+- JavaScript: `pnpm run check`
 
-When a check fails → fix → rerun that check only → repeat → final `scripts/run_checks.sh` or `pnpm check`.
+run before committing
+
+- `scripts/run_checks.sh` (runs all `chk_*.sh` sequentially)
+
+If a check fails → fix → rerun that check only → repeat → final `scripts/run_checks.sh`.
 
 ## Architecture
 

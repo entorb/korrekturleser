@@ -60,14 +60,14 @@ The application can be run locally with an SQLite database:
 ### Streamlit App (V1)
 
 ```sh
-scripts/streamlit.sh
+scripts/run_streamlit.sh
 open http://localhost:8503/korrekturleser-streamlit/
 ```
 
 ### FastAPI Backend (V2)
 
 ```sh
-scripts/fastapi.sh
+scripts/run_fastapi.sh
 open http://localhost:9002
 
 # to view API spec
@@ -77,7 +77,7 @@ open http://localhost:9002/docs
 ### Vue.js Frontend (V2)
 
 ```sh
-scripts/vue.sh
+scripts/run_vue.sh
 open http://localhost:5173/korrekturleser-vue/
 ```
 
@@ -85,66 +85,14 @@ The FastAPI routes and types are generated from FastAPI OpenAPI spec:
 
 ```sh
 # start fastapi
-scripts/fastapi.sh
+scripts/run_fastapi.sh
 # export the OpenAPI spec
 pnpm generate-api
 ```
 
-### Code checks
+## Code checks
 
-These should be executed before commit and after each AI assistant step.
-
-#### Python backends
-
-```sh
-scripts/ruff.sh
-scripts/pytest.sh
-```
-
-#### Frontend
-
-```sh
-# this runs these in parallel: format lint type-check spell test
-pnpm check
-```
-
-## Project Structure
-
-```plain
-korrekturleser/
-├── shared/              # Shared Python code (DB, LLM provider, config)
-│   ├── config.py        # Configuration and environment detection
-│   ├── helper.py        # Shared helper functions
-│   ├── helper_ai.py     # AI mode configurations (single source of truth)
-│   ├── helper_db.py     # Database operations (MySQL prod, SQLite local)
-│   ├── helper_diff.py   # Diff HTML generation
-│   └── llm_provider.py  # LLM provider abstraction (Gemini, Ollama)
-├── streamlit_app/       # Streamlit application (V1)
-│   └── reports/         # Report pages
-├── fastapi_app/         # FastAPI REST API (V2 Backend)
-│   ├── routers/         # API endpoints
-│   │   ├── auth.py      # Authentication (login with JWT)
-│   │   ├── text.py      # Text improvement operations
-│   │   └── stats.py     # Usage statistics
-│   ├── schemas.py       # Pydantic models for validation
-│   └── helper_fastapi.py # JWT token management
-├── vue_app/             # Vue.js application (V2 Frontend)
-│   ├── src/
-│   │   ├── api/         # Auto-generated API client (from OpenAPI)
-│   │   ├── config/      # Configuration (modes.ts is auto-generated)
-│   │   ├── views/       # Page components (Login, Text, Stats)
-│   │   ├── stores/      # Pinia state stores (auth, text)
-│   │   ├── services/    # API client configuration
-│   │   ├── utils/       # Utilities (JWT decoding)
-│   │   └── plugins/     # Quasar configuration
-│   └── __tests__/       # Vitest unit tests
-├── scripts/             # Helper scripts
-│   ├── generate_mode_descriptions.py  # Generates TypeScript from Python modes
-│   ├── fastapi.sh       # Run FastAPI backend
-│   ├── vue.sh           # Run Vue.js frontend
-│   └── streamlit.sh     # Run Streamlit app
-└── tests/               # Pytest for Streamlit and FastAPI
-```
+see `scripts/chk_*.sh` run all via `scripts/run_check.sh`
 
 ## Architecture Details
 
