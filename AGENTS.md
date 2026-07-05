@@ -16,10 +16,9 @@ Local DB auto-creates `db.sqlite` (user Torben, secret `test`, ID:1). Prod detec
 
 | App | Script | URL |
 | --- | ------ | --- |
+| Streamlit (V1 PoC) | `scripts/run_streamlit.sh` | `localhost:8503/korrekturleser-streamlit/` |
 | FastAPI (V2 BE) | `scripts/run_fastapi.sh` | `localhost:9002` |
 | Vue.js (V2 FE) | `scripts/run_vue.sh` | `localhost:5173/korrekturleser-vue/` |
-| Streamlit (V1) | `scripts/run_streamlit.sh` | `localhost:8503/korrekturleser-streamlit/` |
-| NiceGUI (V3) | `scripts/run_nicegui.sh` | `localhost:8505/korrekturleser-nice/` |
 
 ## Code generation
 
@@ -55,10 +54,9 @@ When a check fails → fix → rerun that check only → repeat → final `scrip
 ## Architecture
 
 - **`shared/`** — single source of truth (DB, LLM providers, mode configs, config). Used by all apps.
+- **`streamlit_app/`** — V1 legacy PoC.
 - **`fastapi_app/`** — REST API at root `/be/korrekturleser-fastapi`. JWT auth (24h, HS256). 4 routers: auth, config, text, stats. Rate limiter (slowapi) PROD only. CORS: PROD → `entorb.net`, local → localhost:4173/5173.
 - **`vue_app/`** — Vue 3 + Quasar + Pinia + TypeScript. See `vue_app/AGENTS.md` for conventions.
-- **`streamlit_app/`** — V1 legacy PoC.
-- **`nicegui_app/`** — V3 PoC (not active).
 
 ### Database
 
