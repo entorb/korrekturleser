@@ -1,45 +1,54 @@
 #!/bin/sh
 
-# ensure we are in the root dir
-cd $(dirname $0)/..
-
 # exit upon error
 set -e
 
+# ensure we are in the root dir
+SCRIPT_DIR="$(dirname "$0")"
+cd "$SCRIPT_DIR/.."
+
+
 # 1. Python
 
-DEPS=$(uv run python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); print(' '.join(p.split('>')[0].split('<')[0].split('=')[0].split('!')[0] for p in d['project']['dependencies']))")
-DEV_DEPS=$(uv run python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); print(' '.join(p.split('>')[0].split('<')[0].split('=')[0].split('!')[0] for p in d['dependency-groups']['dev']))")
-DEPS_VERSIONED=$(uv run python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); print(' '.join(d['project']['dependencies']))")
-DEV_DEPS_VERSIONED=$(uv run python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); print(' '.join(d['dependency-groups']['dev']))")
+# # update uv
+# brew update && brew upgrade uv
 
-# 1. remove all
-uv remove $DEPS
-uv remove --dev $DEV_DEPS
+uv python upgrade "$(cat .python-version)"
 
-# 2. re-add with pinned versions from pyproject.toml (sets constraints)
-uv add $DEPS_VERSIONED
-uv add --dev $DEV_DEPS_VERSIONED
+# extract versions from pyproject.toml
+GEN_OUT=$(uv run python "$SCRIPT_DIR/gen_py_packages_update.py")
+DEP_REM=$(printf '%s\n' "$GEN_OUT" | sed -n 1p)
+DEP_ADD=$(printf '%s\n' "$GEN_OUT" | sed -n 2p)
+DEV_REM=$(printf '%s\n' "$GEN_OUT" | sed -n 3p)
+DEV_ADD=$(printf '%s\n' "$GEN_OUT" | sed -n 4p)
 
-# 3. upgrade within constraints
-uv lock --upgrade
+# Disables pathname expansion.
+set -f
+
+# remove unpinned
+[ -n "$DEP_REM" ] && uv remove $DEP_REM
+[ -n "$DEV_REM" ] && uv remove --dev $DEV_REM
+
 uv sync --upgrade
 
-python scripts/gen_requirements.py
+# Re-add at latest versions
+[ -n "$DEP_ADD" ] && uv add $DEP_ADD
+[ -n "$DEV_ADD" ] && uv add --dev $DEV_ADD
+# Restore pathname expansion.
+set +f
 
-# ruff
 uv run ruff format
 uv run ruff check --fix
 
-# pre-commit
 uv run pre-commit autoupdate
 uv run pre-commit run --all-files
+
+
+# 2. Vue
 
 # start fastapi
 uv run uvicorn fastapi_app.main:app --host localhost --port 9002 --reload &
 DEV_PID=$!
-
-# 2. Vue
 
 # remove old node_modules
 rm -rf node_modules
