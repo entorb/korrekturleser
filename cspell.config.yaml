@@ -20,12 +20,13 @@ import:
 
 ignorePaths:
   - '.*'
+  - '.vscode'
   - 'cspell.config.yaml'
-  - 'dist'
   - 'LICENSE'
-  - 'node_modules'
   - 'package*.json'
   - 'pnpm-lock.yaml'
   - 'pnpm-workspace.yaml'
+  - 'public'
   - 'pyproject.toml'
   - 'uv.lock'
+  - 'vue_app/src/api'
