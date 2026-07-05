@@ -4,9 +4,8 @@ This repository contains the source code for an LLM-based text improvement tool,
 
 The application has been implemented in multiple tech stacks, to compare them:
 
-- V1: Python Streamlit
+- V1: Python Streamlit PoC
 - V2: Python FastAPI backend with Vue.js frontend
-- V3: Python NiceGUI
 
 [SonarQube](https://sonarcloud.io/summary/overall?id=entorb_korrekturleser) is used to check the code quality.
 
@@ -91,21 +90,6 @@ scripts/fastapi.sh
 pnpm generate-api
 ```
 
-### NiceGUI App (V3)
-
-```sh
-scripts/nicegui.sh
-open http://localhost:8505/korrekturleser-nice
-```
-
-Standalone application combining frontend and backend using NiceGUI. Features:
-
-- Session-based authentication (auto-login in local mode)
-- SQLite database in local mode, MySQL in production
-- Real-time UI updates with async processing
-- Diff visualization and markdown rendering
-- Consistent styling with Vue.js app
-
 ### Code checks
 
 These should be executed before commit and after each AI assistant step.
@@ -154,17 +138,10 @@ korrekturleser/
 │   │   ├── utils/       # Utilities (JWT decoding)
 │   │   └── plugins/     # Quasar configuration
 │   └── __tests__/       # Vitest unit tests
-├── nicegui_app/         # NiceGUI application (V3 Standalone)
-│   ├── main.py          # App initialization, routing, auth guard
-│   ├── helper_nicegui.py # SessionManager for user state
-│   ├── page_login.py    # Login page
-│   ├── page_text.py     # Text improvement page
-│   └── page_stats.py    # Statistics page
 ├── scripts/             # Helper scripts
 │   ├── generate_mode_descriptions.py  # Generates TypeScript from Python modes
 │   ├── fastapi.sh       # Run FastAPI backend
 │   ├── vue.sh           # Run Vue.js frontend
-│   ├── nicegui.sh       # Run NiceGUI app
 │   └── streamlit.sh     # Run Streamlit app
 └── tests/               # Pytest for Streamlit and FastAPI
 ```
