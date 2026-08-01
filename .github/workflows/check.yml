@@ -45,11 +45,14 @@ jobs:
           node-version: 24
           cache: "pnpm"
 
-      # cache pre-commit data
-      - uses: actions/cache@v6
-        with:
-          path: ~/.cache/pre-commit
-          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+      - name: Run prek pre-commit
+        uses: j178/prek-action@v2
+
+      - name: Run markdownlint
+        run: pnpm exec markdownlint-cli2 "**/*.md"
+
+      - name: Run cspell
+        run: pnpm exec cspell-cli --gitignore --unique --silent .
 
       - name: Prepare
         run: |
@@ -101,9 +104,6 @@ jobs:
 
       - name: Run py dead code Vulture
         run: uv run --frozen --no-build vulture
-
-      - name: Run prek pre-commit
-        uses: j178/prek-action@v2
 
       # for SonarQube coverage report
       # - uses: SonarSource/sonarqube-scan-action@v8

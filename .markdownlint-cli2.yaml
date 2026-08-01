@@ -1,6 +1,6 @@
 ignores:
-  - "**/node_modules/**"
   - "**/.venv/**"
+  - "**/node_modules/**"
 
 config:
   MD013: false # line-length

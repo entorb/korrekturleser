@@ -30,3 +30,6 @@ ignorePaths:
   - 'pyproject.toml'
   - 'uv.lock'
   - 'vue_app/src/api'
+  - 'biome.json'
+  - 'pnpm-lock.yaml'
+  - 'pnpm-workspace.yaml'
