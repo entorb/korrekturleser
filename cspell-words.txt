@@ -37,6 +37,7 @@ oxlint
 pagecheckerboard
 pagecolor
 pageopacity
+prek
 pythonpath
 Qube
 rsyncs

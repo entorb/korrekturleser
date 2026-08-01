@@ -29,7 +29,7 @@ set -f
 [ -n "$DEP_REM" ] && uv remove $DEP_REM
 [ -n "$DEV_REM" ] && uv remove --dev $DEV_REM
 
-uv sync --upgrade
+uv --no-build sync --upgrade
 
 # Re-add at latest versions
 [ -n "$DEP_ADD" ] && uv add $DEP_ADD
@@ -37,17 +37,17 @@ uv sync --upgrade
 # Restore pathname expansion.
 set +f
 
-uv run ruff format
-uv run ruff check --fix
+uv run --no-build ruff format
+uv run --no-build ruff check --fix
 
-uv run pre-commit autoupdate
-uv run pre-commit run --all-files
+prek autoupdate
+prek run --all-files
 
 
 # 2. Vue
 
 # start fastapi
-uv run uvicorn fastapi_app.main:app --host localhost --port 9002 --reload &
+uv run --no-build uvicorn fastapi_app.main:app --host localhost --port 9002 --reload &
 DEV_PID=$!
 
 # remove old node_modules
