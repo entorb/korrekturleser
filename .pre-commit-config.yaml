@@ -41,8 +41,8 @@ repos:
         args: ["--fix=lf"]
       # - id: no-commit-to-branch # Prevent committing to protected branches
       #   args: [--branch, staging]
-      - id: pretty-format-json
-        args: ["--autofix", "--indent=2", "--no-ensure-ascii", "--no-sort-keys"]
+      # - id: pretty-format-json
+      #  args: ["--autofix", "--indent=2", "--no-ensure-ascii", "--no-sort-keys"]
       # - id: require-pattern # Require each file to match a configured regular expression
       - id: requirements-txt-fixer
       - id: trailing-whitespace
