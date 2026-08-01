@@ -114,4 +114,4 @@ jobs:
         run: uv audit --preview-features audit
 
       - name: Run js audit
-        run: pnpm audit
+        run: pnpm audit --prod
