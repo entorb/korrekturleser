@@ -1,62 +1,21 @@
-onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - core-js
-  - cypress
-  - esbuild
+minimumReleaseAge: 7200 # 5 days (in minutes)
+minimumReleaseAgeExclude:
+  - '@biomejs/biome'
+  - '@biomejs/cli-darwin-arm64'
+  - '@biomejs/cli-darwin-x64'
+  - '@biomejs/cli-linux-arm64-musl'
+  - '@biomejs/cli-linux-arm64'
+  - '@biomejs/cli-linux-x64-musl'
+  - '@biomejs/cli-linux-x64'
+  - '@biomejs/cli-win32-arm64'
+  - '@biomejs/cli-win32-x64'
+  - quasar@2.23.3
 
-# minimumReleaseAge: 20160 # 2 weeks (in minutes)
-# minimumReleaseAgeExclude:
-#   - '@biomejs/biome'
-#   - '@biomejs/cli-darwin-arm64'
-#   - '@biomejs/cli-darwin-x64'
-#   - '@biomejs/cli-linux-arm64-musl'
-#   - '@biomejs/cli-linux-arm64'
-#   - '@biomejs/cli-linux-x64-musl'
-#   - '@biomejs/cli-linux-x64'
-#   - '@biomejs/cli-win32-arm64'
-#   - '@biomejs/cli-win32-x64'
-#   - qs@6.15.2
-#   - tmp@0.2.6
-#   - shell-quote@1.8.4 || 1.8.5
-#   - esbuild@0.28.1
-#   - '@esbuild/aix-ppc64@0.28.1'
-#   - '@esbuild/android-arm64@0.28.1'
-#   - '@esbuild/android-arm@0.28.1'
-#   - '@esbuild/android-x64@0.28.1'
-#   - '@esbuild/darwin-arm64@0.28.1'
-#   - '@esbuild/darwin-x64@0.28.1'
-#   - '@esbuild/freebsd-arm64@0.28.1'
-#   - '@esbuild/freebsd-x64@0.28.1'
-#   - '@esbuild/linux-arm64@0.28.1'
-#   - '@esbuild/linux-arm@0.28.1'
-#   - '@esbuild/linux-ia32@0.28.1'
-#   - '@esbuild/linux-loong64@0.28.1'
-#   - '@esbuild/linux-mips64el@0.28.1'
-#   - '@esbuild/linux-ppc64@0.28.1'
-#   - '@esbuild/linux-riscv64@0.28.1'
-#   - '@esbuild/linux-s390x@0.28.1'
-#   - '@esbuild/linux-x64@0.28.1'
-#   - '@esbuild/netbsd-arm64@0.28.1'
-#   - '@esbuild/netbsd-x64@0.28.1'
-#   - '@esbuild/openbsd-arm64@0.28.1'
-#   - '@esbuild/openbsd-x64@0.28.1'
-#   - '@esbuild/openharmony-arm64@0.28.1'
-#   - '@esbuild/sunos-x64@0.28.1'
-#   - '@esbuild/win32-arm64@0.28.1'
-#   - '@esbuild/win32-ia32@0.28.1'
-#   - '@esbuild/win32-x64@0.28.1'
-#   - form-data@4.0.6
-#   - vite@8.0.16
-#   - js-yaml@4.1.2 || 4.3.0
-#   - markdown-it@14.1.2
-#   - undici@7.28.0
-#   - '@hey-api/openapi-ts@0.97.3'
-#   - brace-expansion@1.1.16 || 1.1.17 || 2.1.2 || 2.1.3 || 5.0.7 || 5.0.8
-#   - immutable@5.1.8
-#   - linkify-it@5.0.2
-#   - fast-uri@3.1.3 || 3.1.4
-#   - postcss@8.5.18
-#   - quasar@2.21.5
+allowBuilds:
+  '@parcel/watcher': true
+  core-js: true
+  cypress: true
+  esbuild: true
 
 overrides:
   js-yaml@<=4.1.1: ^4.1.2
@@ -68,12 +27,3 @@ overrides:
   serialize-javascript@<=7.0.2: '>=7.0.3'
   smol-toml@<1.6.1: '>=1.6.1'
   uuid@<14.0.0: '>=14.0.0'
-
-allowBuilds:
-  '@parcel/watcher': true
-  core-js: true
-  cypress: true
-  esbuild: true
-
-minimumReleaseAgeExclude:
-  - quasar@2.21.5
