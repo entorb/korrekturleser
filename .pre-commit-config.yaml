@@ -9,7 +9,7 @@
 
 exclude: |
   (?x)^(
-    \.vscode/.*|vue_app/src/api/.*|biome\.json|renovate\.json
+    \.vscode/.*
   )$
 
 repos:
@@ -42,7 +42,7 @@ repos:
       # - id: no-commit-to-branch # Prevent committing to protected branches
       #   args: [--branch, staging]
       # - id: pretty-format-json
-      #  args: ["--autofix", "--indent=2", "--no-ensure-ascii", "--no-sort-keys"]
+      #   args: ["--autofix", "--indent=2", "--no-ensure-ascii", "--no-sort-keys"]
       # - id: require-pattern # Require each file to match a configured regular expression
       - id: requirements-txt-fixer
       - id: trailing-whitespace
