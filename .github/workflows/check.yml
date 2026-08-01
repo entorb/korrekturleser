@@ -46,7 +46,7 @@ jobs:
           cache: "pnpm"
 
       - name: Run prek pre-commit
-        uses: j178/prek-action@v2
+        uses: j178/prek-action@v2.0.6
 
       - name: Run markdownlint
         run: pnpm exec markdownlint-cli2 "**/*.md"
