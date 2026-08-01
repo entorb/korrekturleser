@@ -2,7 +2,6 @@ import tsPlugin from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
 import pluginVitest from '@vitest/eslint-plugin'
 import pluginCypress from 'eslint-plugin-cypress'
-import pluginImport from 'eslint-plugin-import'
 import sonarjs from 'eslint-plugin-sonarjs'
 import pluginVue from 'eslint-plugin-vue'
 import pluginVueA11y from 'eslint-plugin-vuejs-accessibility'
@@ -18,7 +17,6 @@ export default [
       '**/.DS_Store',
       '**/.env',
       '**/.pnpm',
-      '**/.venv',
       '**/.vite',
       '**/*.d.ts',
       '**/*.tsbuildinfo',
@@ -54,12 +52,13 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
-      import: pluginImport,
       sonarjs
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
-      ...((sonarjs.configs?.recommended as { rules?: Record<string, unknown> })?.rules ?? {}),
+      ...(sonarjs.configs?.recommended && 'rules' in sonarjs.configs.recommended
+        ? sonarjs.configs.recommended.rules
+        : {}),
       // Type safety
       // '@typescript-eslint/consistent-type-imports' — covered by Biome useImportType
       '@typescript-eslint/explicit-function-return-type': 'off',
@@ -88,10 +87,6 @@ export default [
       // Code quality
       '@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
-      // Import organization — 'import/first', 'import/newline-after-import', 'import/no-duplicates', 'import/order' covered by Biome organizeImports
-      'import/no-cycle': 'off', // Slow rule (~33% of lint time) — caught by SonarCloud in CI
-      'import/no-self-import': 'error',
-      'import/no-useless-path-segments': 'error',
       // General best practices
       'array-callback-return': 'error',
       eqeqeq: ['error', 'always', { null: 'ignore' }],
@@ -189,7 +184,6 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
-      import: pluginImport,
       sonarjs,
       'vuejs-accessibility': pluginVueA11y
     },
@@ -201,10 +195,6 @@ export default [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
       ],
-      // Import organization — 'import/first', 'import/newline-after-import', 'import/no-duplicates', 'import/order' covered by Biome organizeImports
-      'import/no-cycle': 'off', // Slow rule — caught by SonarCloud in CI
-      'import/no-self-import': 'error',
-      'import/no-useless-path-segments': 'error',
       // SonarJS
       'sonarjs/cognitive-complexity': ['warn', 20],
       'sonarjs/no-commented-code': 'off', // Slow rule — caught by SonarCloud in CI
@@ -372,7 +362,6 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
-      import: pluginImport,
       vitest: pluginVitest
     },
     rules: {
@@ -388,8 +377,6 @@ export default [
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
       ],
       '@typescript-eslint/strict-boolean-expressions': 'off',
-      // Relaxed import rules for tests — 'import/newline-after-import', 'import/order' now covered by Biome
-      'import/no-cycle': 'off',
       // Relaxed code quality for tests
       'no-console': 'off',
       // 'prefer-template' — covered by Biome useTemplate
@@ -427,7 +414,6 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
-      import: pluginImport,
       cypress: pluginCypress
     },
     rules: {
@@ -439,8 +425,6 @@ export default [
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
       '@typescript-eslint/prefer-optional-chain': 'off',
-      // Relaxed import rules for E2E tests — most now covered by Biome
-      'import/no-cycle': 'off',
       // Relaxed code quality for E2E tests
       'array-callback-return': 'off',
       'no-console': 'off',
