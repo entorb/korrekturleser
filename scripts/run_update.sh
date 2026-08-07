@@ -8,6 +8,10 @@ SCRIPT_DIR="$(dirname "$0")"
 cd "$SCRIPT_DIR/.."
 
 
+# 0. prek pre-commit
+prek autoupdate
+prek run --all-files
+
 # 1. Python
 
 # # update uv
@@ -29,7 +33,7 @@ set -f
 [ -n "$DEP_REM" ] && uv remove $DEP_REM
 [ -n "$DEV_REM" ] && uv remove --dev $DEV_REM
 
-uv --no-build sync --upgrade
+uv sync --no-build --upgrade
 
 # Re-add at latest versions
 [ -n "$DEP_ADD" ] && uv add $DEP_ADD
@@ -39,10 +43,6 @@ set +f
 
 uv run --no-build ruff format
 uv run --no-build ruff check --fix
-
-prek autoupdate
-prek run --all-files
-
 
 # 2. Vue
 
