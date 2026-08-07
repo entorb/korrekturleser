@@ -57,7 +57,7 @@ jobs:
       - name: Prepare
         run: |
           uv sync --frozen --no-build
-          pnpm install --ignore-scripts
+          pnpm install --frozen-lockfile
           cp .env.example .env
 
       - name: Run md format
