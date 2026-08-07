@@ -54,7 +54,7 @@ async function handlePasteFromClipboard() {
 
 function handleLogout() {
   authStore.logout()
-  router.push({ name: 'login' })
+  void router.push({ name: 'login' })
 }
 </script>
 
