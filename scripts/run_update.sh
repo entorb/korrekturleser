@@ -53,8 +53,14 @@ DEV_PID=$!
 # remove old node_modules
 rm -rf node_modules
 
-pnpm up
+pnpm self-update
+pnpm up --latest
 pnpm exec biome migrate --write
+# fit audit findings
+if ! pnpm audit; then
+  pnpm audit --fix override
+  pnpm audit --fix update
+fi
 pnpm run check
 # generate the api, requires fastapi to run
 pnpm run generate-api
