@@ -7,7 +7,7 @@ from streamlit.testing.v1 import AppTest
 
 from shared.config import USER_ID_LOCAL, USER_NAME_LOCAL
 
-pages = sorted(Path("streamlit_app/reports").glob("*.py"))
+pages = sorted((Path(__file__).parent.parent / "streamlit_app/reports").glob("*.py"))
 
 
 @pytest.mark.parametrize("path", pages)
