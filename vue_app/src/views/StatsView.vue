@@ -14,7 +14,7 @@ const isLoading = ref(false)
 const error = ref<string | null>(null)
 
 function handleKeyPress(event: KeyboardEvent) {
-  if (event.key === 'Escape') router.push({ name: 'text' })
+  if (event.key === 'Escape') void router.push({ name: 'text' })
 }
 
 async function loadStats() {
@@ -41,7 +41,7 @@ onUnmounted(() => {
 
 function handleLogout() {
   authStore.logout()
-  router.push({ name: 'login' })
+  void router.push({ name: 'login' })
 }
 
 const formatNumber = (num: number | string | undefined = 0): string =>
