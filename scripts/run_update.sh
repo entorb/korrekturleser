@@ -58,8 +58,8 @@ pnpm up --latest
 pnpm exec biome migrate --write
 # fit audit findings
 if ! pnpm audit; then
-  pnpm audit --fix override
   pnpm audit --fix update
+  pnpm audit --fix override
 fi
 pnpm run check
 # generate the api, requires fastapi to run
