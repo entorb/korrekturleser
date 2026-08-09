@@ -3,11 +3,6 @@
 # ensure we are in the root dir
 cd "$(dirname "$0")/.."
 
-if ! grep -qxF 'cspell-words-missing.txt' .gitignore; then
-    echo "cspell-words-missing.txt missing from .gitignore"
-    exit 1
-fi
-
 rm -f cspell-words-missing.txt
 pnpm exec cspell-cli --cache --gitignore --quiet --unique .
 if [ $? -ne 0 ]; then

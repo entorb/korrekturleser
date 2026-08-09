@@ -68,6 +68,9 @@ jobs:
           uv run --frozen --no-build ruff format --check
           uv run --frozen --no-build ruff check --no-fix --output-format=github
 
+      - name: Run py type check Pyright
+        run: uv run --frozen --no-build pyright shared fastapi_app streamlit_app
+
       # - name: Run formatter
       #   run: pnpm run format
       # - name: Setup Biome
