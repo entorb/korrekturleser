@@ -276,7 +276,7 @@ ON DUPLICATE KEY UPDATE
 
 def db_select_usage_stats_total(user_id: int) -> pd.DataFrame:
     """SELECT user_name, sum(cnt_requests), sum(cnt_tokens)."""
-    col_names = ["user_name", "cnt_requests", "cnt_tokens"]
+    col_names: pd.Index = pd.Index(["user_name", "cnt_requests", "cnt_tokens"])
 
     sql = """
 SELECT u.name, SUM(h.cnt_requests) AS cnt_requests, SUM(h.cnt_tokens) AS cnt_tokens
@@ -321,7 +321,7 @@ ORDER BY cnt_tokens DESC, u.name ASC
 
 def db_select_usage_stats_daily(user_id: int) -> pd.DataFrame:
     """SELECT date, user_name, cnt_requests, cnt_tokens."""
-    col_names = ["date", "user_name", "cnt_requests", "cnt_tokens"]
+    col_names: pd.Index = pd.Index(["date", "user_name", "cnt_requests", "cnt_tokens"])
 
     sql = """
 SELECT h.date, u.name, h.cnt_requests, h.cnt_tokens

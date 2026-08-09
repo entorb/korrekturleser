@@ -97,7 +97,7 @@ def format_config_dataframe() -> pd.DataFrame:
         "LLM_PROVIDER_DEFAULT": LLM_PROVIDER_DEFAULT,
     }
     config_items = sorted([(k, str(v)) for k, v in config_data.items()])
-    return pd.DataFrame(config_items, columns=["key", "value"])
+    return pd.DataFrame(config_items, columns=pd.Index(["key", "value"]))
 
 
 def format_session_dataframe(session_dict: dict) -> pd.DataFrame:
@@ -115,4 +115,4 @@ def format_session_dataframe(session_dict: dict) -> pd.DataFrame:
     import pandas as pd  # noqa: PLC0415
 
     session_items = sorted([(k, str(v)) for k, v in session_dict.items()])
-    return pd.DataFrame(session_items, columns=["key", "value"])
+    return pd.DataFrame(session_items, columns=pd.Index(["key", "value"]))
