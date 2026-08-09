@@ -1,14 +1,12 @@
 #!/bin/sh
 
 # ensure we are in the root dir
-cd $(dirname $0)/..
+cd "$(dirname "$0")/.."
 
-pnpm audit
-
-if [ $? -ne 0 ]; then
-    pnpm audit --fix update
-    pnpm audit --fix override
-    if [ $? -ne 0 ]; then
-        exit 1
-    fi
+if pnpm audit; then
+    exit 0
 fi
+
+pnpm audit --fix update
+pnpm audit --fix override
+pnpm audit

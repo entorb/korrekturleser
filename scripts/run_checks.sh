@@ -1,12 +1,12 @@
 #!/bin/sh
 
 # ensure we are in the root dir
-cd $(dirname $0)/..
+cd "$(dirname "$0")/.."
 
 failures=0
 failed_list=""
 
-for f in $(dirname $0)/chk_*.sh; do
+for f in "$(dirname "$0")"/chk_*.sh; do
     name=$(basename "$f" .sh)
     echo ""
     echo "=== $name ==="
