@@ -49,7 +49,8 @@ class MistralProvider(LLMProvider):
 
         response = retry_with_exponential_backoff(_api_call, provider_name=PROVIDER)()
 
-        s = str(response.choices[0].message.content) or ""
+        choice = response.choices[0] if response.choices else None
+        s = str(choice.message.content) if choice and choice.message else ""
         tokens = 0
         if (
             hasattr(response, "usage")
