@@ -12,7 +12,7 @@
     "lint": "eslint . --cache --fix --ignore-pattern .gitignore",
     "preview": "vite preview",
     "run": "run-s build preview",
-    "spell": "cspell-cli --cache --quiet --gitignore --unique .",
+    "spell": "cspell-cli --cache --gitignore --quiet  --unique .",
     "test-cov": "vitest --watch=false --coverage",
     "test": "vitest --watch=false",
     "types": "vue-tsc --build",
