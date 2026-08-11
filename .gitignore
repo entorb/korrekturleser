@@ -1,6 +1,7 @@
 # dirs
 __pycache__/
 .pytest_cache/
+/.claude/
 /.coverage
 /.venv/
 /.vite/

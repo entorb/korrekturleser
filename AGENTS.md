@@ -69,7 +69,6 @@ Auto-detects PROD vs local. Local: SQLite (`db.sqlite`) mirrors MySQL schema. Pr
 | Python | `uv run pytest --quiet --tb=short` | `tests/conftest.py` sets `LLM_PROVIDERS=Mock` + `LLM_MODEL=random` before imports |
 | Vue | `pnpm test` (vitest) | jsdom, `vue_app/__tests__/` |
 | Vue + coverage | `pnpm test-cov` | |
-| E2E | `pnpm cy:run` (Cypress) | |
 
 Python tests: FastAPI `TestClient`, session-scoped fixtures (`client`, `auth_token`, `auth_headers`).
 

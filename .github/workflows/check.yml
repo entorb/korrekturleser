@@ -17,6 +17,7 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v7
@@ -24,16 +25,12 @@ jobs:
           persist-credentials: false
           fetch-depth: 1 # latest only
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@v9
         with:
           enable-cache: true
           cache-dependency-glob: |
             pyproject.toml
             uv.lock
-
-      # - uses: actions/setup-python@v6
-      #   with:
-      #     python-version-file: ".python-version"
 
       - uses: pnpm/action-setup@v6
         with:
@@ -46,24 +43,22 @@ jobs:
           cache: "pnpm"
 
       - name: Run prek pre-commit
-        uses: j178/prek-action@v3.0.0
-
-      - name: Run markdownlint
-        run: pnpm exec markdownlint-cli2 "**/*.md"
-
-      - name: Run cspell
-        run: pnpm exec cspell-cli --gitignore --unique --silent .
+        uses: j178/prek-action@v3
 
       - name: Prepare
         run: |
           uv sync --frozen --no-build
           pnpm install --frozen-lockfile
           cp .env.example .env
+          sed -i 's/^LLM_PROVIDERS=.*/LLM_PROVIDERS=Mock/' .env
 
-      - name: Run md format
+      - name: Run md lint
         run: pnpm exec markdownlint-cli2 "**/*.md"
 
-      - name: Run py format Ruff
+      - name: Run CSpell
+        run: pnpm exec cspell-cli --gitignore --unique .
+
+      - name: Run py lint Ruff
         run: |
           uv run --frozen --no-build ruff format --check
           uv run --frozen --no-build ruff check --no-fix --output-format=github
@@ -71,8 +66,6 @@ jobs:
       - name: Run py type check Pyright
         run: uv run --frozen --no-build pyright shared fastapi_app streamlit_app
 
-      # - name: Run formatter
-      #   run: pnpm run format
       # - name: Setup Biome
       #   uses: biomejs/setup-biome@v2
       #   with:
@@ -82,22 +75,18 @@ jobs:
         run: pnpm exec biome ci .
 
       - name: Run js lint ESLint
-        run: pnpm exec eslint . --cache --ignore-pattern .gitignore
+        run: pnpm exec eslint . --cache
 
       - name: Run py test Pytest
         run: |
-          uv run --frozen --no-build pytest \
-            --cov \
-            --cov-report=xml:coverage.xml \
-            --quiet \
-            --tb=short
+          uv run --frozen --no-build pytest
+        #     --cov \
+        #     --cov-report=xml:coverage.xml \
+        #     --quiet \
+        #     --tb=short
 
       - name: Run js test Vitest
         run: pnpm exec vitest --watch=false
-
-      - name: Run CSpell
-        run: pnpm exec cspell-cli --gitignore --unique .
-        # run: pnpm run spell
 
       - name: Run js type check
         run: pnpm exec vue-tsc --build
