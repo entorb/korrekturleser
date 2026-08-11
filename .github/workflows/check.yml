@@ -25,7 +25,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 1 # latest only
 
-      - uses: astral-sh/setup-uv@v9
+      - uses: astral-sh/setup-uv@v9.0.0
         with:
           enable-cache: true
           cache-dependency-glob: |
@@ -43,7 +43,7 @@ jobs:
           cache: "pnpm"
 
       - name: Run prek pre-commit
-        uses: j178/prek-action@v3
+        uses: j178/prek-action@v3.0.0
 
       - name: Prepare
         run: |
