@@ -15,10 +15,32 @@ permissions:
   contents: read
 
 jobs:
-  check:
+  core:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          fetch-depth: 1 # latest only
 
+      - name: Run prek pre-commit
+        uses: j178/prek-action@v3.0.0
+
+      - name: Run md lint
+        uses: DavidAnson/markdownlint-cli2-action@v24
+        with:
+          globs: '**/*.md'
+
+      - name: Run CSpell
+        uses: streetsidesoftware/cspell-action@v8
+        with:
+          files: '**/*'
+          incremental_files_only: false
+
+  python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
         with:
@@ -32,6 +54,54 @@ jobs:
             pyproject.toml
             uv.lock
 
+      - name: Prepare
+        run: |
+          uv sync --frozen --no-build
+          cp .env.example .env
+          sed -i 's/^LLM_PROVIDERS=.*/LLM_PROVIDERS=Mock/' .env
+
+      - name: Run py lint Ruff
+        run: |
+          uv run --frozen --no-build ruff format --check
+          uv run --frozen --no-build ruff check --no-fix --output-format=github
+
+      - name: Run py type check Pyright
+        run: uv run --frozen --no-build pyright shared fastapi_app streamlit_app
+
+      - name: Run py test Pytest
+        run: |
+          uv run --frozen --no-build pytest
+
+      # - name: Run py test Pytest
+      #   run: |
+      #     uv run --frozen --no-build pytest \
+      #       --cov \
+      #       --cov-report=xml:coverage.xml \
+      #       --quiet \
+      #       --tb=short
+      #
+      # - name: Upload py coverage
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: coverage-python
+      #     path: coverage.xml
+      #     retention-days: 1
+
+      - name: Run py dead code Vulture
+        run: uv run --frozen --no-build vulture
+
+      - name: Run py audit
+        run: uv audit --preview-features audit
+
+  node:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          fetch-depth: 1 # latest only
+
       - uses: pnpm/action-setup@v6
         with:
           version: latest
@@ -42,29 +112,8 @@ jobs:
           node-version: 24
           cache: "pnpm"
 
-      - name: Run prek pre-commit
-        uses: j178/prek-action@v3.0.0
-
       - name: Prepare
-        run: |
-          uv sync --frozen --no-build
-          pnpm install --frozen-lockfile
-          cp .env.example .env
-          sed -i 's/^LLM_PROVIDERS=.*/LLM_PROVIDERS=Mock/' .env
-
-      - name: Run md lint
-        run: pnpm exec markdownlint-cli2 "**/*.md"
-
-      - name: Run CSpell
-        run: pnpm exec cspell-cli --gitignore --unique .
-
-      - name: Run py lint Ruff
-        run: |
-          uv run --frozen --no-build ruff format --check
-          uv run --frozen --no-build ruff check --no-fix --output-format=github
-
-      - name: Run py type check Pyright
-        run: uv run --frozen --no-build pyright shared fastapi_app streamlit_app
+        run: pnpm install --frozen-lockfile
 
       # - name: Setup Biome
       #   uses: biomejs/setup-biome@v2
@@ -77,16 +126,18 @@ jobs:
       - name: Run js lint ESLint
         run: pnpm exec eslint . --cache
 
-      - name: Run py test Pytest
-        run: |
-          uv run --frozen --no-build pytest
-        #     --cov \
-        #     --cov-report=xml:coverage.xml \
-        #     --quiet \
-        #     --tb=short
-
       - name: Run js test Vitest
         run: pnpm exec vitest --watch=false
+
+      # - name: Run js test Vitest
+      #   run: pnpm exec vitest --watch=false --coverage
+      #
+      # - name: Upload js coverage
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: coverage-js
+      #     path: coverage/lcov.info
+      #     retention-days: 1
 
       - name: Run js type check
         run: pnpm exec vue-tsc --build
@@ -94,16 +145,44 @@ jobs:
       - name: Run js dead code Knip
         run: pnpm knip
 
-      - name: Run py dead code Vulture
-        run: uv run --frozen --no-build vulture
-
-      # for SonarQube coverage report
-      # - uses: SonarSource/sonarqube-scan-action@v8
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: Run py audit
-        run: uv audit --preview-features audit
-
       - name: Run js audit
         run: pnpm audit --prod
+
+  # sonarqube:
+  #   needs: [python, node]
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 5
+  #   steps:
+  #     - uses: actions/checkout@v7
+  #       with:
+  #         persist-credentials: false
+  #         fetch-depth: 0 # Sonar wants full history for blame/new-code analysis
+
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: coverage-python
+  #         path: .
+
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: coverage-js
+  #         path: coverage/
+
+  #     - uses: SonarSource/sonarqube-scan-action@v8
+  #       env:
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  # all-checks-passed:
+  #   if: always()
+  #   needs: [core, python, node, sonarqube]
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 1
+  #   steps:
+  #     - name: Check job results
+  #       run: |
+  #         if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]] || \
+  #            [[ "${{ contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+  #           echo "One or more required jobs failed or were cancelled."
+  #           exit 1
+  #         fi
+  #         echo "All required jobs passed."
