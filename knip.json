@@ -5,5 +5,5 @@
   "project": ["vue_app/src/**/*.{ts,vue,sass,scss}"],
   "ignore": ["vue_app/src/api/**"],
   "ignoreBinaries": ["uv"],
-  "ignoreDependencies": ["@cspell/dict-de-de", "@typescript/native"]
+  "ignoreDependencies": ["@typescript/native"]
 }

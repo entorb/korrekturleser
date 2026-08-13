@@ -13,10 +13,11 @@ dictionaries:
   - python
   - typescript
 
-language: en-US, de-DE
+language: en-US
+# , de-DE
 
 import:
-  - '@cspell/dict-de-de'
+  # - '@cspell/dict-de-de'
 
 ignorePaths:
   - '.*'
