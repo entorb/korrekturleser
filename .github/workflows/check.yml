@@ -28,9 +28,7 @@ jobs:
         uses: j178/prek-action@v3.0.0
 
       - name: Run md lint
-        uses: DavidAnson/markdownlint-cli2-action@v24
-        with:
-          globs: '**/*.md'
+        uses: rvben/rumdl@v0
 
       - name: Run CSpell
         uses: streetsidesoftware/cspell-action@v8

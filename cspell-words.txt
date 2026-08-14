@@ -1,4 +1,3 @@
-# CSpell Custom Dictionary Words
 Abmelden
 Abschnitten
 accesslog
@@ -96,6 +95,7 @@ pythonpath
 Qube
 Rechtschreibung
 rsyncs
+rumdl
 ruzv
 selectbox
 senden
