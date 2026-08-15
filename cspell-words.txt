@@ -11,6 +11,7 @@ Ausgabe
 beim
 bordercolor
 borderopacity
+browserslist
 chatcompletionresponse
 checkpw
 Colada

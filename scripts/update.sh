@@ -7,15 +7,13 @@ set -e
 SCRIPT_DIR="$(dirname "$0")"
 cd "$SCRIPT_DIR/.."
 
-
 # 0. prek pre-commit
 prek autoupdate
-prek run --all-files
 
-# 1. Python
+echo === Python ===
 
-# # update uv
-# brew update && brew upgrade uv
+# update uv
+brew update && brew upgrade uv
 
 uv python upgrade "$(cat .python-version)"
 
@@ -44,29 +42,34 @@ set +f
 uv run --no-build ruff format
 uv run --no-build ruff check --fix
 
-# 2. Vue
+echo === Vue ===
 
-# start fastapi
-uv run --no-build uvicorn fastapi_app.main:app --host localhost --port 9002 --reload &
-DEV_PID=$!
-
-# remove old node_modules
-rm -rf node_modules
-
+rm -rf node_modules pnpm-lock.yaml
 pnpm self-update
 pnpm up --latest
 pnpm exec biome migrate --write
-# fit audit findings
-if ! pnpm audit; then
-  pnpm audit --fix update
-  pnpm audit --fix override
-fi
-pnpm run check
+# npm i baseline-browser-mapping@latest -D
+# npx update-browserslist-db@latest
+
 # generate the api, requires fastapi to run
+# start fastapi
+uv run --no-build uvicorn fastapi_app.main:app --host localhost --port 9002 --reload &
+PID_FASTAPI=$!
 pnpm run generate-api
 
-# stop fastapi
-kill $DEV_PID
-wait $DEV_PID 2>/dev/null || true
+echo === check code ===
+sh ./scripts/run_checks.sh
 
-echo DONE
+if [ -n "$(git status --porcelain)" ]; then
+  echo === git push ===
+  git add pnpm-lock.yaml
+  git diff --staged --quiet -- pnpm-lock.yaml || git commit -m "Update Lock"
+
+  git add package.json pnpm-workspace.yaml biome.json
+  git commit -m "Update packages and pnpm audit findings"
+  git push
+fi
+
+echo "update DONE, not yet deployed"
+kill $PID_FASTAPI
+wait $PID_FASTAPI 2>/dev/null || true

@@ -9,10 +9,10 @@ dependencies = [
     "bcrypt>=5.0.0",
     "dotenv>=0.9.9",
     "fastapi>=0.141.1",
-    "google-genai>=2.17.0",
-    "mistralai>=2.9.1",
+    "google-genai>=2.18.1",
+    "mistralai>=2.9.3",
     "mysql-connector-python==9.4.0",
-    "openai>=2.53.0",
+    "openai>=3.1.0",
     "pandas==2.2.3",
     "pyarrow==20.0.0",
     "pydantic>=2.13.4",
@@ -24,14 +24,14 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "httpx2>=2.9.1",
+    "httpx2>=2.10.0",
     "ollama>=0.6.2",
     "pyright>=1.1.411",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
-    "ruff>=0.16.1",
+    "ruff>=0.16.3",
     "tomli-w>=1.2.0",
-    "uvicorn>=0.52.1",
+    "uvicorn>=0.52.3",
     "vulture>=2.16",
     "watchdog>=6.0.0",
 ]
