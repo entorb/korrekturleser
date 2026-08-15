@@ -39,5 +39,5 @@ td.diff_header {
 }
 table.diff td {
   padding: 2px;
-  word-break: break-word;
+  overflow-wrap: anywhere;
 }

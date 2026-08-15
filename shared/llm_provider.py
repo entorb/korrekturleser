@@ -31,13 +31,13 @@ def retry_with_exponential_backoff(
 
     """
 
-    def wrapper(*args, **kwargs) -> T:  # noqa: ANN002, ANN003
+    def wrapper(*args, **kwargs) -> T:  # noqa: ANN002, ANN003  # NOSONAR(S6796)
         for attempt in range(max_retries):
             try:
                 return func(*args, **kwargs)
             except Exception as e:
                 if attempt < max_retries - 1:
-                    wait_time = initial_wait * (2**attempt)
+                    wait_time = initial_wait * 2**attempt
                     logger.warning(
                         "%s error, retrying in %d seconds (attempt %d/%d): %s",
                         provider_name,
@@ -137,7 +137,7 @@ def get_llm_provider(provider_name: str) -> LLMProvider:
         return MistralProvider()
 
     msg = f"Unknown LLM provider: {provider_name}"
-    logger.error(msg)
+    logger.error("Unknown LLM provider")
     raise ValueError(msg)
 
 
