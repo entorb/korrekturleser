@@ -1,7 +1,29 @@
 """Tests for FastAPI text improvement endpoints."""
 
+from unittest.mock import patch
+
 import pytest
 from fastapi.testclient import TestClient
+
+
+class _FakeProvider:
+    """Minimal LLM provider stub for exercising error paths."""
+
+    def __init__(
+        self,
+        response: tuple[str, int] = ("improved text", 10),
+        error: Exception | None = None,
+    ) -> None:
+        self._response = response
+        self._error = error
+
+    def get_models(self) -> list[str]:
+        return ["fake-model"]
+
+    def call(self, model: str, instruction: str, prompt: str) -> tuple[str, int]:  # noqa: ARG002
+        if self._error is not None:
+            raise self._error
+        return self._response
 
 
 class TestImproveText:
@@ -275,3 +297,125 @@ class TestInputValidation:
         assert data["mode"] == mode
         assert "text_ai" in data
         assert data["tokens_used"] > 0
+
+
+class TestErrorHandling:
+    """Test input validation and LLM error paths."""
+
+    def test_improve_whitespace_only_text_returns_400(
+        self, client: TestClient, auth_headers: dict[str, str]
+    ) -> None:
+        """Text that is only whitespace is rejected."""
+        response = client.post(
+            "/api/text",
+            json={"text": "   ", "mode": "correct"},
+            headers=auth_headers,
+        )
+        assert response.status_code == 400
+        assert response.json()["detail"] == "Text cannot be empty"
+
+    def test_improve_custom_mode_without_instruction_returns_400(
+        self, client: TestClient, auth_headers: dict[str, str]
+    ) -> None:
+        """Custom mode requires a custom_instruction."""
+        response = client.post(
+            "/api/text",
+            json={"text": "Test text", "mode": "custom"},
+            headers=auth_headers,
+        )
+        assert response.status_code == 400
+        assert "custom_instruction" in response.json()["detail"]
+
+    def test_improve_custom_mode_blank_instruction_returns_400(
+        self, client: TestClient, auth_headers: dict[str, str]
+    ) -> None:
+        """Custom mode rejects a blank custom_instruction."""
+        response = client.post(
+            "/api/text",
+            json={"text": "Test text", "mode": "custom", "custom_instruction": "   "},
+            headers=auth_headers,
+        )
+        assert response.status_code == 400
+        assert "custom_instruction" in response.json()["detail"]
+
+    def test_improve_custom_mode_with_instruction_works(
+        self, client: TestClient, auth_headers: dict[str, str]
+    ) -> None:
+        """Custom mode with a valid instruction succeeds."""
+        response = client.post(
+            "/api/text",
+            json={
+                "text": "Test text",
+                "mode": "custom",
+                "custom_instruction": "Make it polite",
+            },
+            headers=auth_headers,
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["mode"] == "custom"
+        assert "text_ai" in data
+
+    def test_improve_provider_failure_returns_500(
+        self, client: TestClient, auth_headers: dict[str, str]
+    ) -> None:
+        """A failing LLM provider setup yields a 500."""
+        with patch(
+            "fastapi_app.routers.text.get_llm_provider",
+            side_effect=ValueError("no such provider"),
+        ):
+            response = client.post(
+                "/api/text",
+                json={"text": "Test text", "mode": "correct"},
+                headers=auth_headers,
+            )
+        assert response.status_code == 500
+        assert response.json()["detail"] == "LLM service is not properly configured"
+
+    def test_improve_llm_empty_response_returns_500(
+        self, client: TestClient, auth_headers: dict[str, str]
+    ) -> None:
+        """An empty LLM response is treated as a processing failure."""
+        with patch(
+            "fastapi_app.routers.text.get_llm_provider",
+            return_value=_FakeProvider(response=("", 0)),
+        ):
+            response = client.post(
+                "/api/text",
+                json={"text": "Test text", "mode": "correct"},
+                headers=auth_headers,
+            )
+        assert response.status_code == 500
+
+    def test_improve_llm_exception_returns_500(
+        self, client: TestClient, auth_headers: dict[str, str]
+    ) -> None:
+        """A generic LLM exception yields a 500."""
+        with patch(
+            "fastapi_app.routers.text.get_llm_provider",
+            return_value=_FakeProvider(error=RuntimeError("boom")),
+        ):
+            response = client.post(
+                "/api/text",
+                json={"text": "Test text", "mode": "correct"},
+                headers=auth_headers,
+            )
+        assert response.status_code == 500
+        assert response.json()["detail"] == "Failed to process text. Please try again."
+
+    def test_improve_usage_logging_failure_still_returns_200(
+        self, client: TestClient, auth_headers: dict[str, str]
+    ) -> None:
+        """A usage-logging failure does not break the text response."""
+        with patch(
+            "fastapi_app.routers.text.db_insert_usage",
+            side_effect=RuntimeError("db down"),
+        ):
+            response = client.post(
+                "/api/text",
+                json={"text": "Test text", "mode": "correct"},
+                headers=auth_headers,
+            )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["text_ai"] == "Mocked Test text response"
