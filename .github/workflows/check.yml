@@ -25,13 +25,13 @@ jobs:
           fetch-depth: 1 # latest only
 
       - name: Run prek pre-commit
-        uses: j178/prek-action@v3.0.0
+        uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece # v3.0.0
 
       - name: Run md lint
-        uses: rvben/rumdl@v0
+        uses: rvben/rumdl@4997ff07b63c7a54d6a495ebcd3ce7f23ee1173f # v0.2.55
 
       - name: Run CSpell
-        uses: streetsidesoftware/cspell-action@v8
+        uses: streetsidesoftware/cspell-action@de2a73e963e7443969755b648a1008f77033c5b2 # v8
         with:
           files: '**/*'
           incremental_files_only: false
@@ -45,7 +45,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 1 # latest only
 
-      - uses: astral-sh/setup-uv@v9.0.0
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
           enable-cache: true
           cache-dependency-glob: |
@@ -68,22 +68,18 @@ jobs:
 
       - name: Run py test Pytest
         run: |
-          uv run --frozen --no-build pytest
+          uv run --frozen --no-build pytest \
+            --cov \
+            --cov-report=xml:coverage.xml \
+            --quiet \
+            --tb=short
 
-      # - name: Run py test Pytest
-      #   run: |
-      #     uv run --frozen --no-build pytest \
-      #       --cov \
-      #       --cov-report=xml:coverage.xml \
-      #       --quiet \
-      #       --tb=short
-      #
-      # - name: Upload py coverage
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: coverage-python
-      #     path: coverage.xml
-      #     retention-days: 1
+      - name: Upload py coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-python
+          path: coverage.xml
+          retention-days: 1
 
       - name: Run py dead code Vulture
         run: uv run --frozen --no-build vulture
@@ -113,6 +109,19 @@ jobs:
       - name: Prepare
         run: pnpm install --frozen-lockfile
 
+      - name: Package tsconfig deps for Sonar
+        run: |
+          mkdir -p /tmp/sonar-tsconfig/@vue /tmp/sonar-tsconfig/@tsconfig
+          cp -RL node_modules/@vue/tsconfig /tmp/sonar-tsconfig/@vue/
+          cp -RL node_modules/@tsconfig/node24 /tmp/sonar-tsconfig/@tsconfig/
+
+      - name: Upload sonar tsconfig deps
+        uses: actions/upload-artifact@v4
+        with:
+          name: tsconfig-deps
+          path: /tmp/sonar-tsconfig/
+          retention-days: 1
+
       # - name: Setup Biome
       #   uses: biomejs/setup-biome@v2
       #   with:
@@ -125,17 +134,14 @@ jobs:
         run: pnpm exec eslint . --cache
 
       - name: Run js test Vitest
-        run: pnpm exec vitest --watch=false
+        run: pnpm exec vitest --watch=false --coverage
 
-      # - name: Run js test Vitest
-      #   run: pnpm exec vitest --watch=false --coverage
-      #
-      # - name: Upload js coverage
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: coverage-js
-      #     path: coverage/lcov.info
-      #     retention-days: 1
+      - name: Upload js coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-js
+          path: coverage/lcov.info
+          retention-days: 1
 
       - name: Run js type check
         run: pnpm exec vue-tsc --build
@@ -146,41 +152,46 @@ jobs:
       - name: Run js audit
         run: pnpm audit --prod
 
-  # sonarqube:
-  #   needs: [python, node]
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 5
-  #   steps:
-  #     - uses: actions/checkout@v7
-  #       with:
-  #         persist-credentials: false
-  #         fetch-depth: 0 # Sonar wants full history for blame/new-code analysis
+  sonarqube:
+    needs: [core, python, node]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # Sonar wants full history for blame/new-code analysis
 
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         name: coverage-python
-  #         path: .
+      - uses: actions/download-artifact@v4
+        with:
+          name: coverage-python
+          path: .
 
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         name: coverage-js
-  #         path: coverage/
+      - uses: actions/download-artifact@v4
+        with:
+          name: coverage-js
+          path: coverage/
 
-  #     - uses: SonarSource/sonarqube-scan-action@v8
-  #       env:
-  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: tsconfig-deps
+          path: node_modules/
 
-  # all-checks-passed:
-  #   if: always()
-  #   needs: [core, python, node, sonarqube]
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 1
-  #   steps:
-  #     - name: Check job results
-  #       run: |
-  #         if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]] || \
-  #            [[ "${{ contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
-  #           echo "One or more required jobs failed or were cancelled."
-  #           exit 1
-  #         fi
-  #         echo "All required jobs passed."
+      - uses: SonarSource/sonarqube-scan-action@v8
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  all-checks-passed:
+    if: always()
+    needs: [core, python, node, sonarqube]
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Check job results
+        run: |
+          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]] || \
+             [[ "${{ contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            echo "One or more required jobs failed or were cancelled."
+            exit 1
+          fi
+          echo "All required jobs passed."
