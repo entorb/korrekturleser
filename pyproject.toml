@@ -41,7 +41,9 @@ pythonpath = ["shared", "streamlit_app", "fastapi_app"]
 testpaths = ["tests"]
 
 [tool.coverage.run]
-source = ["shared", "streamlit_app", "fastapi_app"]
+# source="." => single source root so coverage.xml paths are unique for SonarQube
+source = ["."]
+omit = [".venv/*", "node_modules/*", "tests/*", "scripts/*"]
 
 [tool.coverage.report]
 exclude_lines = ["pragma: no cover", "if __name__ == \"__main__\":"]
