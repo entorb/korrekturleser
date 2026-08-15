@@ -57,7 +57,7 @@ async def login(request: Request, login_request: LoginRequest) -> TokenResponse:
     token_data = {"user_id": user_id, "username": user_name}
     access_token = create_access_token(data=token_data)
 
-    logger.info("Login of user %s (%d)", user_name, user_id)
+    logger.info("Login of user %s", user_name[0:3])
 
     return TokenResponse(
         access_token=access_token,
