@@ -6,7 +6,34 @@ import html
 from shared.texts import LABEL_KI_TEXT, LABEL_MY_TEXT
 
 
-def create_diff_html(text_in: str, text_ai: str) -> str:  # noqa: C901
+def _highlight_chunks(text: str, opcodes: list, side: int, change_class: str) -> str:
+    """
+    Build highlighted HTML for one text column.
+
+    Args:
+        text: Column text
+        opcodes: Character-level difflib opcodes
+        side: 0 = original column (use i1/i2 ranges), 1 = AI column (use j1/j2)
+        change_class: CSS class applied to changed chunks
+
+    Returns:
+        HTML string with escaped chunks, changed chunks wrapped in a span
+
+    """
+    result = []
+    for tag, i1, i2, j1, j2 in opcodes:
+        start, end = (i1, i2) if side == 0 else (j1, j2)
+        chunk = text[start:end]
+        if not chunk:  # Skip empty chunks
+            continue
+        if tag == "equal":
+            result.append(html.escape(chunk))
+        elif tag in ("replace", "insert", "delete"):
+            result.append(f'<span class="{change_class}">{html.escape(chunk)}</span>')
+    return "".join(result)
+
+
+def create_diff_html(text_in: str, text_ai: str) -> str:
     """
     Create side-by-side comparison table with highlighted changes.
 
@@ -18,39 +45,12 @@ def create_diff_html(text_in: str, text_ai: str) -> str:  # noqa: C901
         HTML string with two-column comparison table
 
     """
-
-    def highlight_original(text: str, opcodes: list) -> str:
-        """Highlight deletions in original text."""
-        result = []
-        for tag, i1, i2, _j1, _j2 in opcodes:
-            chunk = text[i1:i2]
-            if not chunk:  # Skip empty chunks
-                continue
-            if tag == "equal":
-                result.append(html.escape(chunk))
-            elif tag in ("replace", "delete"):
-                result.append(f'<span class="diff-delete">{html.escape(chunk)}</span>')
-        return "".join(result)
-
-    def highlight_ai(text: str, opcodes: list) -> str:
-        """Highlight insertions in AI text."""
-        result = []
-        for tag, _i1, _i2, j1, j2 in opcodes:
-            chunk = text[j1:j2]
-            if not chunk:  # Skip empty chunks
-                continue
-            if tag == "equal":
-                result.append(html.escape(chunk))
-            elif tag in ("replace", "insert"):
-                result.append(f'<span class="diff-insert">{html.escape(chunk)}</span>')
-        return "".join(result)
-
     # Get opcodes for character-level diff
     matcher = difflib.SequenceMatcher(None, text_in, text_ai)
     opcodes = matcher.get_opcodes()
 
-    text_in_highlighted = highlight_original(text_in, opcodes)
-    text_ai_highlighted = highlight_ai(text_ai, opcodes)
+    text_in_highlighted = _highlight_chunks(text_in, opcodes, 0, "diff-delete")
+    text_ai_highlighted = _highlight_chunks(text_ai, opcodes, 1, "diff-insert")
 
     # Create two-column table with highlighted changes
     html_content = f"""

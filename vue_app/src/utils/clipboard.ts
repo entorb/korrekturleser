@@ -37,7 +37,7 @@ export async function copyToClipboard(text: string): Promise<void> {
   textArea.select()
 
   try {
-    const successful = document.execCommand('copy')
+    const successful = document.execCommand('copy') // NOSONAR:typescript:S1874
     if (!successful) {
       throw new Error('Copy command failed')
     }
@@ -78,7 +78,7 @@ export async function readFromClipboard(): Promise<string> {
   textArea.focus()
 
   try {
-    const successful = document.execCommand('paste')
+    const successful = document.execCommand('paste') // NOSONAR:typescript:S1874
     if (!successful) {
       throw new Error('Paste command failed')
     }

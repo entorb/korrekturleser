@@ -68,7 +68,6 @@ with st.form(LABEL_MY_TEXT):
     textarea_in = st.text_area(
         label=LABEL_MY_TEXT,
         height="content",
-        # label_visibility="collapsed",
         key="textarea_in",
     )
 
@@ -77,7 +76,6 @@ with st.form(LABEL_MY_TEXT):
         custom_instruction = st.text_area(
             "Anweisung",
             key="custom_instruction",
-            # placeholder="Deine Anweisung...",
         )
 
     submit_button = st.form_submit_button("An KI senden", type="primary")
