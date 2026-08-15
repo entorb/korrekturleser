@@ -1,6 +1,6 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { useTextStore } from './text'
+import { useTextStore } from '../text'
 
 describe('Text Store', () => {
   beforeEach(() => {
