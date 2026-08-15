@@ -17,6 +17,7 @@
       "!cypress/videos",
       "!dist",
       "!node_modules",
+      "!package.json",
       "!pnpm-lock.yaml",
       "!public",
       "!scripts",

@@ -21,7 +21,18 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post("/")
+@router.post(
+    "/",
+    responses={
+        400: {
+            "description": (
+                "Invalid request: empty text, unknown mode, or missing "
+                "custom_instruction"
+            )
+        },
+        500: {"description": "LLM service not configured or processing failed"},
+    },
+)
 async def improve_text(
     request: TextRequest,
     current_user: Annotated[UserInfoInternal, Depends(get_current_user)],

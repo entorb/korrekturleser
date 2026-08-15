@@ -22,7 +22,10 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/")
+@router.get(
+    "/",
+    responses={500: {"description": "Failed to fetch usage statistics"}},
+)
 async def get_all_stats(
     current_user: Annotated[UserInfoInternal, Depends(get_current_user)],
 ) -> UsageStatsResponse:

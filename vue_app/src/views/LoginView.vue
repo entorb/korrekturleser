@@ -54,7 +54,12 @@ async function handleLogin() {
           <q-card-section>
             <q-form @submit.prevent="handleLogin">
               <!-- Hidden username field for accessibility and password managers -->
+              <label
+                for="username"
+                style="display: none"
+              >Name</label>
               <input
+                id="username"
                 v-model="username"
                 type="text"
                 autocomplete="username"

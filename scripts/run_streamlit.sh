@@ -1,4 +1,4 @@
 #!/bin/sh
 cd "$(dirname "$0")/.."
 
-uv run -m streamlit run streamlit_app/main.py
+uv run --no-build -m streamlit run streamlit_app/main.py

@@ -3,7 +3,13 @@
 # ensure we are in the root dir
 cd "$(dirname "$0")/.."
 
-uv run pytest --quiet --tb=short
+out=$(mktemp)
+uv run --no-build pytest --quiet --no-summary --tb=short >"$out" 2>&1
+status=$?
 # uv run pytest --cov --cov-report=term-missing
 
-if [ $? -ne 0 ]; then exit 1; fi
+if [ $status -ne 0 ]; then
+    tail -n 40 "$out"
+fi
+rm -f "$out"
+exit $status

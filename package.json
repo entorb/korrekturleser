@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "check": "run-p format lint types spell test knip",
+    "check": "run-p format lint types test knip",
     "dev": "vite",
-    "format": "biome check --write .",
+    "format": "biome format --write . && biome check --write .",
     "generate-api": "openapi-ts && uv run python scripts/gen_mode_descriptions.py",
     "lint": "eslint . --cache --fix --ignore-pattern .gitignore",
     "preview": "vite preview",
@@ -29,12 +29,7 @@
     "vue-router": "^5.2.0",
     "workbox-window": "^7.4.1"
   },
-  "browserslist": [
-    "iOS >= 15",
-    "Safari >= 15",
-    "> 0.5%",
-    "not dead"
-  ],
+  "browserslist": ["iOS >= 15", "Safari >= 15", "> 0.5%", "not dead"],
   "devDependencies": {
     "@biomejs/biome": "^2.5.7",
     "@hey-api/openapi-ts": "0.99.0",

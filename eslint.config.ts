@@ -288,7 +288,9 @@ export default [
       'vue/valid-define-options': 'error',
       // Accessibility
       ...pluginVueA11y.configs.recommended.rules,
-      'vuejs-accessibility/no-autofocus': 'warn'
+      'vuejs-accessibility/no-autofocus': 'warn',
+      // Allow explicit for/id association (default `every` also demands nesting, impossible for aria-hidden fields)
+      'vuejs-accessibility/label-has-for': ['error', { required: { some: ['nesting', 'id'] } }]
     }
   },
 

@@ -171,6 +171,26 @@ def db_select_rows(query: str, param: tuple) -> list[tuple]:
 # 2. Selects
 
 
+def _verify_secret(rows: list, geheimnis: str) -> tuple[int, str]:
+    """
+    Return (user_id, username) for the first row matching the secret.
+
+    Args:
+        rows: Rows of (id, name, secret_hashed)
+        geheimnis: The user's plaintext secret (password)
+
+    Returns:
+        (user_id, username) if a row matches, (0, "") otherwise
+
+    """
+    for row in rows:
+        if len(row) == 3:  # noqa: PLR2004
+            user_id, username, secret_hashed = row[0], row[1], row[2]
+            if verify_geheimnis(geheimnis, str(secret_hashed)):
+                return int(user_id), str(username)
+    return 0, ""
+
+
 def db_select_user_from_geheimnis(geheimnis: str) -> tuple[int, str]:
     """
     Authenticate user by verifying secret against bcrypt-hashed passwords.
@@ -192,29 +212,13 @@ def db_select_user_from_geheimnis(geheimnis: str) -> tuple[int, str]:
             cursor = con.cursor()
             cursor.execute("SELECT id, name, secret_hashed FROM user ORDER BY id")
             rows = cursor.fetchall()
-
-        # Verify the provided secret against each user's hashed secret
-        for row in rows:
-            if len(row) == 3:  # noqa: PLR2004
-                user_id, username, secret_hashed = row[0], row[1], row[2]
-                if verify_geheimnis(geheimnis, str(secret_hashed)):
-                    return int(user_id), str(username)
-        return 0, ""
+        return _verify_secret(rows, geheimnis)
 
     # Production with MySQL
     # Fetch id, name, and hashed secrets in a single query
     query = "SELECT id, name, secret_hashed FROM user ORDER BY id"
     rows = db_select_rows(query=query, param=())
-
-    # Verify the provided secret against each user's hashed secret
-    for row in rows:
-        if len(row) == 3:  # noqa: PLR2004
-            user_id, username, secret_hashed = row[0], row[1], row[2]
-            if verify_geheimnis(geheimnis, str(secret_hashed)):
-                return int(user_id), str(username)
-
-    # No matching user found
-    return 0, ""
+    return _verify_secret(rows, geheimnis)
 
 
 # update AI usage

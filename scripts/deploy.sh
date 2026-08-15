@@ -6,18 +6,16 @@ cd "$(dirname "$0")/.."
 set -e
 
 # cleanup
-rm -f .DS_Store
-rm -f */.DS_Store
+rm -f ./.DS_Store
+rm -f -- ./*/.DS_Store
 
 # start fastapi
-uv run uvicorn fastapi_app.main:app --host localhost --port 9002 --reload &
+uv run --no-build uvicorn fastapi_app.main:app --host localhost --port 9002 --reload &
 DEV_PID=$!
 
 # 1. Frontend
 pnpm run generate-api
 pnpm run check
-# ./scripts/chk_py_format.sh
-# ./scripts/chk_py_test.sh
 pnpm run build
 rsync -ruzv --no-links --delete --delete-excluded dist/* entorb@entorb.net:html/korrekturleser-vue/
 
@@ -25,7 +23,7 @@ rsync -ruzv --no-links --delete --delete-excluded dist/* entorb@entorb.net:html/
 # 2. Backends
 # config.toml -> config-prod.toml
 python3 scripts/config_convert.py
-./scripts/chk_py_format.sh
+./scripts/chk_py_lint.sh
 ./scripts/chk_py_test.sh
 
 # rsync -uz .streamlit/config-prod.toml entorb@entorb.net:korrekturleser/.streamlit/config.toml

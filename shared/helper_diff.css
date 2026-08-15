@@ -5,7 +5,6 @@
   font-size: 13px;
   border: 1px solid #d0d7de;
   border-radius: 6px;
-  /* background: white; */
 }
 .comparison-table th {
   color: #1f2328;
@@ -14,7 +13,6 @@
   border-bottom: 2px solid #d0d7de;
   text-align: center;
   width: 50%;
-  /* background-color: #f6f8fa; */
 }
 .comparison-table td {
   padding: 12px;
