@@ -101,6 +101,19 @@ class TestUsageStats:
         assert len(data["total"]) == 1
         assert data["total"][0]["user_name"] == "NonAdmin"
 
+    def test_stats_query_error_returns_500(
+        self, client: TestClient, auth_headers: dict[str, str]
+    ) -> None:
+        """A database error while fetching stats yields a 500."""
+        with patch(
+            "fastapi_app.routers.stats.db_select_usage_stats_daily",
+            side_effect=RuntimeError("db down"),
+        ):
+            response = client.get("/api/stats", headers=auth_headers)
+
+        assert response.status_code == 500
+        assert "Failed to fetch usage statistics" in response.json()["detail"]
+
 
 class TestRootEndpoints:
     """Test root and health endpoints."""
