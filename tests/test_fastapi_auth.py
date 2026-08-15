@@ -5,6 +5,7 @@ from datetime import UTC, datetime, timedelta
 import jwt
 from fastapi.testclient import TestClient
 
+from fastapi_app.helper_fastapi import create_access_token
 from fastapi_app.routers import auth
 from shared.helper import my_get_env
 
@@ -109,3 +110,46 @@ class TestTokenExpiration:
             < time_diff
             < timedelta(hours=expected_hours, minutes=+1)
         )
+
+    def test_create_access_token_with_expires_delta(self) -> None:
+        """Custom expiration delta is honored."""
+        token = create_access_token(
+            {"user_id": 1, "username": "Torben"},
+            expires_delta=timedelta(minutes=5),
+        )
+        secret_key = my_get_env("FASTAPI_JWT_SECRET_KEY")
+        payload = jwt.decode(token, secret_key, algorithms=["HS256"])
+
+        exp_time = datetime.fromtimestamp(payload["exp"], tz=UTC)
+        time_diff = exp_time - datetime.now(UTC)
+        assert timedelta(minutes=4) < time_diff < timedelta(minutes=6)
+
+    def test_expired_token_returns_401(self, client: TestClient) -> None:
+        """An expired token is rejected with a dedicated error."""
+        token_data = {
+            "user_id": 1,
+            "username": "Torben",
+            "exp": datetime.now(UTC) - timedelta(hours=1),
+        }
+        secret_key = my_get_env("FASTAPI_JWT_SECRET_KEY")
+        expired_token = jwt.encode(token_data, secret_key, algorithm="HS256")
+
+        response = client.get(
+            "/api/stats", headers={"Authorization": f"Bearer {expired_token}"}
+        )
+
+        assert response.status_code == 401
+        assert response.json()["detail"] == "Token has expired"
+
+    def test_token_missing_user_id_returns_401(self, client: TestClient) -> None:
+        """A token without the user_id claim is rejected."""
+        token_data = {"username": "Torben"}
+        secret_key = my_get_env("FASTAPI_JWT_SECRET_KEY")
+        token = jwt.encode(token_data, secret_key, algorithm="HS256")
+
+        response = client.get(
+            "/api/stats", headers={"Authorization": f"Bearer {token}"}
+        )
+
+        assert response.status_code == 401
+        assert response.json()["detail"] == "Could not validate credentials"
