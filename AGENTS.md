@@ -42,14 +42,19 @@ To add a mode: edit `shared/mode_configs.py` (add `ModeConfig` entry + `TextMode
 
 run after each modification
 
-- Python: `uv run ruff format && uv run ruff check --fix --unsafe-fixes`
-- JavaScript: `pnpm run check`
+- Python: `scripts/chk_py_lint.sh`
+- JavaScript: `scripts/chk_js_format.sh`
 
 run before committing
 
 - `scripts/run_checks.sh` (runs all `chk_*.sh` sequentially)
 
 If a check fails → fix → rerun that check only → repeat → final `scripts/run_checks.sh`.
+
+To re-run a single failing test:
+
+- Python: `uv run pytest path/to/test_file.py` or `uv run pytest path/to/test_file.py::test_function`
+- JavaScript: `pnpm exec vitest path/to/test.spec.ts` or `pnpm exec vitest -t "test name"`
 
 ## Architecture
 
@@ -66,12 +71,13 @@ Auto-detects PROD vs local. Local: SQLite (`db.sqlite`) mirrors MySQL schema. Pr
 
 | Stack | Command | Notes |
 | ----- | ------- | ----- |
-| Python | `uv run pytest --quiet --tb=short` | `tests/conftest.py` sets `LLM_PROVIDERS=Mock` + `LLM_MODEL=random` before imports |
-| Vue | `pnpm test` (vitest) | jsdom, `vue_app/__tests__/` |
-| Vue + coverage | `pnpm test-cov` | |
+| Python | `scripts/chk_py_test.sh` | `tests/conftest.py` sets `LLM_PROVIDERS=Mock` + `LLM_MODEL=random` before imports |
+| Python + coverage | `run_py_test_cov.sh` | |
+| Vue | `scripts/chk_js_test.sh` | vitest, jsdom, `vue_app/__tests__/` |
+| Vue + coverage | `run_js_test_cov.sh` | |
 
 Python tests: FastAPI `TestClient`, session-scoped fixtures (`client`, `auth_token`, `auth_headers`).
 
 ## Deployment
 
-Target: Uberspace via SCP. Script: `scripts/deploy.sh` — starts FastAPI locally, generates API client, runs checks, builds Vue, syncs to `entorb@entorb.net`. Prod under gunicorn (see `deployment.md`).
+Target: Uberspace via SCP. Script: `scripts/deploy.sh`. Prod under gunicorn (see `deployment.md`).

@@ -4,6 +4,6 @@
   "entry": ["scripts/*.sh"],
   "project": ["vue_app/src/**/*.{ts,vue,sass,scss}"],
   "ignore": ["vue_app/src/api/**"],
-  "ignoreBinaries": ["uv"],
+  "ignoreBinaries": [],
   "ignoreDependencies": ["@typescript/native"]
 }

@@ -1,2 +1,2 @@
 #!/bin/sh
-pnpm run generate-api
+openapi-ts && uv run python scripts/gen_mode_descriptions.py

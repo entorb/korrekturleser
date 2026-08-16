@@ -92,7 +92,7 @@ pnpm generate-api
 
 ## Code checks
 
-see `scripts/chk_*.sh` run all via `scripts/run_check.sh`
+see `scripts/chk_*.sh` run all via `scripts/run_checks.sh`
 
 ## Architecture Details
 
