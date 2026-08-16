@@ -2,7 +2,19 @@
 
 # ensure we are in the root dir
 cd "$(dirname "$0")/.."
+out=$(mktemp)
+trap 'rm -f "$out"' EXIT INT TERM
 
-uv run --no-build pyright shared fastapi_app streamlit_app
+uv run --no-build pyright shared fastapi_app streamlit_app >"$out" 2>&1
+status=$?
 
-if [ $? -ne 0 ]; then exit 1; fi
+# print output in good case only if more than 1 lines
+if [ $status -eq 0 ]; then
+    lines=$(wc -l < "$out")
+    if [ "$lines" -gt 1 ]; then
+        head -n 10 "$out"
+    fi
+else
+    head -n 100 "$out"
+fi
+exit $status

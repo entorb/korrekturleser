@@ -6,10 +6,12 @@ cd "$(dirname "$0")/.."
 failures=0
 failed_list=""
 
+echo "# code checks"
+
 for f in "$(dirname "$0")"/chk_*.sh; do
     name=$(basename "$f" .sh)
     echo ""
-    echo "=== $name ==="
+    echo "## $name"
     sh "$f"
     if [ $? -ne 0 ]; then
         failures=$((failures + 1))

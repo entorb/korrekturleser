@@ -1,4 +1,6 @@
 #!/bin/sh
+
+# ensure we are in the root dir
 cd "$(dirname "$0")/.."
 
 # --host localhost -> only listen for requests from local machine.
