@@ -139,4 +139,4 @@ async function handleLogin() {
 - [ ] Views minimal, logic extracted
 - [ ] Buttons have `type` attribute
 - [ ] Icon buttons have `aria-label`
-- [ ] Run `pnpm check` before commit
+- [ ] Run `scripts/run_checks.sh` before commit
