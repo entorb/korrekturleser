@@ -5,25 +5,14 @@
     "ignoreUnknown": true,
     "includes": [
       "**",
-      "!.cache",
-      "!.cspellcache",
-      "!.eslintcache",
-      "!.vite",
-      "!*.d.ts",
-      "!*.tsbuildinfo",
-      "!coverage",
+      "!**/*.d.ts",
       "!cypress/downloads",
       "!cypress/screenshots",
       "!cypress/videos",
-      "!dist",
-      "!node_modules",
       "!package.json",
       "!pnpm-lock.yaml",
       "!public",
-      "!scripts",
-      "!sonar-report.xml",
-      "!vue_app/components.d.ts",
-      "!vue_app/src/route-map.d.ts"
+      "!scripts"
     ]
   },
   "formatter": {
