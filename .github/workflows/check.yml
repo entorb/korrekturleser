@@ -67,7 +67,7 @@ jobs:
           uv run --frozen --no-build ruff check --no-fix --output-format=github
 
       - name: Run py type check Pyright
-        run: uv run --frozen --no-build pyright shared fastapi_app streamlit_app
+        run: uv run --frozen --no-build pyright
 
       - name: Run py test Pytest
         run: |
