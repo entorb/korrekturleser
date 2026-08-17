@@ -139,7 +139,7 @@ jobs:
         run: pnpm exec biome ci .
 
       - name: Run js lint ESLint
-        run: pnpm exec eslint . --cache
+        run: pnpm exec eslint .
 
       - name: Run js test Vitest
         run: pnpm exec vitest --watch=false --coverage
