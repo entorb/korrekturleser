@@ -25,3 +25,4 @@ ignorePaths:
   - 'pnpm-lock.yaml'
   - 'pnpm-workspace.yaml'
   - 'uv.lock'
+
