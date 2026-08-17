@@ -1,8 +1,15 @@
-# dirs
-__pycache__/
-.pytest_cache/
+*.log
+*.swp
+.cspellcache
+.DS_Store
+.env
+.eslintcache
 /.claude/
 /.coverage
+/.pytest_cache/
+/.ruff_cache/
+/.rumdl_cache/
+/.venv/
 /.venv/
 /.vite/
 /coverage
@@ -11,14 +18,7 @@ __pycache__/
 /dist
 /node_modules
 /template
-
-# files
-.cspellcache
-.DS_Store
-.env
-.eslintcache
-*.log
-*.swp
+__pycache__/
 coverage.xml
 cspell-words-missing.txt
 db.sqlite
