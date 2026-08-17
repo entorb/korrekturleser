@@ -3,32 +3,25 @@ $schema: https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell
 version: '0.2'
 useCache: true
 useGitignore: true
-
 dictionaryDefinitions:
   - name: cspell-words
     path: cspell-words.txt
     addWords: true
-
 dictionaries:
   - cspell-words
   - python
   - typescript
-
 language: en-US
-
 ignorePaths:
-  - '.*'
-  - '.vscode'
   - '**/*.d.ts'
+  - '/.vscode/'
+  - '/LICENSE'
+  - '/public/'
+  - '/vue_app/src/api/'
   - 'biome.json'
   - 'cspell-words.txt'
   - 'cspell.config.yaml'
-  - 'LICENSE'
   - 'package*.json'
   - 'pnpm-lock.yaml'
-  - 'pnpm-lock.yaml'
   - 'pnpm-workspace.yaml'
-  - 'pnpm-workspace.yaml'
-  - 'public'
   - 'uv.lock'
-  - 'vue_app/src/api'
