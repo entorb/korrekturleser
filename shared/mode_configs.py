@@ -1,4 +1,4 @@
-"""Helper: AI - Consolidated mode configuration."""
+"""Helper: Text correction modes."""
 
 from dataclasses import dataclass
 from typing import Literal
