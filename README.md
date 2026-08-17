@@ -92,7 +92,7 @@ pnpm generate-api
 
 ## Code checks
 
-see `scripts/chk_*.sh` run all via `scripts/run_checks.sh`
+see `scripts/chk_*.sh` run all via [scripts/run_checks.sh](scripts/run_checks.sh)
 
 ## Architecture Details
 
@@ -100,7 +100,7 @@ see `scripts/chk_*.sh` run all via `scripts/run_checks.sh`
 
 All business logic is centralized in the shared layer, used by both Streamlit and FastAPI applications:
 
-- **`helper_ai.py`** (Single Source of Truth for AI Modes)
+- **[helper_ai.py](helper_ai.py)** (Single Source of Truth for AI Modes)
   - `MODE_CONFIGS`: Dictionary defining all text improvement modes
   - Each `ModeConfig` contains:
     - `mode`: Mode identifier (e.g., "correct", "improve")
@@ -109,15 +109,15 @@ All business logic is centralized in the shared layer, used by both Streamlit an
   - Available modes: correct, improve, summarize, expand, translate_de, translate_en
   - Frontend TypeScript types are auto-generated from these configurations
 
-- **`config.py`**: Environment detection and LLM configuration
+- **[config.py](config.py)**: Environment detection and LLM configuration
   - `where_am_i()`: Detects PROD vs Local environment
   - LLM provider and model settings
 
-- **`llm_provider.py`**: LLM abstraction layer
+- **[llm_provider.py](llm_provider.py)**: LLM abstraction layer
   - `GeminiProvider`: Production LLM (Google Gemini API)
   - `OllamaProvider`: Local development only
 
-- **`helper_db.py`**: Database operations with automatic environment detection
+- **[helper_db.py](helper_db.py)**: Database operations with automatic environment detection
   - Auto-detects local vs production environment
   - **Production**: MySQL with connection pooling
   - **Local**: SQLite (`db.sqlite`) auto-created with matching schema
@@ -129,14 +129,14 @@ All business logic is centralized in the shared layer, used by both Streamlit an
 
 REST API with JWT authentication and three endpoint groups:
 
-**Authentication Router** (`routers/auth.py`):
+**Authentication Router** ([routers/auth.py](routers/auth.py)):
 
 - `POST /api/auth/login`: Authenticate with secret, returns JWT token
   - Rate limited: 5 attempts per minute per IP (production only)
   - JWT contains `user_id` and `username`
   - Token valid for 24 hours
 
-**Text Improvement Router** (`routers/text.py`):
+**Text Improvement Router** ([routers/text.py](routers/text.py)):
 
 - `POST /api/text/`: Process text with AI
   - Request: `{ text: string, mode: TextMode }`
@@ -144,7 +144,7 @@ REST API with JWT authentication and three endpoint groups:
   - Requires JWT authentication
   - Logs usage to database (production only)
 
-**Statistics Router** (`routers/stats.py`):
+**Statistics Router** ([routers/stats.py](routers/stats.py)):
 
 - `GET /api/stats/`: Get usage statistics
   - Admin (user_id=1): Returns stats for all users
@@ -162,16 +162,16 @@ Modern frontend with TypeScript, Vue 3, and Quasar:
 
 ### Code Generation Pipeline
 
-1. Python defines modes in `shared/helper_ai.py` (single source of truth)
+1. Python defines modes in [shared/helper_ai.py](shared/helper_ai.py) (single source of truth)
 2. FastAPI exposes modes via OpenAPI schema
 3. `pnpm generate-api` does two things:
    - Generates TypeScript API client from OpenAPI spec
-   - Runs `scripts/generate_mode_descriptions.py` to extract mode descriptions
+   - Runs [scripts/generate_mode_descriptions.py](scripts/generate_mode_descriptions.py) to extract mode descriptions
 4. Frontend uses auto-generated types and descriptions
 
 ## Features
 
-see **Available Modes** (defined in `shared/helper_ai.py`):
+see **Available Modes** (defined in [shared/helper_ai.py](shared/helper_ai.py)):
 
 **Pages**:
 

@@ -61,7 +61,7 @@ To re-run a single failing test:
 - **`shared/`** — single source of truth (DB, LLM providers, mode configs, config). Used by all apps.
 - **`streamlit_app/`** — V1 legacy PoC.
 - **`fastapi_app/`** — REST API at root `/be/korrekturleser-fastapi`. JWT auth (24h, HS256). 4 routers: auth, config, text, stats. Rate limiter (slowapi) PROD only. CORS: PROD → `entorb.net`, local → localhost:4173/5173.
-- **`vue_app/`** — Vue 3 + Quasar + Pinia + TypeScript. See `vue_app/AGENTS.md` for conventions.
+- **`vue_app/`** — Vue 3 + Quasar + Pinia + TypeScript. See [vue_app/AGENTS.md](vue_app/AGENTS.md) for conventions.
 
 ### Database
 
@@ -80,4 +80,4 @@ Python tests: FastAPI `TestClient`, session-scoped fixtures (`client`, `auth_tok
 
 ## Deployment
 
-Target: Uberspace via SCP. Script: `scripts/deploy.sh`. Prod under gunicorn (see `deployment.md`).
+Target: Uberspace via SCP. Script: `scripts/deploy.sh`. Prod under gunicorn (see [deployment.md](deployment.md)).
