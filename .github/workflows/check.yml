@@ -1,0 +1,219 @@
+---
+name: Check Code
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1  # latest only
+
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e  # v3.0.0
+
+      - name: cleanup after Gitleaks
+        run: rm -rf results.sarif
+
+      - name: Run prek pre-commit
+        uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece  # v3.0.0
+
+      - name: Run md lint
+        uses: rvben/rumdl@4997ff07b63c7a54d6a495ebcd3ce7f23ee1173f  # v0.2.55
+
+      - name: Run CSpell
+        uses: streetsidesoftware/cspell-action@de2a73e963e7443969755b648a1008f77033c5b2  # v8.4.0
+        with:
+          files: '**/*'
+          incremental_files_only: false
+
+      - name: yaml lint
+        run: |
+          npx -y @owenlamont/ryl@0.21.0 check -d '{extends: default, rules: {line-length: disable, truthy: disable}, ignore: [pnpm-lock.yaml]}' .
+
+  python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1  # latest only
+
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            pyproject.toml
+            uv.lock
+
+      - name: Prepare
+        run: |
+          uv sync --frozen --no-build
+          cp .env.example .env
+          sed -i 's/^LLM_PROVIDERS=.*/LLM_PROVIDERS=Mock/' .env
+
+      - name: Run py lint Ruff
+        run: |
+          uv run --frozen --no-build ruff format --check
+          uv run --frozen --no-build ruff check --no-fix --output-format=github
+
+      - name: Run py type check Pyright
+        run: uv run --frozen --no-build pyright
+
+      - name: Run py test Pytest
+        run: |
+          uv run --frozen --no-build pytest \
+            --cov \
+            --cov-report=xml:coverage.xml \
+            --quiet \
+            --tb=short
+
+      - name: Upload py coverage
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: coverage-py
+          path: coverage.xml
+          retention-days: 1
+
+      - name: Run py dead code Vulture
+        run: uv run --frozen --no-build vulture
+
+      - name: Run py audit
+        run: uv audit --preview-features audit
+
+  node:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1  # latest only
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86  # v6.0.10
+        with:
+          version: 11
+          run_install: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020  # v7.0.0
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Prepare
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Package tsconfig deps for Sonar
+        run: |
+          mkdir -p /tmp/sonar-tsconfig/@vue /tmp/sonar-tsconfig/@tsconfig
+          cp -RL node_modules/@vue/tsconfig /tmp/sonar-tsconfig/@vue/
+          cp -RL node_modules/@tsconfig/node24 /tmp/sonar-tsconfig/@tsconfig/
+
+      - name: Upload sonar tsconfig deps
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: tsconfig-deps
+          path: /tmp/sonar-tsconfig/
+          retention-days: 1
+
+      # - name: Setup Biome
+      #   uses: biomejs/setup-biome@v2
+      #   with:
+      #     version: latest
+
+      - name: Run js format Biome
+        run: pnpm exec biome ci .
+
+      - name: Run js lint ESLint
+        run: pnpm exec eslint .
+
+      - name: Run js test Vitest
+        run: pnpm exec vitest --watch=false --coverage
+
+      - name: Upload js coverage
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: coverage-js
+          path: coverage/lcov.info
+          retention-days: 1
+
+      - name: Run js type check
+        run: pnpm exec vue-tsc --build
+
+      - name: Run js dead code Knip
+        run: pnpm knip
+
+      - name: Run js audit
+        run: pnpm audit --prod
+
+  sonarqube:
+    needs: [core, python, node]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0  # Sonar wants full history for blame/new-code analysis
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+        with:
+          name: coverage-py
+          path: .
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+        with:
+          name: coverage-js
+          path: coverage/
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+        with:
+          name: tsconfig-deps
+          path: node_modules/
+
+      - uses: SonarSource/sonarqube-scan-action@22918119ff8e1ca75a623e15c8296b6ea4fbe28f  # v8.2.1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  all-checks-passed:
+    if: always()
+    needs: [core, python, node, sonarqube]
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Check job results
+        run: |
+          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]] || \
+             [[ "${{ contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            echo "One or more required jobs failed or were cancelled."
+            exit 1
+          fi
+          echo "All required jobs passed."

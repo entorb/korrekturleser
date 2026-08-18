@@ -1,0 +1,9 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "tags": ["-lintignore"],
+  "entry": ["scripts/*.sh"],
+  "project": ["vue_app/src/**/*.{ts,vue,sass,scss}"],
+  "ignore": ["vue_app/src/api/**"],
+  "ignoreBinaries": [],
+  "ignoreDependencies": ["@typescript/native"]
+}
