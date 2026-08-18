@@ -1,0 +1,24 @@
+---
+minimumReleaseAge: 7200  # 5 days (in minutes)
+minimumReleaseAgeExclude:
+  - '@biomejs/biome'
+  - '@biomejs/cli-darwin-arm64'
+  - '@biomejs/cli-darwin-x64'
+  - '@biomejs/cli-linux-arm64-musl'
+  - '@biomejs/cli-linux-arm64'
+  - '@biomejs/cli-linux-x64-musl'
+  - '@biomejs/cli-linux-x64'
+  - '@biomejs/cli-win32-arm64'
+  - '@biomejs/cli-win32-x64'
+  - js-yaml@4.3.0 || 4.3.1
+
+allowBuilds:
+  '@parcel/watcher': true
+  core-js: true
+  cypress: true
+  esbuild: true
+
+overrides:
+  js-yaml@>=4.0.0 <4.3.0: ^4.3.0
+  js-yaml@>=4.0.0 <4.3.1: ^4.3.1
+  glob@^11.1.0: '^13.0.6'
