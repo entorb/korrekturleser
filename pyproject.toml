@@ -48,15 +48,15 @@ omit = [".venv/*", "node_modules/*", "tests/*", "scripts/*"]
 [tool.coverage.report]
 exclude_lines = ["pragma: no cover", "if __name__ == \"__main__\":"]
 
-[tool.pyright]
-include = ["fastapi_app", "shared", "streamlit_app"]
-
 [tool.uv]
 # pyarrow cannot be updated beyond 20.0.0 (pinned by pandas==2.2.3 compatibility)
-
 [tool.uv.audit]
-# cspell:disable-next-line
+# cspell:disable
 ignore = ["GHSA-rgxp-2hwp-jwgg"]
+# cspell:enable
+
+[tool.pyright]
+include = ["fastapi_app", "shared", "streamlit_app"]
 
 [tool.vulture]
 ignore_decorators = ["@app.get", "@router.get", "@router.post"]
