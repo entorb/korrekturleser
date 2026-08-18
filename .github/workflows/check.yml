@@ -27,6 +27,10 @@ jobs:
           persist-credentials: false
           fetch-depth: 1  # latest only
 
+      - name: yaml lint
+        run: |
+          npx @owenlamont/ryl@0.21.0 check -d '{extends: default, rules: {line-length: disable, truthy: disable}, ignore: [pnpm-lock.yaml]}' .
+
       - name: Run prek pre-commit
         uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece  # v3.0.0
 
