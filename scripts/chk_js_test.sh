@@ -9,6 +9,6 @@ pnpm exec vitest --watch=false --silent=passed-only --reporter=minimal >"$out" 2
 status=$?
 
 if [ $status -ne 0 ]; then
-    head -n 100 "$out"
+  head -n 100 "$out"
 fi
 exit $status

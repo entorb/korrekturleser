@@ -19,7 +19,6 @@ pnpm run check
 pnpm run build
 rsync -ruzv --no-links --delete --delete-excluded dist/* entorb@entorb.net:html/korrekturleser-vue/
 
-
 # 2. Backends
 # config.toml -> config-prod.toml
 python3 scripts/config_convert.py

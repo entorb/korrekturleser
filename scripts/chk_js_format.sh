@@ -9,7 +9,7 @@ pnpm exec biome format --write . >"$out" 2>&1 && pnpm exec biome check --write .
 status=$?
 
 if [ $status -ne 0 ]; then
-    echo "Issues remaining, you can try:\npnpm exec biome check --write --unsafe ."
-    head -n 100 "$out"
+  echo "Issues remaining, you can try:\npnpm exec biome check --write --unsafe ."
+  head -n 100 "$out"
 fi
 exit $status
