@@ -104,6 +104,7 @@ rumdl
 ruzv
 selectbox
 senden
+shellcheck
 shfmt
 Shouty
 showpageshadow
