@@ -14,6 +14,7 @@ export type {
   ConfigResponse,
   DailyUsage,
   GetAllStatsApiStatsGetData,
+  GetAllStatsApiStatsGetErrors,
   GetAllStatsApiStatsGetResponse,
   GetAllStatsApiStatsGetResponses,
   GetConfigApiConfigGetData,

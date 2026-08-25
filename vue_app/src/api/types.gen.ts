@@ -294,9 +294,17 @@ export type ImproveTextApiTextPostData = {
 
 export type ImproveTextApiTextPostErrors = {
   /**
+   * Invalid request: empty text, unknown mode, or missing custom_instruction
+   */
+  400: unknown
+  /**
    * Validation Error
    */
   422: HttpValidationError
+  /**
+   * LLM service not configured or processing failed
+   */
+  500: unknown
 }
 
 export type ImproveTextApiTextPostError =
@@ -317,6 +325,13 @@ export type GetAllStatsApiStatsGetData = {
   path?: never
   query?: never
   url: '/api/stats/'
+}
+
+export type GetAllStatsApiStatsGetErrors = {
+  /**
+   * Failed to fetch usage statistics
+   */
+  500: unknown
 }
 
 export type GetAllStatsApiStatsGetResponses = {

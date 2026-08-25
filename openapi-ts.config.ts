@@ -4,7 +4,7 @@ export default defineConfig({
   input: 'http://localhost:9002/openapi.json',
   output: {
     path: 'vue_app/src/api',
-    postProcess: ['biome:format', 'biome:lint']
+    postProcess: ['biome:check']
   },
   plugins: ['@hey-api/client-axios', '@hey-api/typescript', '@hey-api/sdk']
 })

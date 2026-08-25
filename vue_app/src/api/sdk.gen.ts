@@ -10,6 +10,7 @@ import type {
 import { client } from './client.gen.js'
 import type {
   GetAllStatsApiStatsGetData,
+  GetAllStatsApiStatsGetErrors,
   GetAllStatsApiStatsGetResponses,
   GetConfigApiConfigGetData,
   GetConfigApiConfigGetErrors,
@@ -143,8 +144,12 @@ export const improveTextApiTextPost = <ThrowOnError extends boolean = false>(
  */
 export const getAllStatsApiStatsGet = <ThrowOnError extends boolean = false>(
   options?: Options<GetAllStatsApiStatsGetData, ThrowOnError>
-): RequestResult<GetAllStatsApiStatsGetResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<GetAllStatsApiStatsGetResponses, unknown, ThrowOnError>({
+): RequestResult<GetAllStatsApiStatsGetResponses, GetAllStatsApiStatsGetErrors, ThrowOnError> =>
+  (options?.client ?? client).get<
+    GetAllStatsApiStatsGetResponses,
+    GetAllStatsApiStatsGetErrors,
+    ThrowOnError
+  >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/stats/',
