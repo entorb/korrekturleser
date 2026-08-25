@@ -4,7 +4,6 @@ import { fileURLToPath, URL } from 'node:url'
 import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 import legacy from '@vitejs/plugin-legacy'
 import Vue from '@vitejs/plugin-vue'
-import Components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import vueDevTools from 'vite-plugin-vue-devtools'
@@ -37,10 +36,6 @@ export default defineConfig({
     vueDevTools(),
     VueRouter({
       dts: 'vue_app/src/route-map.d.ts'
-    }),
-    // https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin#readme
-    Components({
-      dts: 'vue_app/components.d.ts'
     }),
     VitePWA({
       registerType: 'autoUpdate',
