@@ -5,16 +5,17 @@ cd "$SCRIPT_DIR/.."
 # exit upon error
 set -e
 
-echo "## Python"
-
-echo "### Update UV and Python via brew/uv? [y/N]"
+echo "## Update Python, Node, UV, and PNPM [y/N]"
 read -r REPLY
+
 if [ "$REPLY" = "y" ] || [ "$REPLY" = "Y" ]; then
   brew update
+  echo "### UV Version"
   brew upgrade uv
   UV_VER=$(uv --version | awk '{print $2}')
   # write required-version into [tool.uv] of pyproject.toml
-  uv run python - "$UV_VER" <<'PY'
+  # must NOT use `uv run` here — uv checks required-version before executing
+  python3 - "$UV_VER" <<'PY'
 import pathlib
 import re
 import sys
@@ -35,7 +36,7 @@ path.write_text(text)
 PY
   echo "uv pinned to $UV_VER"
 
-  echo "### Python version"
+  echo "### Python Version"
   # upgrade to latest available 3.11 patch, then pin the exact version
   uv python upgrade 3.11
   UV_PY_VER=$(
@@ -50,6 +51,24 @@ PY
   }
   printf '%s\n' "$UV_PY_VER" >.python-version
   echo "python pinned to $UV_PY_VER"
+
+  echo "### Node and PNPM Versions"
+  brew upgrade node@24
+  brew upgrade pnpm
+  pnpm self-update
+
+  # update package.json and .nvmrc with new versions
+  NODE_VER=$(node --version | sed 's/v//')
+  PNPM_VER=$(pnpm --version)
+  PNPM_MANAGER="pnpm@$PNPM_VER"
+  printf '%s\n' "$NODE_VER" >.nvmrc
+  node -e "
+    const pkg = JSON.parse(require('fs').readFileSync('package.json','utf8'));
+    pkg.packageManager = '$PNPM_MANAGER';
+    pkg.engines.node = '>=$NODE_VER';
+    pkg.engines.pnpm = '>=$PNPM_VER';
+    require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+  "
 fi
 
 echo "## Python Packages"
@@ -78,28 +97,6 @@ set +f
 ./scripts/chk_py_lint.sh
 
 echo "## Node"
-
-echo "### Update Node and pnpm via brew? [y/N]"
-read -r REPLY
-if [ "$REPLY" = "y" ] || [ "$REPLY" = "Y" ]; then
-  brew upgrade node@24
-  brew upgrade pnpm
-  pnpm self-update
-
-  # update package.json and .nvmrc with new versions
-  NODE_VER=$(node --version | sed 's/v//')
-  PNPM_VER=$(pnpm --version)
-  PNPM_MANAGER="pnpm@$PNPM_VER"
-  printf '%s\n' "$NODE_VER" >.nvmrc
-  node -e "
-    const pkg = JSON.parse(require('fs').readFileSync('package.json','utf8'));
-    pkg.packageManager = '$PNPM_MANAGER';
-    pkg.engines.node = '>=$NODE_VER';
-    pkg.engines.pnpm = '>=$PNPM_VER';
-    require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-  "
-fi
-
 echo "### delete old node_modules and lock"
 rm -rf node_modules
 rm -f pnpm-lock.yaml
@@ -133,7 +130,7 @@ if [ -n "$(git status --porcelain)" ]; then
   git add pnpm-lock.yaml uv.lock
   git diff --staged --quiet -- pnpm-lock.yaml uv.lock || git commit -m "chore(deps): Lock"
 
-  git add package.json pyproject.toml pnpm-workspace.yaml biome.json prek.toml .nvmrc .python-version vue_app/src/api vue_app/src/config/modes.ts
+  git add package.json pyproject.toml pnpm-workspace.yaml biome.json .pre-commit-config.yaml .nvmrc .python-version vue_app/src/api vue_app/src/config/modes.ts
   git commit -m "chore(deps): Package update" || true
   git push
 fi
