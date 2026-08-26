@@ -46,7 +46,7 @@ Output
 - in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc
 - keine Kommentare
 - Struktur und Zeilenumbrüche nicht ändern
-- Format: plain Text, keine Markdown-Formatierung
+- Format: plain text, no Markdown format
 """,
     ),
     "improve": ModeConfig(
@@ -62,7 +62,7 @@ Output
 - verbesserter Text
 - in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc
 - keine Kommentare
-- Format: plain Text, keine Markdown-Formatierung
+- Format: plain text, no Markdown format
 """,
     ),
     "summarize": ModeConfig(
@@ -93,7 +93,7 @@ Output
 - Text
 - in derselben Sprache! Falls Eingabe in Englisch, dann Ausgabe in Englisch, etc
 - keine Kommentare
-- Format: plain Text, keine Markdown-Formatierung.
+- Format: plain text, no Markdown format
 """,
     ),
     "translate_de": ModeConfig(
@@ -109,15 +109,7 @@ Output
     "custom": ModeConfig(
         mode="custom",
         description="Freitext Anweisung",
-        instruction="""
-Input
-- Text
-Tasks
-- <CUSTOM_INSTRUCTION>
-Output
-- Veränderter Text
-- Format: plain Text, keine Markdown-Formatierung.
-""",
+        instruction="<CUSTOM_INSTRUCTION>",
     ),
 }
 
