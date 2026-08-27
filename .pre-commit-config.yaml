@@ -8,8 +8,6 @@
 # update hooks to latest version
 #  prek autoupdate
 
-# :schema https://www.schemastore.org/prek.json
-
 exclude: >-
   (?x)^(
     \.vscode/.*
