@@ -5,7 +5,7 @@ out=$(mktemp)
 trap 'rm -f "$out"' EXIT INT TERM
 
 # check = format + lint
-pnpm exec biome check --write . >>"$out" 2>&1
+pnpm exec biome check --reporter=concise . >>"$out" 2>&1
 status=$?
 
 if [ $status -ne 0 ]; then

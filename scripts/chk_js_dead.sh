@@ -4,7 +4,7 @@ cd "$(dirname "$0")/.."
 out=$(mktemp)
 trap 'rm -f "$out"' EXIT INT TERM
 
-pnpm exec knip >"$out" 2>&1
+pnpm exec knip --reporter compact >"$out" 2>&1
 status=$?
 
 # print output in good case only if more than 1 lines
