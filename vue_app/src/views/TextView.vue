@@ -212,25 +212,30 @@ function handleLogout() {
           <!-- Mode Selector and KI Button -->
           <div class="row q-col-gutter-sm q-mt-md">
             <div class="col-grow">
-              <q-select
-                v-model="textStore.selectedMode"
-                :options="modes"
-                label="Modus"
-                outlined
-                emit-value
-                map-options
-              >
-                <template #option="scope">
-                  <q-item v-bind="scope.itemProps">
-                    <q-item-section>
-                      <q-item-label>{{ modeDescriptions[scope.opt] || scope.opt }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </template>
-                <template #selected>
-                  {{ modeDescriptions[textStore.selectedMode] || textStore.selectedMode }}
-                </template>
-              </q-select>
+              <div class="row items-center q-gutter-sm">
+                <div class="col-grow">
+                  <q-select
+                    v-model="textStore.selectedMode"
+                    :options="modes"
+                    label="Modus"
+                    outlined
+                    emit-value
+                    map-options
+                    @update:model-value="textStore.instruction = ''"
+                  >
+                    <template #option="scope">
+                      <q-item v-bind="scope.itemProps">
+                        <q-item-section>
+                          <q-item-label>{{ modeDescriptions[scope.opt] || scope.opt }}</q-item-label>
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                    <template #selected>
+                      {{ modeDescriptions[textStore.selectedMode] || textStore.selectedMode }}
+                    </template>
+                  </q-select>
+                </div>
+              </div>
               <q-input
                 v-if="textStore.selectedMode === 'custom'"
                 v-model="textStore.customInstruction"
@@ -315,6 +320,20 @@ function handleLogout() {
               />
             </div>
           </div>
+
+          <!-- Instruction Display -->
+          <q-card
+            v-if="textStore.instruction"
+            bordered
+            class="q-mt-sm"
+          >
+            <q-card-section class="q-py-sm">
+              <div class="text-subtitle2">
+                KI Anweisung
+              </div>
+              <pre class="instruction-pre q-mt-sm q-mb-none">{{ textStore.instruction.trim() }}</pre>
+            </q-card-section>
+          </q-card>
         </q-card-section>
       </q-card>
     </q-page>
@@ -322,6 +341,28 @@ function handleLogout() {
 </template>
 
 <style>
+/* Markdown links */
+.markdown-content a {
+  color: var(--q-primary);
+  text-decoration: underline;
+  word-break: break-word;
+}
+
+.markdown-content a:hover {
+  text-decoration: none;
+}
+
+/* Instruction display */
+.instruction-pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 12px;
+  background: var(--q-grey-2);
+  color: var(--q-dark);
+  border-radius: 4px;
+  padding: 12px;
+}
+
 /* Diff container optimization */
 .diff-container {
   max-width: 100%;
