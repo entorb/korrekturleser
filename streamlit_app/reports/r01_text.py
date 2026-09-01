@@ -105,7 +105,7 @@ if submit_button:
     st.session_state["cnt_tokens"] += tokens
 
     # Display output differently for summarize mode (markdown) vs others (text)
-    if selected_mode == "summarize":
+    if selected_mode in ["summarize", "factcheck"]:
         textarea_ai = st.markdown(text_response)
 
     else:

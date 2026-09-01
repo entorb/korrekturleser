@@ -93,7 +93,15 @@ export type TextRequest = {
    *
    * AI text operation mode
    */
-  mode: 'correct' | 'improve' | 'summarize' | 'expand' | 'translate_de' | 'translate_en' | 'custom'
+  mode:
+    | 'correct'
+    | 'improve'
+    | 'summarize'
+    | 'expand'
+    | 'translate_de'
+    | 'translate_en'
+    | 'factcheck'
+    | 'custom'
   /**
    * Custom Instruction
    *
@@ -131,7 +139,19 @@ export type TextResponse = {
   /**
    * Mode
    */
-  mode: 'correct' | 'improve' | 'summarize' | 'expand' | 'translate_de' | 'translate_en' | 'custom'
+  mode:
+    | 'correct'
+    | 'improve'
+    | 'summarize'
+    | 'expand'
+    | 'translate_de'
+    | 'translate_en'
+    | 'factcheck'
+    | 'custom'
+  /**
+   * Instruction
+   */
+  instruction: string
   /**
    * Tokens Used
    */

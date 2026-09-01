@@ -10,13 +10,11 @@ class ModeConfig:
     Configuration for a text improvement mode.
 
     Attributes:
-        mode: The mode identifier string
         description: User-facing description (button text)
         instruction: LLM instruction for backend processing
 
     """
 
-    mode: str
     description: str
     instruction: str
 
@@ -34,7 +32,6 @@ Output Format
 # Consolidated mode configurations
 MODE_CONFIGS = {
     "correct": ModeConfig(
-        mode="correct",
         description="Korrigiere",
         instruction="""
 Input
@@ -50,7 +47,6 @@ Output
 """,
     ),
     "improve": ModeConfig(
-        mode="improve",
         description="Verbessere",
         instruction="""
 Input
@@ -66,7 +62,6 @@ Output
 """,
     ),
     "summarize": ModeConfig(
-        mode="summarize",
         description="Text -> Stichwörter",
         instruction="""
 Input
@@ -82,7 +77,6 @@ Output
 """,
     ),
     "expand": ModeConfig(
-        mode="expand",
         description="Stichwörter -> Text",
         instruction="""
 Input
@@ -97,17 +91,30 @@ Output
 """,
     ),
     "translate_de": ModeConfig(
-        mode="translate_de",
         description="Übersetzen -> DE",
-        instruction=_INSTRUCTION_TRANSLATE.replace("<LANG>", "Deutsche", 1),
+        instruction=_INSTRUCTION_TRANSLATE.replace("<LANG>", "Deutsch", 1),
     ),
     "translate_en": ModeConfig(
-        mode="translate_en",
         description="Übersetzen -> EN",
-        instruction=_INSTRUCTION_TRANSLATE.replace("<LANG>", "Englische", 1),
+        instruction=_INSTRUCTION_TRANSLATE.replace("<LANG>", "Englisch", 1),
+    ),
+    "factcheck": ModeConfig(
+        description="Faktencheck",
+        instruction="""
+Input
+- Text
+Tasks
+- Du führst einen Factcheck zum Text durch.
+- Fokus auf wissenschaftliche Korrektheit.
+- Belege Aussagen mit belastbaren Quellen, insbesondere bei Verschwörungstheorien und FakeNews.
+  Aber nur seriöse funktionierende gültige Links.
+Output
+- Markdown format, keine Einleitung
+- kurz und prägnant
+- einfache Sprache
+""",  # noqa: E501
     ),
     "custom": ModeConfig(
-        mode="custom",
         description="Freitext Anweisung",
         instruction="<CUSTOM_INSTRUCTION>",
     ),
@@ -122,5 +129,6 @@ TextMode = Literal[
     "expand",
     "translate_de",
     "translate_en",
+    "factcheck",
     "custom",
 ]

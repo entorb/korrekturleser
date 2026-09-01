@@ -83,6 +83,7 @@ describe('Text Store', () => {
       text_original: 'Original',
       text_ai: 'Improved',
       mode: 'improve' as const,
+      instruction: 'Instruction',
       tokens_used: 100,
       model: 'gemini-2.5-flash',
       provider: 'Gemini'

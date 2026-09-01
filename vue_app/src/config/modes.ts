@@ -20,6 +20,7 @@ const ALL_MODES: TextMode[] = [
   'expand',
   'translate_de',
   'translate_en',
+  'factcheck',
   'custom'
 ]
 
@@ -31,6 +32,7 @@ const MODE_DESCRIPTIONS: Record<TextMode, string> = {
   expand: 'Stichwörter -> Text',
   translate_de: 'Übersetzen -> DE',
   translate_en: 'Übersetzen -> EN',
+  factcheck: 'Faktencheck',
   custom: 'Freitext Anweisung'
 }
 
