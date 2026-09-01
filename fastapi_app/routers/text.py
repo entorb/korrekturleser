@@ -110,6 +110,7 @@ async def improve_text(
             text_original=request.text,
             text_ai=improved_text,
             mode=request.mode,
+            instruction=instruction,
             tokens_used=tokens_used,
             model=model,
             provider=selected_provider,

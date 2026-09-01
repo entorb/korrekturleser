@@ -61,6 +61,7 @@ class TextResponse(BaseModel):
     text_original: str
     text_ai: str
     mode: TextMode  # pyright: ignore[reportInvalidTypeForm]
+    instruction: str
     tokens_used: int
     model: str
     provider: str

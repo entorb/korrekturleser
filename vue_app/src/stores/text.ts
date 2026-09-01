@@ -17,6 +17,7 @@ export const useTextStore = defineStore('text', () => {
   const outputText = ref('')
   const diffHtml = ref('')
   const lastResult = ref<TextResponse | null>(null)
+  const instruction = ref('')
   const error = ref<string | null>(null)
   const customInstruction = ref('')
 
@@ -24,6 +25,7 @@ export const useTextStore = defineStore('text', () => {
     outputText.value = ''
     diffHtml.value = ''
     lastResult.value = null
+    instruction.value = ''
     error.value = null
   }
 
@@ -44,6 +46,7 @@ export const useTextStore = defineStore('text', () => {
     outputText,
     diffHtml,
     lastResult,
+    instruction,
     error,
     customInstruction,
     clearOutput,

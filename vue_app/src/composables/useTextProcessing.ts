@@ -23,7 +23,9 @@ export function useTextProcessing() {
   )
 
   const showMarkdown = computed(
-    () => textStore.outputText && textStore.selectedMode === 'summarize'
+    () =>
+      textStore.outputText &&
+      (textStore.selectedMode === 'summarize' || textStore.selectedMode === 'factcheck')
   )
 
   function buildTextRequest(): TextRequest {
@@ -40,6 +42,7 @@ export function useTextProcessing() {
   function handleResult(result: TextResponse) {
     textStore.outputText = result.text_ai
     textStore.lastResult = result
+    textStore.instruction = result.instruction || ''
 
     if (showDiff.value) {
       textStore.diffHtml = generateDiff(`${textStore.inputText}\n\n`, `${result.text_ai}\n\n`)

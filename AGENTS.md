@@ -20,16 +20,11 @@ Local DB auto-creates `db.sqlite` (user Torben, secret `test`, ID:1). Prod detec
 | FastAPI (V2 BE) | `scripts/run_fastapi.sh` | `localhost:9002` |
 | Vue.js (V2 FE) | `scripts/run_vue.sh` | `localhost:5173/korrekturleser-vue/` |
 
-## Code generation
-
-**FastAPI must be running** before generating frontend API client:
+## API code generation
 
 ```sh
-scripts/run_fastapi.sh   # terminal 1
-pnpm generate-api        # terminal 2 — reads localhost:9002/openapi.json
+scripts/gen_api_for_vue.sh
 ```
-
-`pnpm generate-api` does two things:
 
 1. Generates `vue_app/src/api/` via `@hey-api/openapi-ts`
 2. Runs `scripts/gen_mode_descriptions.py` → `vue_app/src/config/modes.ts`
@@ -57,6 +52,10 @@ To re-run a single failing test:
 
 - Python: `uv run pytest path/to/test_file.py` or `uv run pytest path/to/test_file.py::test_function`
 - JavaScript: `pnpm exec vitest path/to/test.spec.ts` or `pnpm exec vitest -t "test name"`
+
+### Add CSpell findings
+
+If `scripts/chk_spelling.sh` finds unknown words, these are written to `cspell-words-missing.txt`. The ones that are correct shall be appended to `cspell-words.txt` file, which will be sorted by running `scripts/chk_pre-commit.sh`.
 
 ## Architecture
 
