@@ -11,6 +11,7 @@
 exclude: >-
   (?x)^(
     \.vscode/.*
+    |pnpm-lock.yaml
   )$
 repos:
   - repo: builtin
@@ -42,14 +43,14 @@ repos:
       - id: trailing-whitespace
 
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: v0.2.62
+    rev: v0.2.68
     hooks:
       - id: rumdl
       # args: ["--fix"]
       - id: rumdl-fmt
 
   - repo: https://github.com/owenlamont/ryl-pre-commit
-    rev: v0.21.0
+    rev: v0.22.0
     hooks:
       - id: ryl
         args: ["--fix"]
