@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Respond like smart caveman. Cut filler. Fragments fine. Technical terms exact.
+instead of `/tmp/` use `./tmp/` dir for helper scripts.
 
 ## Dev setup
 
