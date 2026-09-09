@@ -2,25 +2,25 @@
  * Diff generation utilities
  */
 
-import { createTwoFilesPatch } from 'diff'
-import { html } from 'diff2html'
+import { createTwoFilesPatch } from "diff"
+import { html } from "diff2html"
 
 export function generateDiff(original: string, improved: string): string {
-  const patch = createTwoFilesPatch('Original', 'Verbessert', original, improved, '', '', {
-    context: 3
+  const patch = createTwoFilesPatch("Original", "Verbessert", original, improved, "", "", {
+    context: 3,
   })
   const diffHtml = html(patch, {
     drawFileList: false,
-    matching: 'words',
-    outputFormat: 'side-by-side',
-    renderNothingWhenEmpty: false
+    matching: "words",
+    outputFormat: "side-by-side",
+    renderNothingWhenEmpty: false,
   })
 
-  const doc = new DOMParser().parseFromString(diffHtml, 'text/html')
+  const doc = new DOMParser().parseFromString(diffHtml, "text/html")
 
   // Remove unnecessary elements
   for (const el of doc.querySelectorAll(
-    '.d2h-file-header, .d2h-info, .d2h-code-linenumber, .d2h-code-side-linenumber, .d2h-code-line-prefix'
+    ".d2h-file-header, .d2h-info, .d2h-code-linenumber, .d2h-code-side-linenumber, .d2h-code-line-prefix",
   )) {
     el.remove()
   }

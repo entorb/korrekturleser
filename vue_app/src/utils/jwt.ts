@@ -14,10 +14,10 @@ interface JwtPayload {
  */
 export function decodeJwt(token: string): JwtPayload | null {
   try {
-    const parts = token.split('.')
+    const parts = token.split(".")
     if (parts.length !== 3 || parts[1] == null) return null
 
-    const decoded = atob(parts[1].replaceAll('-', '+').replaceAll('_', '/'))
+    const decoded = atob(parts[1].replaceAll("-", "+").replaceAll("_", "/"))
     return JSON.parse(decoded) as JwtPayload
   } catch {
     return null

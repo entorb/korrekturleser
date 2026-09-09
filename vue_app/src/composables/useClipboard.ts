@@ -2,15 +2,15 @@
  * Composable for clipboard operations with Quasar notifications
  */
 
-import { useQuasar } from 'quasar'
+import { useQuasar } from "quasar"
 
-import { copyToClipboard as copyText, readFromClipboard } from '@/utils/clipboard'
+import { copyToClipboard as copyText, readFromClipboard } from "@/utils/clipboard"
 
 async function pasteFromClipboard(): Promise<string> {
   try {
     return await readFromClipboard()
   } catch {
-    return ''
+    return ""
   }
 }
 
@@ -20,9 +20,9 @@ export function useClipboard() {
   async function copyToClipboard(text: string) {
     try {
       await copyText(text)
-      $q.notify({ type: 'positive', message: 'Kopiert!' })
+      $q.notify({ type: "positive", message: "Kopiert!" })
     } catch {
-      $q.notify({ type: 'negative', message: 'Kopieren fehlgeschlagen' })
+      $q.notify({ type: "negative", message: "Kopieren fehlgeschlagen" })
     }
   }
 

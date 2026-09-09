@@ -2,7 +2,7 @@
  * Composable for keyboard shortcuts
  */
 
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted } from "vue"
 
 interface KeyboardShortcutOptions {
   onEscape?: () => void
@@ -11,21 +11,21 @@ interface KeyboardShortcutOptions {
 
 export function useKeyboardShortcuts(options: KeyboardShortcutOptions = {}) {
   function handleGlobalKeyPress(event: KeyboardEvent) {
-    if (event.key === 'Escape') options.onEscape?.()
+    if (event.key === "Escape") options.onEscape?.()
   }
 
   function handleTextareaKeydown(event: KeyboardEvent, canSubmit: boolean) {
-    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey) && canSubmit) {
+    if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && canSubmit) {
       event.preventDefault()
       options.onCtrlEnter?.()
     }
   }
 
   onMounted(() => {
-    globalThis.addEventListener('keydown', handleGlobalKeyPress)
+    globalThis.addEventListener("keydown", handleGlobalKeyPress)
   })
   onUnmounted(() => {
-    globalThis.removeEventListener('keydown', handleGlobalKeyPress)
+    globalThis.removeEventListener("keydown", handleGlobalKeyPress)
   })
 
   return { handleTextareaKeydown }

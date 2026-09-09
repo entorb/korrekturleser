@@ -1,92 +1,92 @@
-import { createPinia, setActivePinia } from 'pinia'
-import { beforeEach, describe, expect, it } from 'vitest'
-import { useTextStore } from '../text'
+import { createPinia, setActivePinia } from "pinia"
+import { beforeEach, describe, expect, it } from "vitest"
+import { useTextStore } from "../text.ts"
 
-describe('Text Store', () => {
+describe("Text Store", () => {
   beforeEach(() => {
     setActivePinia(createPinia())
   })
 
-  it('initializes with default values', () => {
+  it("initializes with default values", () => {
     const store = useTextStore()
 
-    expect(store.selectedMode).toBe('correct')
-    expect(store.inputText).toBe('')
-    expect(store.outputText).toBe('')
-    expect(store.diffHtml).toBe('')
+    expect(store.selectedMode).toBe("correct")
+    expect(store.inputText).toBe("")
+    expect(store.outputText).toBe("")
+    expect(store.diffHtml).toBe("")
     expect(store.lastResult).toBeNull()
     expect(store.error).toBeNull()
   })
 
-  it('updates input text', () => {
+  it("updates input text", () => {
     const store = useTextStore()
-    store.inputText = 'Hello world'
-    expect(store.inputText).toBe('Hello world')
+    store.inputText = "Hello world"
+    expect(store.inputText).toBe("Hello world")
   })
 
-  it('updates output text', () => {
+  it("updates output text", () => {
     const store = useTextStore()
-    store.outputText = 'Corrected text'
-    expect(store.outputText).toBe('Corrected text')
+    store.outputText = "Corrected text"
+    expect(store.outputText).toBe("Corrected text")
   })
 
-  it('changes mode', () => {
+  it("changes mode", () => {
     const store = useTextStore()
-    store.selectedMode = 'improve'
-    expect(store.selectedMode).toBe('improve')
+    store.selectedMode = "improve"
+    expect(store.selectedMode).toBe("improve")
   })
 
-  it('sets diff HTML', () => {
+  it("sets diff HTML", () => {
     const store = useTextStore()
-    store.diffHtml = '<div>diff</div>'
-    expect(store.diffHtml).toBe('<div>diff</div>')
+    store.diffHtml = "<div>diff</div>"
+    expect(store.diffHtml).toBe("<div>diff</div>")
   })
 
-  it('clears output while preserving input', () => {
+  it("clears output while preserving input", () => {
     const store = useTextStore()
 
-    store.inputText = 'Input text'
-    store.outputText = 'Output text'
-    store.diffHtml = '<div>diff</div>'
-    store.error = 'Some error'
+    store.inputText = "Input text"
+    store.outputText = "Output text"
+    store.diffHtml = "<div>diff</div>"
+    store.error = "Some error"
 
     store.clearOutput()
 
-    expect(store.inputText).toBe('Input text')
-    expect(store.outputText).toBe('')
-    expect(store.diffHtml).toBe('')
+    expect(store.inputText).toBe("Input text")
+    expect(store.outputText).toBe("")
+    expect(store.diffHtml).toBe("")
     expect(store.lastResult).toBeNull()
     expect(store.error).toBeNull()
   })
 
-  it('clears all data including input', () => {
+  it("clears all data including input", () => {
     const store = useTextStore()
 
-    store.inputText = 'Input text'
-    store.outputText = 'Output text'
-    store.selectedMode = 'summarize'
-    store.diffHtml = '<div>diff</div>'
+    store.inputText = "Input text"
+    store.outputText = "Output text"
+    store.selectedMode = "summarize"
+    store.diffHtml = "<div>diff</div>"
 
     store.clearAll()
 
-    expect(store.inputText).toBe('')
-    expect(store.outputText).toBe('')
-    expect(store.diffHtml).toBe('')
+    expect(store.inputText).toBe("")
+    expect(store.outputText).toBe("")
+    expect(store.diffHtml).toBe("")
     expect(store.lastResult).toBeNull()
     expect(store.error).toBeNull()
-    expect(store.selectedMode).toBe('correct')
+    expect(store.selectedMode).toBe("correct")
   })
 
-  it('sets last result', () => {
+  it("sets last result", () => {
     const store = useTextStore()
     const mockResult = {
-      text_original: 'Original',
-      text_ai: 'Improved',
-      mode: 'improve' as const,
-      instruction: 'Instruction',
+      text_original: "Original",
+      text_ai: "Improved",
+      mode: "improve" as const,
+      instruction: "Instruction",
       tokens_used: 100,
-      model: 'gemini-2.5-flash',
-      provider: 'Gemini'
+      model: "gemini-2.5-flash",
+      provider: "Gemini",
     }
 
     store.lastResult = mockResult

@@ -7,8 +7,8 @@ export {
   improveTextApiTextPost,
   loginApiAuthLoginPost,
   type Options,
-  rootGet
-} from './sdk.gen.js'
+  rootGet,
+} from "./sdk.gen.js"
 export type {
   ClientOptions,
   ConfigResponse,
@@ -45,5 +45,5 @@ export type {
   TokenResponse,
   TotalUsage,
   UsageStatsResponse,
-  ValidationError
-} from './types.gen.js'
+  ValidationError,
+} from "./types.gen.js"
