@@ -1,125 +1,125 @@
 // Plugins
-import { fileURLToPath, URL } from 'node:url'
+import { fileURLToPath, URL } from "node:url"
 
-import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
-import legacy from '@vitejs/plugin-legacy'
-import Vue from '@vitejs/plugin-vue'
-import { defineConfig } from 'vite'
-import { VitePWA } from 'vite-plugin-pwa'
-import vueDevTools from 'vite-plugin-vue-devtools'
-import VueRouter from 'vue-router/vite'
+import { quasar, transformAssetUrls } from "@quasar/vite-plugin"
+import legacy from "@vitejs/plugin-legacy"
+import Vue from "@vitejs/plugin-vue"
+import { defineConfig } from "vite"
+import { VitePWA } from "vite-plugin-pwa"
+import vueDevTools from "vite-plugin-vue-devtools"
+import VueRouter from "vue-router/vite"
 
 // https://vite.dev/config/
 export default defineConfig({
   // TM: important when deploying not into the webserver root dir
   // error message "was blocked due to MIME type (“text/html”) mismatch"
-  base: '/korrekturleser-vue/',
+  base: "/korrekturleser-vue/",
   build: {
     assetsInlineLimit: 4096,
     chunkSizeWarningLimit: 500,
     cssCodeSplit: true,
-    minify: 'esbuild',
-    sourcemap: false
+    minify: "esbuild",
+    sourcemap: false,
     // target is handled by @vitejs/plugin-legacy below
   },
 
   optimizeDeps: {
-    include: ['vue', 'vue-router', 'quasar']
+    include: ["vue", "vue-router", "quasar"],
   },
   plugins: [
     Vue({
-      template: { transformAssetUrls }
+      template: { transformAssetUrls },
     }),
     quasar({
-      sassVariables: 'vue_app/styles/quasar-variables.sass'
+      sassVariables: "vue_app/styles/quasar-variables.sass",
     }),
     vueDevTools(),
     VueRouter({
-      dts: 'vue_app/src/route-map.d.ts'
+      dts: "vue_app/src/route-map.d.ts",
     }),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: "autoUpdate",
       includeAssets: [
-        'favicon.svg',
-        'favicon.ico',
-        'favicon-16x16.png',
-        'favicon-32x32.png',
-        'apple-touch-icon.png',
-        'android-chrome-192x192.png',
-        'android-chrome-512x512.png'
+        "favicon.svg",
+        "favicon.ico",
+        "favicon-16x16.png",
+        "favicon-32x32.png",
+        "apple-touch-icon.png",
+        "android-chrome-192x192.png",
+        "android-chrome-512x512.png",
       ],
       manifest: {
-        name: 'KI Korrekturleser - AI Text Correction',
-        short_name: 'Korrekturleser',
-        description: 'AI-powered text proofreading and improvement by LLM',
-        theme_color: '#1976d2',
-        background_color: '#ffffff',
-        display: 'standalone',
-        orientation: 'portrait',
-        scope: '/korrekturleser-vue/',
-        start_url: '/korrekturleser-vue/',
+        name: "KI Korrekturleser - AI Text Correction",
+        short_name: "Korrekturleser",
+        description: "AI-powered text proofreading and improvement by LLM",
+        theme_color: "#1976d2",
+        background_color: "#ffffff",
+        display: "standalone",
+        orientation: "portrait",
+        scope: "/korrekturleser-vue/",
+        start_url: "/korrekturleser-vue/",
         icons: [
           {
-            src: '/korrekturleser-vue/android-chrome-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any maskable'
+            src: "/korrekturleser-vue/android-chrome-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any maskable",
           },
           {
-            src: '/korrekturleser-vue/android-chrome-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
+            src: "/korrekturleser-vue/android-chrome-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable",
           },
           {
-            src: '/korrekturleser-vue/apple-touch-icon.png',
-            sizes: '180x180',
-            type: 'image/png'
+            src: "/korrekturleser-vue/apple-touch-icon.png",
+            sizes: "180x180",
+            type: "image/png",
           },
           {
-            src: '/korrekturleser-vue/favicon-32x32.png',
-            sizes: '32x32',
-            type: 'image/png'
+            src: "/korrekturleser-vue/favicon-32x32.png",
+            sizes: "32x32",
+            type: "image/png",
           },
           {
-            src: '/korrekturleser-vue/favicon-16x16.png',
-            sizes: '16x16',
-            type: 'image/png'
-          }
-        ]
+            src: "/korrekturleser-vue/favicon-16x16.png",
+            sizes: "16x16",
+            type: "image/png",
+          },
+        ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
+            handler: "CacheFirst",
             options: {
-              cacheName: 'google-fonts-cache',
+              cacheName: "google-fonts-cache",
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365
-              }
-            }
-          }
-        ]
-      }
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+            },
+          },
+        ],
+      },
     }),
     // Support iPhone 7+ with iOS 15+ (Safari 15+)
     legacy({
-      modernTargets: ['iOS >= 15', 'Safari >= 15', 'Chrome >= 87', 'Firefox >= 78', 'Edge >= 88'],
-      targets: ['iOS >= 15', 'Safari >= 15', 'Chrome >= 87', 'Firefox >= 78', 'Edge >= 88'],
+      modernTargets: ["iOS >= 15", "Safari >= 15", "Chrome >= 87", "Firefox >= 78", "Edge >= 88"],
+      targets: ["iOS >= 15", "Safari >= 15", "Chrome >= 87", "Firefox >= 78", "Edge >= 88"],
       modernPolyfills: true,
-      renderLegacyChunks: false
-    })
+      renderLegacyChunks: false,
+    }),
   ],
-  define: { 'process.env': {} },
+  define: { "process.env": {} },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./vue_app/src', import.meta.url))
+      "@": fileURLToPath(new URL("./vue_app/src", import.meta.url)),
     },
-    extensions: ['.js', '.json', '.jsx', '.mjs', '.ts', '.tsx', '.vue']
+    extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
   },
   preview: { port: 4173, strictPort: true },
-  server: { port: 5173, strictPort: true }
+  server: { port: 5173, strictPort: true },
 })

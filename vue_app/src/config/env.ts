@@ -9,16 +9,16 @@ interface AppConfig {
 }
 
 function validateEnv(): AppConfig {
-  const apiBaseUrl = import.meta.env['VITE_API_BASE_URL']
+  const apiBaseUrl = import.meta.env["VITE_API_BASE_URL"]
 
-  if (typeof apiBaseUrl !== 'string' || apiBaseUrl.length === 0) {
-    throw new Error('VITE_API_BASE_URL environment variable is not defined')
+  if (typeof apiBaseUrl !== "string" || apiBaseUrl.length === 0) {
+    throw new Error("VITE_API_BASE_URL environment variable is not defined")
   }
 
   return {
     apiBaseUrl,
     isDevelopment: import.meta.env.DEV,
-    isProduction: import.meta.env.PROD
+    isProduction: import.meta.env.PROD,
   }
 }
 

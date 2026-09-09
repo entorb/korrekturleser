@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onMounted } from "vue"
+import { useRouter } from "vue-router"
 
-import { useClipboard } from '@/composables/useClipboard'
-import { useConfig } from '@/composables/useConfig'
-import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
-import { useMarkdown } from '@/composables/useMarkdown'
-import { useTextProcessing } from '@/composables/useTextProcessing'
-import { getAvailableModes, getModeDescriptions } from '@/config/modes'
-import { useAuthStore } from '@/stores/auth'
-import { useTextStore } from '@/stores/text'
-import 'diff2html/bundles/css/diff2html.min.css'
+import { useClipboard } from "@/composables/useClipboard"
+import { useConfig } from "@/composables/useConfig"
+import { useKeyboardShortcuts } from "@/composables/useKeyboardShortcuts"
+import { useMarkdown } from "@/composables/useMarkdown"
+import { useTextProcessing } from "@/composables/useTextProcessing"
+import { getAvailableModes, getModeDescriptions } from "@/config/modes"
+import { useAuthStore } from "@/stores/auth"
+import { useTextStore } from "@/stores/text"
+import "diff2html/bundles/css/diff2html.min.css"
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -25,8 +25,8 @@ const { isProcessing, showDiff, showMarkdown, processText, transferAiTextToInput
 const { showDisclaimer, fetchProvidersAndModels, handleProviderChange } = useConfig()
 
 const { handleTextareaKeydown } = useKeyboardShortcuts({
-  onEscape: () => router.push({ name: 'stats' }),
-  onCtrlEnter: processText
+  onEscape: () => router.push({ name: "stats" }),
+  onCtrlEnter: processText,
 })
 
 const { copyToClipboard, pasteFromClipboard } = useClipboard()
@@ -36,7 +36,7 @@ const canSubmit = computed(
   () =>
     Boolean(textStore.inputText) &&
     !isProcessing.value &&
-    (textStore.selectedMode !== 'custom' || Boolean(textStore.customInstruction))
+    (textStore.selectedMode !== "custom" || Boolean(textStore.customInstruction)),
 )
 
 onMounted(() => fetchProvidersAndModels())
@@ -54,7 +54,7 @@ async function handlePasteFromClipboard() {
 
 function handleLogout() {
   authStore.logout()
-  void router.push({ name: 'login' })
+  void router.push({ name: "login" })
 }
 </script>
 

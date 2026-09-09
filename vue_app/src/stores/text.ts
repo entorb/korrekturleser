@@ -2,38 +2,38 @@
  * Text processing store using Pinia
  */
 
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { defineStore } from "pinia"
+import { ref } from "vue"
 
-import type { TextRequest, TextResponse } from '@/api'
+import type { TextRequest, TextResponse } from "@/api"
 
-export const useTextStore = defineStore('text', () => {
-  const selectedMode = ref<TextRequest['mode']>('correct')
-  const selectedModel = ref('')
+export const useTextStore = defineStore("text", () => {
+  const selectedMode = ref<TextRequest["mode"]>("correct")
+  const selectedModel = ref("")
   const availableModels = ref<string[]>([])
-  const selectedProvider = ref('')
+  const selectedProvider = ref("")
   const availableProviders = ref<string[]>([])
-  const inputText = ref('')
-  const outputText = ref('')
-  const diffHtml = ref('')
+  const inputText = ref("")
+  const outputText = ref("")
+  const diffHtml = ref("")
   const lastResult = ref<TextResponse | null>(null)
-  const instruction = ref('')
+  const instruction = ref("")
   const error = ref<string | null>(null)
-  const customInstruction = ref('')
+  const customInstruction = ref("")
 
   function clearOutput() {
-    outputText.value = ''
-    diffHtml.value = ''
+    outputText.value = ""
+    diffHtml.value = ""
     lastResult.value = null
-    instruction.value = ''
+    instruction.value = ""
     error.value = null
   }
 
   function clearAll() {
-    inputText.value = ''
+    inputText.value = ""
     clearOutput()
-    selectedMode.value = 'correct'
-    customInstruction.value = ''
+    selectedMode.value = "correct"
+    customInstruction.value = ""
   }
 
   return {
@@ -50,6 +50,6 @@ export const useTextStore = defineStore('text', () => {
     error,
     customInstruction,
     clearOutput,
-    clearAll
+    clearAll,
   }
 })

@@ -6,18 +6,18 @@ import type {
   AxiosRequestHeaders,
   AxiosResponse,
   AxiosStatic,
-  CreateAxiosDefaults
-} from 'axios'
+  CreateAxiosDefaults,
+} from "axios"
 
-import type { Auth } from '../core/auth.gen.js'
+import type { Auth } from "../core/auth.gen.js"
 import type {
   ServerSentEventsOptions,
-  ServerSentEventsResult
-} from '../core/serverSentEvents.gen.js'
-import type { Client as CoreClient, Config as CoreConfig } from '../core/types.gen.js'
+  ServerSentEventsResult,
+} from "../core/serverSentEvents.gen.js"
+import type { Client as CoreClient, Config as CoreConfig } from "../core/types.gen.js"
 
 export interface Config<T extends ClientOptions = ClientOptions>
-  extends Omit<CreateAxiosDefaults, 'auth' | 'baseURL' | 'headers' | 'method'>,
+  extends Omit<CreateAxiosDefaults, "auth" | "baseURL" | "headers" | "method">,
     CoreConfig {
   /**
    * Axios implementation. You can use this option to provide either an
@@ -29,7 +29,7 @@ export interface Config<T extends ClientOptions = ClientOptions>
   /**
    * Base URL for all requests made by this client.
    */
-  baseURL?: T['baseURL']
+  baseURL?: T["baseURL"]
   /**
    * An object containing any HTTP headers that you want to pre-populate your
    * `Headers` object with.
@@ -47,24 +47,24 @@ export interface Config<T extends ClientOptions = ClientOptions>
    *
    * @default false
    */
-  throwOnError?: T['throwOnError']
+  throwOnError?: T["throwOnError"]
 }
 
 export interface RequestOptions<
   TData = unknown,
   ThrowOnError extends boolean = boolean,
-  Url extends string = string
+  Url extends string = string,
 > extends Config<{
       throwOnError: ThrowOnError
     }>,
     Pick<
       ServerSentEventsOptions<TData>,
-      | 'onRequest'
-      | 'onSseError'
-      | 'onSseEvent'
-      | 'sseDefaultRetryDelay'
-      | 'sseMaxRetryAttempts'
-      | 'sseMaxRetryDelay'
+      | "onRequest"
+      | "onSseError"
+      | "onSseEvent"
+      | "sseDefaultRetryDelay"
+      | "sseMaxRetryAttempts"
+      | "sseMaxRetryDelay"
     > {
   /**
    * Any body that you want to add to your request.
@@ -89,7 +89,7 @@ export interface ClientOptions {
 export type RequestResult<
   TData = unknown,
   TError = unknown,
-  ThrowOnError extends boolean = boolean
+  ThrowOnError extends boolean = boolean,
 > = ThrowOnError extends true
   ? Promise<AxiosResponse<TData extends Record<string, unknown> ? TData[keyof TData] : TData>>
   : Promise<
@@ -103,21 +103,21 @@ export type RequestResult<
     >
 
 type MethodFn = <TData = unknown, TError = unknown, ThrowOnError extends boolean = false>(
-  options: Omit<RequestOptions<TData, ThrowOnError>, 'method'>
+  options: Omit<RequestOptions<TData, ThrowOnError>, "method">,
 ) => RequestResult<TData, TError, ThrowOnError>
 
 type SseFn = <
   TData = unknown,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _TError = unknown,
-  ThrowOnError extends boolean = false
+  ThrowOnError extends boolean = false,
 >(
-  options: Omit<RequestOptions<never, ThrowOnError>, 'method'>
+  options: Omit<RequestOptions<never, ThrowOnError>, "method">,
 ) => Promise<ServerSentEventsResult<TData>>
 
 type RequestFn = <TData = unknown, TError = unknown, ThrowOnError extends boolean = false>(
-  options: Omit<RequestOptions<TData, ThrowOnError>, 'method'> &
-    Pick<Required<RequestOptions<TData, ThrowOnError>>, 'method'>
+  options: Omit<RequestOptions<TData, ThrowOnError>, "method"> &
+    Pick<Required<RequestOptions<TData, ThrowOnError>>, "method">,
 ) => RequestResult<TData, TError, ThrowOnError>
 
 type BuildUrlFn = <
@@ -125,13 +125,13 @@ type BuildUrlFn = <
     path?: Record<string, unknown>
     query?: Record<string, unknown>
     url: string
-  }
+  },
 >(
   options: TData &
     Pick<
       RequestOptions<unknown, boolean>,
-      'axios' | 'baseURL' | 'paramsSerializer' | 'querySerializer'
-    >
+      "axios" | "baseURL" | "paramsSerializer" | "querySerializer"
+    >,
 ) => string
 
 export type Client = CoreClient<RequestFn, Config, MethodFn, BuildUrlFn, SseFn> & {
@@ -147,7 +147,7 @@ export type Client = CoreClient<RequestFn, Config, MethodFn, BuildUrlFn, SseFn> 
  * to ensure your client always has the correct values.
  */
 export type CreateClientConfig<T extends ClientOptions = ClientOptions> = (
-  override?: Config<ClientOptions & T>
+  override?: Config<ClientOptions & T>,
 ) => Config<Required<ClientOptions> & T>
 
 export interface TDataShape {
@@ -163,6 +163,6 @@ type OmitKeys<T, K> = Pick<T, Exclude<keyof T, K>>
 export type Options<
   TData extends TDataShape = TDataShape,
   ThrowOnError extends boolean = boolean,
-  TResponse = unknown
-> = OmitKeys<RequestOptions<TResponse, ThrowOnError>, 'body' | 'path' | 'query' | 'url'> &
-  ([TData] extends [never] ? unknown : Omit<TData, 'url'>)
+  TResponse = unknown,
+> = OmitKeys<RequestOptions<TResponse, ThrowOnError>, "body" | "path" | "query" | "url"> &
+  ([TData] extends [never] ? unknown : Omit<TData, "url">)

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, onUnmounted, ref } from "vue"
+import { useRouter } from "vue-router"
 
-import type { UsageStatsResponse } from '@/api'
-import { api } from '@/services/apiClient'
-import { useAuthStore } from '@/stores/auth'
+import type { UsageStatsResponse } from "@/api"
+import { api } from "@/services/apiClient"
+import { useAuthStore } from "@/stores/auth"
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -14,7 +14,7 @@ const isLoading = ref(false)
 const error = ref<string | null>(null)
 
 function handleKeyPress(event: KeyboardEvent) {
-  if (event.key === 'Escape') void router.push({ name: 'text' })
+  if (event.key === "Escape") void router.push({ name: "text" })
 }
 
 async function loadStats() {
@@ -24,7 +24,7 @@ async function loadStats() {
   try {
     stats.value = (await api.statistics.getAllStatsApiStatsGet()).data ?? null
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Fehler beim Laden der Statistiken'
+    error.value = err instanceof Error ? err.message : "Fehler beim Laden der Statistiken"
   } finally {
     isLoading.value = false
   }
@@ -32,22 +32,22 @@ async function loadStats() {
 
 onMounted(async () => {
   await loadStats()
-  globalThis.addEventListener('keydown', handleKeyPress)
+  globalThis.addEventListener("keydown", handleKeyPress)
 })
 
 onUnmounted(() => {
-  globalThis.removeEventListener('keydown', handleKeyPress)
+  globalThis.removeEventListener("keydown", handleKeyPress)
 })
 
 function handleLogout() {
   authStore.logout()
-  void router.push({ name: 'login' })
+  void router.push({ name: "login" })
 }
 
 const formatNumber = (num: number | string | undefined = 0): string =>
-  (typeof num === 'string' ? Number.parseInt(num, 10) : num || 0).toLocaleString()
+  (typeof num === "string" ? Number.parseInt(num, 10) : num || 0).toLocaleString()
 
-const formatDate = (dateStr: string): string => new Date(dateStr).toLocaleDateString('de-DE')
+const formatDate = (dateStr: string): string => new Date(dateStr).toLocaleDateString("de-DE")
 </script>
 
 <template>

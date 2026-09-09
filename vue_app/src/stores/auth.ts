@@ -2,17 +2,17 @@
  * Authentication store using Pinia
  */
 
-import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { defineStore } from "pinia"
+import { computed, ref } from "vue"
 
-import { api, tokenManager } from '@/services/apiClient'
-import { decodeJwt, isTokenExpired } from '@/utils/jwt'
+import { api, tokenManager } from "@/services/apiClient"
+import { decodeJwt, isTokenExpired } from "@/utils/jwt"
 
 interface UserInfo {
   user_name: string
 }
 
-export const useAuthStore = defineStore('auth', () => {
+export const useAuthStore = defineStore("auth", () => {
   const user = ref<UserInfo | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
@@ -26,7 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const { data: response } = await api.auth.loginApiAuthLoginPost({ body: { secret } })
       if (!response) {
-        throw new Error('Login failed')
+        throw new Error("Login failed")
       }
       const token = response.access_token
       tokenManager.set(token)
@@ -38,11 +38,11 @@ export const useAuthStore = defineStore('auth', () => {
       // isAuthenticated=false and the login page "stuck".
       const payload = decodeJwt(token)
       if (payload == null) {
-        throw new Error('Failed to decode authentication token')
+        throw new Error("Failed to decode authentication token")
       }
       user.value = { user_name: payload.username }
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Login failed'
+      error.value = err instanceof Error ? err.message : "Login failed"
       throw err
     } finally {
       isLoading.value = false
@@ -73,6 +73,6 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     login,
     logout,
-    loadUserFromToken
+    loadUserFromToken,
   }
 })
