@@ -94,14 +94,14 @@ export type TextRequest = {
    * AI text operation mode
    */
   mode:
-    | 'correct'
-    | 'improve'
-    | 'summarize'
-    | 'expand'
-    | 'translate_de'
-    | 'translate_en'
-    | 'factcheck'
-    | 'custom'
+    | "correct"
+    | "improve"
+    | "summarize"
+    | "expand"
+    | "translate_de"
+    | "translate_en"
+    | "factcheck"
+    | "custom"
   /**
    * Custom Instruction
    *
@@ -140,14 +140,14 @@ export type TextResponse = {
    * Mode
    */
   mode:
-    | 'correct'
-    | 'improve'
-    | 'summarize'
-    | 'expand'
-    | 'translate_de'
-    | 'translate_en'
-    | 'factcheck'
-    | 'custom'
+    | "correct"
+    | "improve"
+    | "summarize"
+    | "expand"
+    | "translate_de"
+    | "translate_en"
+    | "factcheck"
+    | "custom"
   /**
    * Instruction
    */
@@ -250,7 +250,7 @@ export type LoginApiAuthLoginPostData = {
   body: LoginRequest
   path?: never
   query?: never
-  url: '/api/auth/login'
+  url: "/api/auth/login"
 }
 
 export type LoginApiAuthLoginPostErrors = {
@@ -282,7 +282,7 @@ export type GetConfigApiConfigGetData = {
      */
     provider?: string | null
   }
-  url: '/api/config/'
+  url: "/api/config/"
 }
 
 export type GetConfigApiConfigGetErrors = {
@@ -309,7 +309,7 @@ export type ImproveTextApiTextPostData = {
   body: TextRequest
   path?: never
   query?: never
-  url: '/api/text/'
+  url: "/api/text/"
 }
 
 export type ImproveTextApiTextPostErrors = {
@@ -344,7 +344,7 @@ export type GetAllStatsApiStatsGetData = {
   body?: never
   path?: never
   query?: never
-  url: '/api/stats/'
+  url: "/api/stats/"
 }
 
 export type GetAllStatsApiStatsGetErrors = {
@@ -368,7 +368,7 @@ export type RootGetData = {
   body?: never
   path?: never
   query?: never
-  url: '/'
+  url: "/"
 }
 
 export type RootGetResponses = {
@@ -388,7 +388,7 @@ export type HealthHealthGetData = {
   body?: never
   path?: never
   query?: never
-  url: '/health'
+  url: "/health"
 }
 
 export type HealthHealthGetResponses = {

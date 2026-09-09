@@ -3,12 +3,12 @@
  * Handles AI text improvement, diff generation, and markdown rendering
  */
 
-import { computed, ref } from 'vue'
+import { computed, ref } from "vue"
 
-import type { TextRequest, TextResponse } from '@/api'
-import { api } from '@/services/apiClient'
-import { useTextStore } from '@/stores/text'
-import { generateDiff } from '@/utils/diff'
+import type { TextRequest, TextResponse } from "@/api"
+import { api } from "@/services/apiClient"
+import { useTextStore } from "@/stores/text"
+import { generateDiff } from "@/utils/diff"
 
 export function useTextProcessing() {
   const textStore = useTextStore()
@@ -17,15 +17,15 @@ export function useTextProcessing() {
   const showDiff = computed(
     () =>
       textStore.outputText &&
-      (textStore.selectedMode === 'correct' ||
-        textStore.selectedMode === 'improve' ||
-        textStore.selectedMode === 'custom')
+      (textStore.selectedMode === "correct" ||
+        textStore.selectedMode === "improve" ||
+        textStore.selectedMode === "custom"),
   )
 
   const showMarkdown = computed(
     () =>
       textStore.outputText &&
-      (textStore.selectedMode === 'summarize' || textStore.selectedMode === 'factcheck')
+      (textStore.selectedMode === "summarize" || textStore.selectedMode === "factcheck"),
   )
 
   function buildTextRequest(): TextRequest {
@@ -33,16 +33,16 @@ export function useTextProcessing() {
       text: textStore.inputText,
       mode: textStore.selectedMode,
       custom_instruction:
-        textStore.selectedMode === 'custom' ? textStore.customInstruction || null : null,
+        textStore.selectedMode === "custom" ? textStore.customInstruction || null : null,
       model: textStore.selectedModel || null,
-      provider: textStore.selectedProvider || null
+      provider: textStore.selectedProvider || null,
     }
   }
 
   function handleResult(result: TextResponse) {
     textStore.outputText = result.text_ai
     textStore.lastResult = result
-    textStore.instruction = result.instruction || ''
+    textStore.instruction = result.instruction || ""
 
     if (showDiff.value) {
       textStore.diffHtml = generateDiff(`${textStore.inputText}\n\n`, `${result.text_ai}\n\n`)
@@ -54,18 +54,18 @@ export function useTextProcessing() {
 
     isProcessing.value = true
     textStore.error = null
-    textStore.outputText = ''
-    textStore.diffHtml = ''
+    textStore.outputText = ""
+    textStore.diffHtml = ""
 
     try {
       const body = buildTextRequest()
       const { data: result } = await api.text.improveTextApiTextPost({ body })
 
-      if (!result) throw new Error('No response from API')
+      if (!result) throw new Error("No response from API")
 
       handleResult(result)
     } catch (err) {
-      textStore.error = err instanceof Error ? err.message : 'Fehler bei der Textverarbeitung'
+      textStore.error = err instanceof Error ? err.message : "Fehler bei der Textverarbeitung"
     } finally {
       isProcessing.value = false
     }
@@ -73,7 +73,7 @@ export function useTextProcessing() {
 
   function transferAiTextToInput() {
     textStore.inputText = textStore.outputText
-    textStore.outputText = ''
+    textStore.outputText = ""
   }
 
   return {
@@ -82,6 +82,6 @@ export function useTextProcessing() {
     showMarkdown,
     processText,
     transferAiTextToInput,
-    resetInput: textStore.clearAll
+    resetInput: textStore.clearAll,
   }
 }

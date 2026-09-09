@@ -5,9 +5,9 @@ import {
   type ClientOptions,
   type Config,
   createClient,
-  createConfig
-} from './client/index.js'
-import type { ClientOptions as ClientOptions2 } from './types.gen.js'
+  createConfig,
+} from "./client/index.js"
+import type { ClientOptions as ClientOptions2 } from "./types.gen.js"
 
 /**
  * The `createClientConfig()` function will be called on client initialization
@@ -18,9 +18,9 @@ import type { ClientOptions as ClientOptions2 } from './types.gen.js'
  * to ensure your client always has the correct values.
  */
 export type CreateClientConfig<T extends ClientOptions = ClientOptions2> = (
-  override?: Config<ClientOptions & T>
+  override?: Config<ClientOptions & T>,
 ) => Config<Required<ClientOptions> & T>
 
 export const client: Client = createClient(
-  createConfig<ClientOptions2>({ baseURL: '/be/korrekturleser-fastapi' })
+  createConfig<ClientOptions2>({ baseURL: "/be/korrekturleser-fastapi" }),
 )

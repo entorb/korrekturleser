@@ -5,9 +5,9 @@ import type {
   ClientMeta,
   Options as Options2,
   RequestResult,
-  TDataShape
-} from './client/index.js'
-import { client } from './client.gen.js'
+  TDataShape,
+} from "./client/index.js"
+import { client } from "./client.gen.js"
 import type {
   GetAllStatsApiStatsGetData,
   GetAllStatsApiStatsGetErrors,
@@ -24,13 +24,13 @@ import type {
   LoginApiAuthLoginPostErrors,
   LoginApiAuthLoginPostResponses,
   RootGetData,
-  RootGetResponses
-} from './types.gen.js'
+  RootGetResponses,
+} from "./types.gen.js"
 
 export type Options<
   TData extends TDataShape = TDataShape,
   ThrowOnError extends boolean = boolean,
-  TResponse = unknown
+  TResponse = unknown,
 > = Options2<TData, ThrowOnError, TResponse> & {
   /**
    * You can provide a client instance returned by `createClient()` instead of
@@ -63,20 +63,20 @@ export type Options<
  * HTTPException: If credentials are invalid or rate limit exceeded
  */
 export const loginApiAuthLoginPost = <ThrowOnError extends boolean = false>(
-  options: Options<LoginApiAuthLoginPostData, ThrowOnError>
+  options: Options<LoginApiAuthLoginPostData, ThrowOnError>,
 ): RequestResult<LoginApiAuthLoginPostResponses, LoginApiAuthLoginPostErrors, ThrowOnError> =>
   (options.client ?? client).post<
     LoginApiAuthLoginPostResponses,
     LoginApiAuthLoginPostErrors,
     ThrowOnError
   >({
-    responseType: 'json',
-    url: '/api/auth/login',
+    responseType: "json",
+    url: "/api/auth/login",
     ...options,
     headers: {
-      'Content-Type': 'application/json',
-      ...options.headers
-    }
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
   })
 
 /**
@@ -91,17 +91,17 @@ export const loginApiAuthLoginPost = <ThrowOnError extends boolean = false>(
  * ConfigResponse: Current LLM provider, available models, and all providers
  */
 export const getConfigApiConfigGet = <ThrowOnError extends boolean = false>(
-  options?: Options<GetConfigApiConfigGetData, ThrowOnError>
+  options?: Options<GetConfigApiConfigGetData, ThrowOnError>,
 ): RequestResult<GetConfigApiConfigGetResponses, GetConfigApiConfigGetErrors, ThrowOnError> =>
   (options?.client ?? client).get<
     GetConfigApiConfigGetResponses,
     GetConfigApiConfigGetErrors,
     ThrowOnError
   >({
-    responseType: 'json',
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/config/',
-    ...options
+    responseType: "json",
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/config/",
+    ...options,
   })
 
 /**
@@ -110,21 +110,21 @@ export const getConfigApiConfigGet = <ThrowOnError extends boolean = false>(
  * Improve text using AI based on the selected mode.
  */
 export const improveTextApiTextPost = <ThrowOnError extends boolean = false>(
-  options: Options<ImproveTextApiTextPostData, ThrowOnError>
+  options: Options<ImproveTextApiTextPostData, ThrowOnError>,
 ): RequestResult<ImproveTextApiTextPostResponses, ImproveTextApiTextPostErrors, ThrowOnError> =>
   (options.client ?? client).post<
     ImproveTextApiTextPostResponses,
     ImproveTextApiTextPostErrors,
     ThrowOnError
   >({
-    responseType: 'json',
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/text/',
+    responseType: "json",
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/text/",
     ...options,
     headers: {
-      'Content-Type': 'application/json',
-      ...options.headers
-    }
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
   })
 
 /**
@@ -143,17 +143,17 @@ export const improveTextApiTextPost = <ThrowOnError extends boolean = false>(
  * UsageStatsResponse: Daily and total usage statistics
  */
 export const getAllStatsApiStatsGet = <ThrowOnError extends boolean = false>(
-  options?: Options<GetAllStatsApiStatsGetData, ThrowOnError>
+  options?: Options<GetAllStatsApiStatsGetData, ThrowOnError>,
 ): RequestResult<GetAllStatsApiStatsGetResponses, GetAllStatsApiStatsGetErrors, ThrowOnError> =>
   (options?.client ?? client).get<
     GetAllStatsApiStatsGetResponses,
     GetAllStatsApiStatsGetErrors,
     ThrowOnError
   >({
-    responseType: 'json',
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/stats/',
-    ...options
+    responseType: "json",
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/stats/",
+    ...options,
   })
 
 /**
@@ -162,12 +162,12 @@ export const getAllStatsApiStatsGet = <ThrowOnError extends boolean = false>(
  * Root endpoint.
  */
 export const rootGet = <ThrowOnError extends boolean = false>(
-  options?: Options<RootGetData, ThrowOnError>
+  options?: Options<RootGetData, ThrowOnError>,
 ): RequestResult<RootGetResponses, unknown, ThrowOnError> =>
   (options?.client ?? client).get<RootGetResponses, unknown, ThrowOnError>({
-    responseType: 'json',
-    url: '/',
-    ...options
+    responseType: "json",
+    url: "/",
+    ...options,
   })
 
 /**
@@ -176,10 +176,10 @@ export const rootGet = <ThrowOnError extends boolean = false>(
  * Health check endpoint.
  */
 export const healthHealthGet = <ThrowOnError extends boolean = false>(
-  options?: Options<HealthHealthGetData, ThrowOnError>
+  options?: Options<HealthHealthGetData, ThrowOnError>,
 ): RequestResult<HealthHealthGetResponses, unknown, ThrowOnError> =>
   (options?.client ?? client).get<HealthHealthGetResponses, unknown, ThrowOnError>({
-    responseType: 'json',
-    url: '/health',
-    ...options
+    responseType: "json",
+    url: "/health",
+    ...options,
   })

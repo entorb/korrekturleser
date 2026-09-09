@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref } from "vue"
+import { useRouter } from "vue-router"
 
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from "@/stores/auth"
 
 const router = useRouter()
 const authStore = useAuthStore()
-const username = ref('') // dummy field,added for password manager compatibility
-const secret = ref('')
+const username = ref("") // dummy field,added for password manager compatibility
+const secret = ref("")
 
 async function handleLogin() {
   try {
@@ -23,13 +23,13 @@ async function handleLogin() {
   // case we fall back to a hard navigation so the browser fetches fresh
   // assets.
   try {
-    const failure = await router.replace({ name: 'text' })
+    const failure = await router.replace({ name: "text" })
     if (failure) {
-      globalThis.location.replace(router.resolve({ name: 'text' }).href)
+      globalThis.location.replace(router.resolve({ name: "text" }).href)
     }
   } catch {
     // Chunk-load error — hard navigate to get fresh assets
-    globalThis.location.replace(router.resolve({ name: 'text' }).href)
+    globalThis.location.replace(router.resolve({ name: "text" }).href)
   }
 }
 </script>

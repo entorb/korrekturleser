@@ -7,33 +7,33 @@
  * To regenerate: pnpm generate-api
  */
 
-import type { TextRequest } from '@/api'
+import type { TextRequest } from "@/api"
 
 /** All supported mode values */
-export type TextMode = TextRequest['mode']
+export type TextMode = TextRequest["mode"]
 
 /** All available mode values */
 const ALL_MODES: TextMode[] = [
-  'correct',
-  'improve',
-  'summarize',
-  'expand',
-  'translate_de',
-  'translate_en',
-  'factcheck',
-  'custom'
+  "correct",
+  "improve",
+  "summarize",
+  "expand",
+  "translate_de",
+  "translate_en",
+  "factcheck",
+  "custom",
 ]
 
 // Mode descriptions mapping (auto-generated from backend)
 const MODE_DESCRIPTIONS: Record<TextMode, string> = {
-  correct: 'Korrigiere',
-  improve: 'Verbessere',
-  summarize: 'Text -> Stichwörter',
-  expand: 'Stichwörter -> Text',
-  translate_de: 'Übersetzen -> DE',
-  translate_en: 'Übersetzen -> EN',
-  factcheck: 'Faktencheck',
-  custom: 'Freitext Anweisung'
+  correct: "Korrigiere",
+  improve: "Verbessere",
+  summarize: "Text -> Stichwörter",
+  expand: "Stichwörter -> Text",
+  translate_de: "Übersetzen -> DE",
+  translate_en: "Übersetzen -> EN",
+  factcheck: "Faktencheck",
+  custom: "Freitext Anweisung",
 }
 
 /**

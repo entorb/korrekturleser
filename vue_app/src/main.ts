@@ -1,11 +1,11 @@
-import { createPinia } from 'pinia'
-import { Quasar } from 'quasar'
-import { createApp } from 'vue'
+import { createPinia } from "pinia"
+import { Quasar } from "quasar"
+import { createApp } from "vue"
 
-import App from './App.vue'
-import quasarConfig from './plugins/quasar'
-import router from './router'
-import './assets/ios-fixes.css'
+import App from "./App.vue"
+import quasarConfig from "./plugins/quasar.ts"
+import router from "./router/index.ts"
+import "./assets/ios-fixes.css"
 
 const app = createApp(App)
 
@@ -14,4 +14,4 @@ app.use(pinia)
 app.use(router)
 app.use(Quasar, quasarConfig)
 
-app.mount('#app')
+app.mount("#app")
