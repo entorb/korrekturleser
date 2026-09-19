@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 api=https://sonarcloud.io/api/issues/search
 component=$(sed -n 's/^sonar\.projectKey=//p' .sonarcloud.properties 2>/dev/null || true)
 if [ -z "$component" ]; then
-	component=$(sed -n 's/^sonar\.projectKey=//p' sonar-project.properties 2>/dev/null || true)
+  component=$(sed -n 's/^sonar\.projectKey=//p' sonar-project.properties 2>/dev/null || true)
 fi
 component=${component:-entorb_korrekturleser}
 
@@ -15,7 +15,7 @@ mkdir -p tmp
 out=tmp/sonar.json
 
 curl -sS \
-	"$api?componentKeys=$component&resolved=false" >"$out"
+  "$api?componentKeys=$component&resolved=false" >"$out"
 
 # Reduce to the fields an AI needs to fix each finding (file/line/message/flows).
 jq '{
