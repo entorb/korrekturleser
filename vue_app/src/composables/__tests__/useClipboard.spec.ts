@@ -21,7 +21,7 @@ describe("useClipboard", () => {
   })
 
   it("should copy text to clipboard successfully", async () => {
-    const { copyToClipboard: copyText } = await import("@/utils/clipboard")
+    const { copyToClipboard: copyText } = await import("@/utils/clipboard.ts")
     vi.mocked(copyText).mockResolvedValue()
 
     const { copyToClipboard } = useClipboard()
@@ -31,7 +31,7 @@ describe("useClipboard", () => {
   })
 
   it("should show success notification when copying text", async () => {
-    const { copyToClipboard: copyText } = await import("@/utils/clipboard")
+    const { copyToClipboard: copyText } = await import("@/utils/clipboard.ts")
     vi.mocked(copyText).mockResolvedValue()
 
     const { copyToClipboard } = useClipboard()
@@ -42,7 +42,7 @@ describe("useClipboard", () => {
   })
 
   it("should paste text from clipboard successfully", async () => {
-    const { readFromClipboard } = await import("@/utils/clipboard")
+    const { readFromClipboard } = await import("@/utils/clipboard.ts")
     vi.mocked(readFromClipboard).mockResolvedValue("pasted text")
 
     const { pasteFromClipboard } = useClipboard()
@@ -53,7 +53,7 @@ describe("useClipboard", () => {
   })
 
   it("should return empty string when paste fails 1", async () => {
-    const { readFromClipboard } = await import("@/utils/clipboard")
+    const { readFromClipboard } = await import("@/utils/clipboard.ts")
     vi.mocked(readFromClipboard).mockRejectedValue(new Error("Clipboard error"))
 
     const { pasteFromClipboard } = useClipboard()
@@ -63,7 +63,7 @@ describe("useClipboard", () => {
   })
 
   it("should return empty string when paste fails 2", async () => {
-    const { readFromClipboard } = await import("@/utils/clipboard")
+    const { readFromClipboard } = await import("@/utils/clipboard.ts")
     vi.mocked(readFromClipboard).mockRejectedValue(new Error("Clipboard error"))
 
     const { pasteFromClipboard } = useClipboard()

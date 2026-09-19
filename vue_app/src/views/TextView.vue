@@ -2,14 +2,14 @@
 import { computed, onMounted } from "vue"
 import { useRouter } from "vue-router"
 
-import { useClipboard } from "@/composables/useClipboard"
-import { useConfig } from "@/composables/useConfig"
-import { useKeyboardShortcuts } from "@/composables/useKeyboardShortcuts"
-import { useMarkdown } from "@/composables/useMarkdown"
-import { useTextProcessing } from "@/composables/useTextProcessing"
-import { getAvailableModes, getModeDescriptions } from "@/config/modes"
-import { useAuthStore } from "@/stores/auth"
-import { useTextStore } from "@/stores/text"
+import { useClipboard } from "@/composables/useClipboard.ts"
+import { useConfig } from "@/composables/useConfig.ts"
+import { useKeyboardShortcuts } from "@/composables/useKeyboardShortcuts.ts"
+import { useMarkdown } from "@/composables/useMarkdown.ts"
+import { useTextProcessing } from "@/composables/useTextProcessing.ts"
+import { getAvailableModes, getModeDescriptions } from "@/config/modes.ts"
+import { useAuthStore } from "@/stores/auth.ts"
+import { useTextStore } from "@/stores/text.ts"
 import "diff2html/bundles/css/diff2html.min.css"
 
 const router = useRouter()

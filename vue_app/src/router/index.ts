@@ -9,8 +9,8 @@
 
 import { createRouter, createWebHistory } from "vue-router"
 
-import { tokenManager } from "@/services/apiClient"
-import { useAuthStore } from "@/stores/auth"
+import { tokenManager } from "@/services/apiClient.ts"
+import { useAuthStore } from "@/stores/auth.ts"
 
 /**
  * Wrap a lazy component import so that a chunk-load failure (e.g. after a

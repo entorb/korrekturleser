@@ -1,6 +1,6 @@
 import { createPinia, setActivePinia } from "pinia"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { useTextStore } from "@/stores/text"
+import { useTextStore } from "@/stores/text.ts"
 import { useConfig } from "../useConfig.ts"
 
 vi.mock("@/services/apiClient", () => ({
@@ -34,7 +34,7 @@ describe("useConfig", () => {
   it("fetches providers and models and selects defaults", async () => {
     const store = useTextStore()
     const { fetchProvidersAndModels } = useConfig()
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     vi.mocked(api.config.getConfigApiConfigGet).mockResolvedValue({
       data: { models: ["m1", "m2"], providers: ["p1", "p2"] },
@@ -51,7 +51,7 @@ describe("useConfig", () => {
   it("keeps existing provider when fetching", async () => {
     const store = useTextStore()
     const { fetchProvidersAndModels } = useConfig()
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     store.selectedProvider = "p2"
 
@@ -68,7 +68,7 @@ describe("useConfig", () => {
   it("keeps existing model and provider when already set", async () => {
     const store = useTextStore()
     const { fetchProvidersAndModels } = useConfig()
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     store.selectedModel = "m2"
     store.selectedProvider = "p2"
@@ -86,7 +86,7 @@ describe("useConfig", () => {
   it("does nothing when config response has no models", async () => {
     const store = useTextStore()
     const { fetchProvidersAndModels } = useConfig()
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     vi.mocked(api.config.getConfigApiConfigGet).mockResolvedValue({
       data: { models: [], providers: [] },
@@ -101,7 +101,7 @@ describe("useConfig", () => {
   it("sets error when config fetch fails", async () => {
     const store = useTextStore()
     const { fetchProvidersAndModels } = useConfig()
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     vi.mocked(api.config.getConfigApiConfigGet).mockRejectedValue(new Error("down"))
 
@@ -113,7 +113,7 @@ describe("useConfig", () => {
   it("sets error when handleProviderChange fails", async () => {
     const store = useTextStore()
     const { handleProviderChange } = useConfig()
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     store.selectedProvider = "p1"
     vi.mocked(api.config.getConfigApiConfigGet).mockRejectedValue(new Error("down"))
@@ -126,7 +126,7 @@ describe("useConfig", () => {
   it("updates models on provider change", async () => {
     const store = useTextStore()
     const { handleProviderChange } = useConfig()
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     store.selectedProvider = "p2"
     vi.mocked(api.config.getConfigApiConfigGet).mockResolvedValue({

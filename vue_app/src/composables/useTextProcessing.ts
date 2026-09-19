@@ -5,10 +5,10 @@
 
 import { computed, ref } from "vue"
 
-import type { TextRequest, TextResponse } from "@/api"
-import { api } from "@/services/apiClient"
-import { useTextStore } from "@/stores/text"
-import { generateDiff } from "@/utils/diff"
+import type { TextRequest, TextResponse } from "@/api/index.ts"
+import { api } from "@/services/apiClient.ts"
+import { useTextStore } from "@/stores/text.ts"
+import { generateDiff } from "@/utils/diff.ts"
 
 export function useTextProcessing() {
   const textStore = useTextStore()
