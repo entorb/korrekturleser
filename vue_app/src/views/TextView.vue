@@ -345,7 +345,7 @@ function handleLogout() {
 .markdown-content a {
   color: var(--q-primary);
   text-decoration: underline;
-  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .markdown-content a:hover {
@@ -355,7 +355,7 @@ function handleLogout() {
 /* Instruction display */
 .instruction-pre {
   white-space: pre-wrap;
-  word-break: break-word;
+  overflow-wrap: anywhere;
   font-size: 12px;
   background: var(--q-grey-2);
   color: var(--q-dark);
