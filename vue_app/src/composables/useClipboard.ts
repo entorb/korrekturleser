@@ -4,7 +4,7 @@
 
 import { useQuasar } from "quasar"
 
-import { copyToClipboard as copyText, readFromClipboard } from "@/utils/clipboard"
+import { copyToClipboard as copyText, readFromClipboard } from "@/utils/clipboard.ts"
 
 async function pasteFromClipboard(): Promise<string> {
   try {

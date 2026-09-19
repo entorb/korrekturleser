@@ -42,8 +42,8 @@ describe("Auth Store", () => {
   })
 
   it("sets user as authenticated after successful login", async () => {
-    const { api, tokenManager } = await import("@/services/apiClient")
-    const { decodeJwt, isTokenExpired } = await import("@/utils/jwt")
+    const { api, tokenManager } = await import("@/services/apiClient.ts")
+    const { decodeJwt, isTokenExpired } = await import("@/utils/jwt.ts")
 
     const mockLoginResponse = {
       access_token: "test-token",
@@ -93,7 +93,7 @@ describe("Auth Store", () => {
   })
 
   it("throws and sets error when login fails", async () => {
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     vi.mocked(api.auth.loginApiAuthLoginPost).mockRejectedValue(new Error("Wrong secret"))
 
@@ -106,7 +106,7 @@ describe("Auth Store", () => {
   })
 
   it("throws and sets error when login response has no token", async () => {
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     vi.mocked(api.auth.loginApiAuthLoginPost).mockResolvedValue({ data: undefined } as never)
 
@@ -117,8 +117,8 @@ describe("Auth Store", () => {
   })
 
   it("throws when received token cannot be decoded", async () => {
-    const { api } = await import("@/services/apiClient")
-    const { decodeJwt } = await import("@/utils/jwt")
+    const { api } = await import("@/services/apiClient.ts")
+    const { decodeJwt } = await import("@/utils/jwt.ts")
 
     vi.mocked(api.auth.loginApiAuthLoginPost).mockResolvedValue({
       data: { access_token: "test-token", token_type: "bearer" },
@@ -135,7 +135,7 @@ describe("Auth Store", () => {
   })
 
   it("logs out when no token is stored", async () => {
-    const { tokenManager } = await import("@/services/apiClient")
+    const { tokenManager } = await import("@/services/apiClient.ts")
 
     vi.mocked(tokenManager.get).mockReturnValue(null)
 
@@ -148,8 +148,8 @@ describe("Auth Store", () => {
   })
 
   it("logs out when stored token is expired", async () => {
-    const { tokenManager } = await import("@/services/apiClient")
-    const { isTokenExpired } = await import("@/utils/jwt")
+    const { tokenManager } = await import("@/services/apiClient.ts")
+    const { isTokenExpired } = await import("@/utils/jwt.ts")
 
     vi.mocked(tokenManager.get).mockReturnValue("expired-token")
     vi.mocked(isTokenExpired).mockReturnValue(true)
@@ -162,8 +162,8 @@ describe("Auth Store", () => {
   })
 
   it("loads user from a valid stored token", async () => {
-    const { tokenManager } = await import("@/services/apiClient")
-    const { isTokenExpired, decodeJwt } = await import("@/utils/jwt")
+    const { tokenManager } = await import("@/services/apiClient.ts")
+    const { isTokenExpired, decodeJwt } = await import("@/utils/jwt.ts")
 
     vi.mocked(tokenManager.get).mockReturnValue("valid-token")
     vi.mocked(isTokenExpired).mockReturnValue(false)

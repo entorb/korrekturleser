@@ -1,6 +1,6 @@
 import { createPinia, setActivePinia } from "pinia"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { useTextStore } from "@/stores/text"
+import { useTextStore } from "@/stores/text.ts"
 import { useTextProcessing } from "../useTextProcessing.ts"
 
 vi.mock("@/services/apiClient", () => ({
@@ -55,7 +55,7 @@ describe("useTextProcessing", () => {
   it("builds a request with custom instruction only in custom mode", async () => {
     const store = useTextStore()
     const { processText } = useTextProcessing()
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     store.inputText = "Hello"
     store.selectedMode = "custom"
@@ -83,7 +83,7 @@ describe("useTextProcessing", () => {
   it("builds a request with null optional fields in non-custom mode", async () => {
     const store = useTextStore()
     const { processText } = useTextProcessing()
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     store.inputText = "Hello"
     store.selectedMode = "correct"
@@ -111,7 +111,7 @@ describe("useTextProcessing", () => {
   it("does not call the API when input text is empty", async () => {
     const store = useTextStore()
     const { processText, isProcessing } = useTextProcessing()
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     store.inputText = ""
     await processText()
@@ -123,7 +123,7 @@ describe("useTextProcessing", () => {
   it("stores result and generates diff on success", async () => {
     const store = useTextStore()
     const { processText } = useTextProcessing()
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     store.inputText = "Hello world"
     store.selectedMode = "correct"
@@ -147,7 +147,7 @@ describe("useTextProcessing", () => {
   it("does not generate diff for summarize mode", async () => {
     const store = useTextStore()
     const { processText } = useTextProcessing()
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     store.inputText = "Long text"
     store.selectedMode = "summarize"
@@ -165,7 +165,7 @@ describe("useTextProcessing", () => {
   it("sets error message when API call fails", async () => {
     const store = useTextStore()
     const { processText, isProcessing } = useTextProcessing()
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     store.inputText = "Hello"
 
@@ -180,7 +180,7 @@ describe("useTextProcessing", () => {
   it("falls back to German error message for non-Error failures", async () => {
     const store = useTextStore()
     const { processText } = useTextProcessing()
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     store.inputText = "Hello"
 
@@ -194,7 +194,7 @@ describe("useTextProcessing", () => {
   it("handles missing response from API", async () => {
     const store = useTextStore()
     const { processText } = useTextProcessing()
-    const { api } = await import("@/services/apiClient")
+    const { api } = await import("@/services/apiClient.ts")
 
     store.inputText = "Hello"
 

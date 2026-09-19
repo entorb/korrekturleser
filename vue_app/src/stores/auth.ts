@@ -5,8 +5,8 @@
 import { defineStore } from "pinia"
 import { computed, ref } from "vue"
 
-import { api, tokenManager } from "@/services/apiClient"
-import { decodeJwt, isTokenExpired } from "@/utils/jwt"
+import { api, tokenManager } from "@/services/apiClient.ts"
+import { decodeJwt, isTokenExpired } from "@/utils/jwt.ts"
 
 interface UserInfo {
   user_name: string
