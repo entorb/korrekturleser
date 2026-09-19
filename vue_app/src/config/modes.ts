@@ -7,7 +7,7 @@
  * To regenerate: pnpm generate-api
  */
 
-import type { TextRequest } from "@/api"
+import type { TextRequest } from "@/api/index.ts"
 
 /** All supported mode values */
 export type TextMode = TextRequest["mode"]
