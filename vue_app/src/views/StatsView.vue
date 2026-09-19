@@ -2,9 +2,9 @@
 import { onMounted, onUnmounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
-import type { UsageStatsResponse } from "@/api"
-import { api } from "@/services/apiClient"
-import { useAuthStore } from "@/stores/auth"
+import type { UsageStatsResponse } from "@/api/index.ts"
+import { api } from "@/services/apiClient.ts"
+import { useAuthStore } from "@/stores/auth.ts"
 
 const router = useRouter()
 const authStore = useAuthStore()

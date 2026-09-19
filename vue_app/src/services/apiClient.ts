@@ -2,15 +2,15 @@
  * API client configuration using generated OpenAPI client
  */
 
+import { client } from "@/api/client.gen.ts"
 import {
   getAllStatsApiStatsGet,
   getConfigApiConfigGet,
   improveTextApiTextPost,
   loginApiAuthLoginPost,
-} from "@/api"
-import { client } from "@/api/client.gen"
-import { config } from "@/config/env"
-import { isTokenExpired } from "@/utils/jwt"
+} from "@/api/index.ts"
+import { config } from "@/config/env.ts"
+import { isTokenExpired } from "@/utils/jwt.ts"
 
 // Configure the generated client
 client.setConfig({

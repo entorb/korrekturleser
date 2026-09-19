@@ -5,7 +5,7 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
 
-import type { TextRequest, TextResponse } from "@/api"
+import type { TextRequest, TextResponse } from "@/api/index.ts"
 
 export const useTextStore = defineStore("text", () => {
   const selectedMode = ref<TextRequest["mode"]>("correct")

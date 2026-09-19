@@ -4,8 +4,8 @@
 
 import { computed } from "vue"
 
-import { api } from "@/services/apiClient"
-import { useTextStore } from "@/stores/text"
+import { api } from "@/services/apiClient.ts"
+import { useTextStore } from "@/stores/text.ts"
 
 export function useConfig() {
   const textStore = useTextStore()
