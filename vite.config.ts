@@ -120,6 +120,6 @@ export default defineConfig({
     },
     extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
   },
-  preview: { port: 4173, strictPort: true },
-  server: { port: 5173, strictPort: true },
+  preview: { host: true, port: 4173, strictPort: true },
+  server: { host: true, port: 5173, strictPort: true },
 })
