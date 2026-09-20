@@ -83,14 +83,14 @@ DEV_ADD=$(printf '%s\n' "$GEN_OUT" | sed -n 4p)
 set -f
 
 # remove unpinned
-[ -n "$DEP_REM" ] && uv remove $DEP_REM
-[ -n "$DEV_REM" ] && uv remove --dev $DEV_REM
+[ -n "$DEP_REM" ] && uv remove "$DEP_REM"
+[ -n "$DEV_REM" ] && uv remove --dev "$DEP_REM"
 
 uv sync --no-build --upgrade
 
 # Re-add at latest versions
-[ -n "$DEP_ADD" ] && uv add $DEP_ADD
-[ -n "$DEV_ADD" ] && uv add --dev $DEV_ADD
+[ -n "$DEP_ADD" ] && uv add "$DEP_ADD"
+[ -n "$DEV_ADD" ] && uv add --dev "$DEV_ADD"
 # Restore pathname expansion.
 set +f
 

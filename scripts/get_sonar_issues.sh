@@ -2,7 +2,7 @@
 # Download SonarCloud open issues as JSON.
 
 set -e
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 
 api=https://sonarcloud.io/api/issues/search
 component=$(sed -n 's/^sonar\.projectKey=//p' .sonarcloud.properties 2>/dev/null || true)

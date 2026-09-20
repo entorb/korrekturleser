@@ -2,7 +2,7 @@
 
 # included in prek, so changed file prefix from chk_ to run_
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 out=$(mktemp)
 trap 'rm -f "$out"' EXIT INT TERM
 
