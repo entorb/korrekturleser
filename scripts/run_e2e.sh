@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 
 # Playwright webServer starts FastAPI (Mock LLM) and Vite on its own.
 # The backend requires a .env with a JWT secret, so create one if missing.
