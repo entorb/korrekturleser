@@ -61,10 +61,11 @@ PY
   NODE_VER=$(node --version | sed 's/v//')
   PNPM_VER=$(pnpm --version)
   PNPM_MANAGER="pnpm@$PNPM_VER"
-  printf '%s\n' "$NODE_VER" >.nvmrc
+  printf '%s\n' "${NODE_VER%%.*}" >.nvmrc
   node -e "
     const pkg = JSON.parse(require('fs').readFileSync('package.json','utf8'));
     pkg.packageManager = '$PNPM_MANAGER';
+    pkg.engines ??= {};
     pkg.engines.node = '>=$NODE_VER';
     pkg.engines.pnpm = '>=$PNPM_VER';
     require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
@@ -83,14 +84,19 @@ DEV_ADD=$(printf '%s\n' "$GEN_OUT" | sed -n 4p)
 set -f
 
 # remove unpinned
-[ -n "$DEP_REM" ] && uv remove "$DEP_REM"
-[ -n "$DEV_REM" ] && uv remove --dev "$DEP_REM"
+# word splitting of the space-separated package lists is intended (globbing off via set -f)
+# shellcheck disable=SC2086
+[ -n "$DEP_REM" ] && uv remove $DEP_REM
+# shellcheck disable=SC2086
+[ -n "$DEV_REM" ] && uv remove --dev $DEV_REM
 
 uv sync --no-build --upgrade
 
 # Re-add at latest versions
-[ -n "$DEP_ADD" ] && uv add "$DEP_ADD"
-[ -n "$DEV_ADD" ] && uv add --dev "$DEV_ADD"
+# shellcheck disable=SC2086
+[ -n "$DEP_ADD" ] && uv add $DEP_ADD
+# shellcheck disable=SC2086
+[ -n "$DEV_ADD" ] && uv add --dev $DEV_ADD
 # Restore pathname expansion.
 set +f
 

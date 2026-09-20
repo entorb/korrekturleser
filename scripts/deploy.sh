@@ -23,7 +23,7 @@ echo "### E2E tests"
 
 echo "## Frontend Build and Transfer"
 pnpm run build
-rsync -rhv --delete --no-perms dist/* entorb@entorb.net:html/korrekturleser-vue/
+rsync -rhv --delete --no-perms dist/ entorb@entorb.net:html/korrekturleser-vue/
 
 echo "## Backend"
 # rsync -uz .streamlit/config-prod.toml entorb@entorb.net:korrekturleser/.streamlit/config.toml
