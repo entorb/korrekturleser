@@ -1,6 +1,6 @@
 ---
 $schema: https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json
-version: '0.2'
+version: "0.2"
 useCache: true
 useGitignore: true
 dictionaryDefinitions:
@@ -13,7 +13,8 @@ dictionaries:
   - typescript
 language: en-US
 ignorePaths:
-  - '**/*.d.ts'
+  - "**/*.d.ts"
+  - "/*.json"
   - /.vscode/
   - /LICENSE
   - /public/
