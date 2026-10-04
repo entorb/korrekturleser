@@ -51,9 +51,28 @@ PY
 
   echo "### Node and PNPM Versions"
   brew upgrade node@24
-  brew upgrade pnpm
-  # in pinned project self-update only bumps packageManager in package.json, no global install
-  pnpm self-update
+  # pnpm not from brew: self-update ignores the project cooldown, so pick the newest release
+  # that is >= 7 days old here; in a pinned project it only bumps packageManager
+  PNPM_COOLED=$(
+    python3 - <<'PNPMPY'
+import datetime as dt, json, urllib.request
+data = json.load(urllib.request.urlopen("https://registry.npmjs.org/pnpm", timeout=30))
+cutoff = dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=7)
+cooled = [
+    v
+    for v, ts in data["time"].items()
+    if v[0].isdigit()
+    and "-" not in v
+    and dt.datetime.fromisoformat(ts.replace("Z", "+00:00")) <= cutoff
+]
+print(max(cooled, key=lambda v: tuple(int(n) for n in v.split("."))))
+PNPMPY
+  )
+  [ -n "$PNPM_COOLED" ] || {
+    echo "ERROR: could not resolve pnpm version" >&2
+    exit 1
+  }
+  pnpm self-update "$PNPM_COOLED"
 
   # update package.json and .nvmrc with new versions
   NODE_VER=$(node --version | sed 's/v//')
