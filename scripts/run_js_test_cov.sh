@@ -1,5 +1,5 @@
 #!/bin/sh
-
-cd "$(dirname "$0")/.." || exit 1
+set -e
+cd "$(dirname "$0")/.."
 
 pnpm exec vitest --watch=false --silent --coverage
