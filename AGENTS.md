@@ -55,7 +55,7 @@ To re-run a single failing test:
 
 ### Add CSpell findings
 
-If `scripts/chk_spelling.sh` finds unknown words, these are written to `cspell-words-missing.txt`. The ones that are correct shall be appended to `cspell-words.txt` file, which will be sorted by running `scripts/chk_pre-commit.sh`.
+If `scripts/run_spelling.sh` finds unknown words, these are written to `cspell-words-missing.txt`. The ones that are correct shall be appended to `cspell-words.txt` file, which will be sorted by running `scripts/chk_pre-commit.sh`.
 
 ## Architecture
 
