@@ -94,6 +94,7 @@ nutzer
 nvmrc
 ollama
 persönlichen
+pnpmpy
 prek
 prägnant
 qube
