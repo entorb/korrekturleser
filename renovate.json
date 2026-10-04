@@ -1,0 +1,41 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "vulnerabilityAlerts": {
+    "enabled": true
+  },
+  "osvVulnerabilityAlerts": true,
+  "dependencyDashboard": true,
+  "dependencyDashboardOSVVulnerabilitySummary": "all",
+  "minimumReleaseAge": "14 days",
+  "packageRules": [
+    {
+      "matchPackageNames": ["*"],
+      "enabled": false
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "enabled": true,
+      "groupName": "github actions",
+      "extends": ["schedule:monthly"]
+    },
+    {
+      "matchManagers": ["pre-commit"],
+      "enabled": true,
+      "groupName": "pre-commit",
+      "extends": ["schedule:monthly"]
+    },
+    {
+      "matchManagers": ["pep621"],
+      "enabled": true,
+      "groupName": "python (uv)",
+      "extends": ["schedule:monthly"]
+    },
+    {
+      "matchManagers": ["npm"],
+      "enabled": true,
+      "groupName": "pnpm",
+      "extends": ["schedule:monthly"]
+    }
+  ]
+}
