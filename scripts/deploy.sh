@@ -1,8 +1,6 @@
 #!/bin/sh
-cd "$(dirname "$0")/.." || exit 1
-
-# exit upon error
 set -e
+cd "$(dirname "$0")/.."
 
 # cleanup
 rm -f .DS_Store
@@ -17,6 +15,9 @@ uv run --no-build python scripts/config_convert.py
 
 echo "### Code checks"
 ./scripts/run_checks.sh
+
+echo "### Code checks"
+./scripts/run_spelling.sh
 
 echo "### E2E tests"
 ./scripts/run_e2e.sh

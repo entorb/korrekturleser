@@ -1,5 +1,5 @@
 #!/bin/sh
-
-cd "$(dirname "$0")/.." || exit 1
+set -e
+cd "$(dirname "$0")/.."
 
 uv run --no-build pytest --quiet --no-summary --tb=short --cov --cov-report=term-missing
