@@ -1,9 +1,6 @@
 #!/bin/sh
-SCRIPT_DIR="$(dirname "$0")"
-cd "$SCRIPT_DIR/.."
-
-# exit upon error
 set -e
+cd "$(dirname "$0")/.."
 
 echo "## Update Python, Node, UV, and PNPM [y/N]"
 read -r REPLY
@@ -55,6 +52,7 @@ PY
   echo "### Node and PNPM Versions"
   brew upgrade node@24
   brew upgrade pnpm
+  # in pinned project self-update only bumps packageManager in package.json, no global install
   pnpm self-update
 
   # update package.json and .nvmrc with new versions
@@ -74,7 +72,7 @@ fi
 
 echo "## Python Packages"
 # extract versions from pyproject.toml
-GEN_OUT=$(uv run python "$SCRIPT_DIR/gen_py_packages_update.py")
+GEN_OUT=$(uv run python scripts/gen_py_packages_update.py)
 DEP_REM=$(printf '%s\n' "$GEN_OUT" | sed -n 1p)
 DEP_ADD=$(printf '%s\n' "$GEN_OUT" | sed -n 2p)
 DEV_REM=$(printf '%s\n' "$GEN_OUT" | sed -n 3p)
@@ -121,7 +119,7 @@ echo "### Gen API code"
 
 echo "## Code checks"
 echo "### Prek autoupdate"
-prek autoupdate
+prek autoupdate --cooldown-days 7
 
 echo "### run_checks.sh"
 ./scripts/run_checks.sh
