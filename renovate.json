@@ -2,13 +2,16 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["security:only-security-updates"],
   "minimumReleaseAge": "7 days",
+  "minimumReleaseAgeBehaviour": "timestamp-optional",
+  "semanticCommits": "enabled",
+  "labels": ["dependencies"],
   "rangeStrategy": "bump",
   "internalChecksFilter": "strict",
   "automerge": true,
   "automergeType": "branch",
   "vulnerabilityAlerts": {
-    "automerge": false,
-    "labels": ["security"]
+    "addLabels": ["security"],
+    "automerge": false
   },
   "dependencyDashboardOSVVulnerabilitySummary": "all",
   "pre-commit": {
@@ -21,45 +24,58 @@
       "dependencyDashboardApproval": false
     },
     {
+      "groupName": "github-actions",
       "matchManagers": ["github-actions"],
       "enabled": true,
-      "groupName": "github actions",
       "separateMajorMinor": false,
       "separateMinorPatch": false,
       "schedule": ["* * 1-7 * 0"]
     },
     {
+      "groupName": "pre-commit hooks",
       "matchManagers": ["pre-commit"],
       "enabled": true,
-      "groupName": "pre-commit hooks",
       "separateMajorMinor": false,
       "separateMinorPatch": false,
       "schedule": ["* * 1-7 * 0"]
     },
     {
+      "groupName": "tools-py",
       "matchManagers": ["pep621"],
-      "matchPackageNames": ["ruff", "pyright", "vulture", "pytest", "pytest-cov"],
+      "matchPackageNames": [
+        "pyright",
+        "pytest-cov",
+        "pytest",
+        "python-dotenv",
+        "ruff",
+        "sentry-sdk",
+        "vulture"
+      ],
       "enabled": true,
-      "groupName": "py check tools",
       "separateMajorMinor": false,
       "separateMinorPatch": false,
       "schedule": ["* * 1-7 * 0"]
     },
     {
+      "groupName": "tools-js",
       "matchManagers": ["npm"],
       "matchPackageNames": [
         "@biomejs/biome",
-        "eslint",
+        "@cypress/**",
+        "@eslint/**",
+        "@playwright/**",
+        "@typescript-eslint/**",
+        "@vitest/**",
+        "cypress",
         "eslint-plugin-*",
-        "@typescript-eslint/*",
-        "vitest",
-        "@vitest/*",
-        "vue-tsc",
+        "eslint",
         "knip",
-        "@playwright/test"
+        "playwright",
+        "typescript-eslint",
+        "vitest",
+        "vue-tsc"
       ],
       "enabled": true,
-      "groupName": "js check tools",
       "separateMajorMinor": false,
       "separateMinorPatch": false,
       "schedule": ["* * 1-7 * 0"]
