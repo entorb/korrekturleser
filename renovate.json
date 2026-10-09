@@ -32,8 +32,8 @@
       "schedule": ["* * 1-7 * 0"]
     },
     {
-      "groupName": "pre-commit hooks",
       "matchManagers": ["pre-commit"],
+      "groupName": "pre-commit hooks",
       "enabled": true,
       "separateMajorMinor": false,
       "separateMinorPatch": false,
