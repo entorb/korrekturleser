@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!**/*.d.ts", "!package.json", "!pnpm-lock.yaml", "!public", "!scripts"]
+    "includes": ["**", "!**/*.d.ts", "!package.json", "!public", "!scripts"]
   },
   "formatter": {
     "enabled": true,
@@ -20,22 +20,13 @@
   "javascript": {
     "formatter": {
       "quoteStyle": "double",
-      "jsxQuoteStyle": "double",
       "semicolons": "asNeeded"
     }
   },
   "html": {
+    "experimentalFullSupportEnabled": true,
     "formatter": {
-      "indentScriptAndStyle": false,
       "selfCloseVoidElements": "always"
-    }
-  },
-  "css": {
-    "linter": {
-      "enabled": true
-    },
-    "formatter": {
-      "enabled": true
     }
   },
   "linter": {
@@ -62,7 +53,8 @@
         "useImportsFirst": "error"
       },
       "performance": {
-        "useTopLevelRegex": "off"
+        "useTopLevelRegex": "off",
+        "useVueVapor": "off"
       },
       "security": {
         "noGlobalEval": "error",
@@ -120,8 +112,6 @@
       "linter": {
         "rules": {
           "correctness": {
-            "noUnusedImports": "off",
-            "noUnusedVariables": "off",
             "useHookAtTopLevel": "off",
             "useQwikValidLexicalScope": "off"
           },
@@ -129,7 +119,11 @@
             "noEmptySource": "off"
           },
           "style": {
-            "useFilenamingConvention": "off"
+            "useFilenamingConvention": "off",
+            "noRestrictedGlobals": "off"
+          },
+          "complexity": {
+            "noImportantStyles": "off"
           }
         }
       }
