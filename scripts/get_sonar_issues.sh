@@ -30,3 +30,6 @@ jq '{
 }' "$out" >"$out.tmp" && mv "$out.tmp" "$out"
 
 echo "Wrote $out ($(jq '.issues | length' "$out") issues, SonarQube total $(jq -r '.total' "$out"))."
+
+echo "Prompt:"
+echo "fix tmp/sonar.json findings, update AGENTS.md to prevent in future, where it makes sense"
