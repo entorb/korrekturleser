@@ -14,7 +14,7 @@ dependencies = [
     "mysql-connector-python==9.4.0",
     "openai>=3.19.2",
     "pandas==2.2.3",
-    "pyarrow==20.0.0",
+    "pyarrow==23.0.1",
     "pydantic>=2.13.5",
     "pyjwt>=2.15.0",
     "slowapi>=0.1.10",
