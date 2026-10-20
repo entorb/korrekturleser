@@ -3,7 +3,7 @@ name = "korrekturleser"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.12"
 dependencies = [
     "azure-identity>=1.25.3",
     "bcrypt>=5.0.0",
