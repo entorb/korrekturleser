@@ -1,7 +1,7 @@
 """Config file for Gunicorn for prod deployment on entorb.net."""
 
 # run manually
-# ~/.local/bin/gunicorn --config ~/korrekturleser/fastapi_app/gunicorn_conf.py
+# ~/.local/bin/gunicorn --config ~/be/korrekturleser/fastapi_app/gunicorn_conf.py
 # run via supervisorctl
 # supervisorctl restart korrekturleser-fastapi
 # see log
@@ -9,7 +9,7 @@
 
 import os
 
-app_path = os.environ["HOME"] + "/korrekturleser/"
+app_path = os.environ["HOME"] + "/be/korrekturleser/"
 
 # Gunicorn configuration
 wsgi_app = "fastapi_app.main:app"
