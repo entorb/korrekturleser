@@ -12,8 +12,8 @@ pip3.11 install --user gunicorn uvloop httptools
 less ~/etc/services.d/korrekturleser-fastapi.ini
 
 [program:korrekturleser-fastapi]
-directory=%(ENV_HOME)s/korrekturleser
-command=/home/entorb/.local/bin/gunicorn --config %(ENV_HOME)s/korrekturleser/fastapi_app/gunicorn_conf.py
+directory=%(ENV_HOME)s/be/korrekturleser
+command=/home/entorb/.local/bin/gunicorn --config %(ENV_HOME)s/be/korrekturleser/fastapi_app/gunicorn_conf.py
 loglevel=info
 # `startsecs` is set by Uberspace monitoring team, to prevent a broken service from looping
 startsecs=30

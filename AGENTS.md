@@ -10,7 +10,7 @@ pnpm install             # JS deps
 cp .env.example .env     # set LLM_PROVIDERS=Mock for local
 ```
 
-Local DB auto-creates `db.sqlite` (user Torben, secret `test`, ID:1). Prod detection: check `/home/entorb/korrekturleser` exists.
+Local DB auto-creates `db.sqlite` (user Torben, secret `test`, ID:1). Prod detection: check `/home/entorb/be/korrekturleser` exists.
 
 ## Run apps
 
