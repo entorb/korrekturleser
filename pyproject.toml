@@ -5,21 +5,21 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11,<3.12"
 dependencies = [
-    "azure-identity~=1.25.3",
+    "azure-identity~=1.26.0",
     "bcrypt~=5.0.0",
     "dotenv~=0.9.9",
-    "fastapi~=0.141.1",
-    "google-genai~=2.25.0",
-    "mistralai~=2.10.1",
-    "mysql-connector-python==9.4.0",
-    "openai~=3.19.2",
-    "pandas==2.2.3",
-    "pyarrow==20.0.0",
-    "pydantic~=2.13.5",
+    "fastapi~=0.143.0",
+    "google-genai~=2.30.1",
+    "mistralai~=3.2.0",
+    "mysql-connector-python==26.7.0",
+    "openai~=3.29.0",
+    "pandas==3.0.6",
+    "pyarrow==25.0.1",
+    "pydantic~=2.14.1",
     "pyjwt~=2.15.0",
     "slowapi~=0.1.10",
     "st-copy~=2.0.0",
-    "streamlit~=1.64.0",
+    "streamlit~=1.65.0",
 ]
 
 [dependency-groups]
@@ -51,6 +51,8 @@ exclude_lines = ["pragma: no cover", "if __name__ == \"__main__\":"]
 [tool.uv]
 required-version = "~=0.13.4"
 exclude-newer = "7 days"
+# TODO: remove after 2026-10-26
+exclude-newer-package = { certifi = false }
 
 # pyarrow cannot be updated beyond 20.0.0 (pinned by pandas==2.2.3 compatibility)
 [tool.uv.audit]
