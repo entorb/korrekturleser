@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 # to distinguish PROD vs. Local
 # do not move to config, to prevent circular dependencies
-PATH_ON_WEBSERVER = "/home/entorb/korrekturleser"
+PATH_ON_WEBSERVER = "/home/entorb/be/korrekturleser"
 
 # Load environment variables from .env file in project root
 load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
