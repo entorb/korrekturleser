@@ -17,6 +17,7 @@ dependencies = [
     "pyarrow==25.0.1",
     "pydantic~=2.14.1",
     "pyjwt~=2.15.0",
+    "sentry-sdk>=2.72.0",
     "slowapi~=0.1.10",
     "st-copy~=2.0.0",
     "streamlit~=1.65.0",
@@ -56,8 +57,20 @@ exclude-newer-package = { certifi = false }
 
 # pyarrow cannot be updated beyond 20.0.0 (pinned by pandas==2.2.3 compatibility)
 [tool.uv.audit]
+# pillow fix 13.0.0 blocked: streamlit 1.66 requires pillow<13; app does not decode images
+# TODO: remove when streamlit allows pillow>=13
 # cspell:disable
-ignore = ["GHSA-rgxp-2hwp-jwgg"]
+ignore = [
+  "GHSA-65qm-jvmh-6pqg",
+  "GHSA-vx6w-vv9f-6gvg",
+  "GHSA-58r4-6rv3-gfh8",
+  "GHSA-q45j-58j2-45rg",
+  "GHSA-462x-pgg6-55fp",
+  "GHSA-8g5g-8vmr-9782",
+  "GHSA-c6hw-5grf-ff96",
+  "GHSA-p4wg-p73j-c528",
+  "GHSA-pchr-8j38-3x4p",
+]
 # cspell:enable
 
 [tool.pyright]
