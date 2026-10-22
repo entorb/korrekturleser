@@ -6,7 +6,7 @@
 # run manually
 #  prek run --all-files
 # update hooks to latest version
-#  prek autoupdate
+#  prek autoupdate --cooldown-days 7
 
 exclude: >-
   (?x)^(
