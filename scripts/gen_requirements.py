@@ -23,6 +23,8 @@ lst = [
     or "mysql" in x
     or "openai" in x
     or "pydantic" in x
+    or "sentry" in x
+    or "slowapi" in x
 ]
 
 print(lst)

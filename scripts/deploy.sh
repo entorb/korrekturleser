@@ -29,6 +29,7 @@ rsync -rhv --delete --no-perms dist/ entorb@entorb.net:html/korrekturleser-vue/
 echo "## Backend"
 # rsync -uz .streamlit/config-prod.toml entorb@entorb.net:korrekturleser/.streamlit/config.toml
 echo "### Transfer shared"
+uv run --no-build python scripts/gen_requirements.py
 rsync -hvz --no-perms requirements.txt entorb@entorb.net:be/korrekturleser/
 # DO NOT sync the .env secret file any more
 # rsync -uz pyproject.toml entorb@entorb.net:korrekturleser/pyproject.toml
