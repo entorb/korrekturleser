@@ -61,7 +61,7 @@ If `scripts/run_spelling.sh` finds unknown words, these are written to `cspell-w
 
 - **`shared/`** — single source of truth (DB, LLM providers, mode configs, config). Used by all apps.
 - **`streamlit_app/`** — V1 legacy PoC.
-- **`fastapi_app/`** — REST API at root `/be/korrekturleser-fastapi`. JWT auth (24h, HS256). 4 routers: auth, config, text, stats. Rate limiter (slowapi) PROD only. CORS: PROD → `entorb.net`, local → localhost:4173/5173.
+- **`fastapi_app/`** — REST API at root `/be/korrekturleser`. JWT auth (24h, HS256). 4 routers: auth, config, text, stats. Rate limiter (slowapi) PROD only. CORS: PROD → `entorb.net`, local → localhost:4173/5173.
 - **`vue_app/`** — Vue 3 + Quasar + Pinia + TypeScript. See [vue_app/AGENTS.md](vue_app/AGENTS.md) for conventions.
 
 ### Database
