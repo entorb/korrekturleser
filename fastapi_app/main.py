@@ -2,8 +2,10 @@
 
 import logging
 
+import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sentry_sdk.integrations.logging import LoggingIntegration
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
@@ -17,6 +19,13 @@ ENV = where_am_i()
 init_logging()
 logger = logging.getLogger(__name__)
 
+if ENV == "PROD":
+    sentry_sdk.init(
+        dsn="https://478915eebf07672bfe0d1fba879c3217@o4507139041525760.ingest.de.sentry.io/4512292150378576",
+        integrations=[
+            LoggingIntegration(capture_sentry_logs=True),
+        ],
+    )
 
 # Create rate limiter (disabled during testing)
 limiter = Limiter(key_func=get_remote_address, enabled=(ENV == "PROD"))
@@ -27,7 +36,7 @@ app = FastAPI(
     description="AI-powered text correction and improvement API",
     version="0.1.0",
     # same root for prod and def to make debugging easier
-    root_path="/be/korrekturleser-fastapi",
+    root_path="/be/korrekturleser",
 )
 
 # Add rate limiter to app state
@@ -73,3 +82,10 @@ async def root() -> dict[str, str]:
 async def health() -> dict[str, str]:
     """Health check endpoint."""
     return {"status": "healthy", "environment": ENV}
+
+
+# https://entorb.net/be/korrekturleser/sentry-test
+@app.get("/sentry-test")
+async def trigger_error() -> None:
+    """Test."""
+    _ = 1 / 0

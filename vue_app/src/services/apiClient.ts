@@ -2,6 +2,8 @@
  * API client configuration using generated OpenAPI client
  */
 
+import { isAxiosError } from "axios"
+
 import { client } from "@/api/client.gen.ts"
 import {
   getAllStatsApiStatsGet,
@@ -39,6 +41,16 @@ client.setConfig({
     const token = tokenManager.get()
     return token != null && !isTokenExpired(token) ? token : ""
   },
+})
+
+// Token rejected by server (e.g. signed with a rotated secret): drop it and
+// reload, so the router guard redirects to login
+client.instance.interceptors.response.use(undefined, (error: unknown) => {
+  if (isAxiosError(error) && error.response?.status === 401 && tokenManager.get() != null) {
+    tokenManager.clear()
+    globalThis.location.reload()
+  }
+  return Promise.reject(error)
 })
 
 // Export SDK functions
