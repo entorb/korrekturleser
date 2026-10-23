@@ -21,5 +21,8 @@ LLM_PROVIDER_DEFAULT = LLM_PROVIDERS[0]
 # FastAPI parameters
 # JWT Configuration
 FASTAPI_JWT_SECRET_KEY = my_get_env("FASTAPI_JWT_SECRET_KEY")
+if len(FASTAPI_JWT_SECRET_KEY) < 32:  # noqa: PLR2004
+    msg = "FASTAPI_JWT_SECRET_KEY must be >= 32 chars"
+    raise ValueError(msg)
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRE_HOURS = 24

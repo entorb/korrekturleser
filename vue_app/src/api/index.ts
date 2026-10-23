@@ -8,6 +8,7 @@ export {
   loginApiAuthLoginPost,
   type Options,
   rootGet,
+  triggerErrorSentryTestGet,
 } from "./sdk.gen.js"
 export type {
   ClientOptions,
@@ -44,6 +45,8 @@ export type {
   TextResponse,
   TokenResponse,
   TotalUsage,
+  TriggerErrorSentryTestGetData,
+  TriggerErrorSentryTestGetResponses,
   UsageStatsResponse,
   ValidationError,
 } from "./types.gen.js"

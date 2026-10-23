@@ -25,6 +25,8 @@ import type {
   LoginApiAuthLoginPostResponses,
   RootGetData,
   RootGetResponses,
+  TriggerErrorSentryTestGetData,
+  TriggerErrorSentryTestGetResponses,
 } from "./types.gen.js"
 
 export type Options<
@@ -181,5 +183,19 @@ export const healthHealthGet = <ThrowOnError extends boolean = false>(
   (options?.client ?? client).get<HealthHealthGetResponses, unknown, ThrowOnError>({
     responseType: "json",
     url: "/health",
+    ...options,
+  })
+
+/**
+ * Trigger Error
+ *
+ * Test.
+ */
+export const triggerErrorSentryTestGet = <ThrowOnError extends boolean = false>(
+  options?: Options<TriggerErrorSentryTestGetData, ThrowOnError>,
+): RequestResult<TriggerErrorSentryTestGetResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<TriggerErrorSentryTestGetResponses, unknown, ThrowOnError>({
+    responseType: "json",
+    url: "/sentry-test",
     ...options,
   })
