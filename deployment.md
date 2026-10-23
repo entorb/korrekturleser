@@ -23,5 +23,5 @@ startsecs=30
 
 ```sh
 uberspace web backend list
-uberspace web backend set be/korrekturleser-fastapi --http --port 9002
+uberspace web backend set be/korrekturleser --http --port 9002
 ```
