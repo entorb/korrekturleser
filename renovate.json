@@ -47,17 +47,10 @@
       "schedule": ["* 0-18 * * 6"]
     },
     {
+      "description": "dev group, project.dependencies are bumped by scripts/update.sh",
       "groupName": "tools-py",
       "matchManagers": ["pep621"],
-      "matchPackageNames": [
-        "pyright",
-        "pytest-cov",
-        "pytest",
-        "python-dotenv",
-        "ruff",
-        "sentry-sdk",
-        "vulture"
-      ],
+      "matchDepTypes": ["dependency-groups"],
       "enabled": true,
       "separateMajorMinor": false,
       "separateMinorPatch": false,
