@@ -11,7 +11,7 @@ with p_in.open("rb") as fh:
 
 lst = sorted(o["project"]["dependencies"], key=str.casefold)
 lst = [
-    x
+    x.replace("~=", ">=")
     for x in lst
     if "bcrypt" in x
     or "dotenv" in x
@@ -21,7 +21,10 @@ lst = [
     or "jwt" in x
     or "mistralai" in x
     or "mysql" in x
+    or "numpy" in x
     or "openai" in x
+    or "pandas" in x
+    or "pyarrow" in x
     or "pydantic" in x
     or "sentry" in x
     or "slowapi" in x
