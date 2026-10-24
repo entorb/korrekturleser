@@ -92,32 +92,17 @@ PNPMPY
 fi
 
 echo "## Python Packages"
-# extract versions from pyproject.toml
-GEN_OUT=$(uv run python scripts/gen_py_packages_update.py)
-DEP_REM=$(printf '%s\n' "$GEN_OUT" | sed -n 1p)
-DEP_ADD=$(printf '%s\n' "$GEN_OUT" | sed -n 2p)
-DEV_REM=$(printf '%s\n' "$GEN_OUT" | sed -n 3p)
-DEV_ADD=$(printf '%s\n' "$GEN_OUT" | sed -n 4p)
-
-# Disables pathname expansion.
-set -f
-
-# remove unpinned
-# word splitting of the space-separated package lists is intended (globbing off via set -f)
+# bump project.dependencies to latest, keeps ~=; ==-pinned deps stay untouched
+# dev group is bumped by Renovate (tools-py), uv upgrade cannot yet (astral-sh/uv#20783)
+EXCLUDE_PINNED=$(uv run python -c '
+import tomllib
+deps = tomllib.load(open("pyproject.toml", "rb"))["project"]["dependencies"]
+print(" ".join("--exclude " + d.split("==")[0] for d in deps if "==" in d))
+')
+# word splitting into separate args intended
 # shellcheck disable=SC2086
-[ -n "$DEP_REM" ] && uv remove $DEP_REM
-# shellcheck disable=SC2086
-[ -n "$DEV_REM" ] && uv remove --dev $DEV_REM
-
+uv upgrade $EXCLUDE_PINNED
 uv sync --no-build --upgrade
-
-# Re-add at latest versions
-# shellcheck disable=SC2086
-[ -n "$DEP_ADD" ] && uv add $DEP_ADD
-# shellcheck disable=SC2086
-[ -n "$DEV_ADD" ] && uv add --dev $DEV_ADD
-# Restore pathname expansion.
-set +f
 
 ./scripts/chk_py_lint.sh
 
