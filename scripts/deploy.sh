@@ -40,9 +40,7 @@ rsync -rhvz --delete --delete-excluded --no-perms --exclude __pycache__ fastapi_
 echo "### Install packages"
 ssh entorb@entorb.net "pip3.11 install --user -r be/korrekturleser/requirements.txt > /dev/null"
 
-# echo restarting korrekturleser-streamlit
-# ssh entorb@entorb.net "supervisorctl restart korrekturleser-streamlit"
 echo "### Restart fastapi"
-ssh entorb@entorb.net "supervisorctl restart korrekturleser-fastapi"
+ssh entorb@entorb.net "supervisorctl restart fastapi-korrekturleser"
 
 echo "## DONE"
