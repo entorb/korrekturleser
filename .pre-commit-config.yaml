@@ -69,10 +69,17 @@ repos:
       - id: shellcheck
 
   - repo: https://github.com/owenlamont/ryl-pre-commit
-    rev: v0.25.1
+    rev: v0.26.1
     hooks:
       - id: ryl-check
-        args: [--fix, -d, '{extends: default, rules: {line-length: disable, truthy: disable, document-start: disable}}']
+        args:
+          [
+            --fix,
+            --enable,
+            'anchors,braces,brackets,colons,commas,comments,comments-indentation,empty-lines,hyphens,indentation,key-duplicates,new-line-at-end-of-file,new-lines,trailing-spaces',
+            --exclude,
+            pnpm-lock.yaml
+          ]
       - id: ryl-format
 
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
