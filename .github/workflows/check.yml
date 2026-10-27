@@ -107,8 +107,9 @@ jobs:
       - name: Run py dead code Vulture
         run: uv run --frozen --no-build vulture
 
-      - name: Run py audit
-        run: uv audit --preview-features audit
+        # TODO: enable once migrated to new server with Python 3.15
+        # - name: Run py audit
+        #   run: uv audit --preview-features audit
 
   node:
     runs-on: ubuntu-latest
