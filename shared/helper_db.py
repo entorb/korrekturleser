@@ -15,7 +15,7 @@ from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import MySQLConnectionPool, PooledMySQLConnection
 
 from .config import LLM_PROVIDER_DEFAULT
-from .helper import my_get_env, verify_geheimnis, where_am_i
+from .helper import ENV, my_get_env, verify_geheimnis
 
 # Load environment variables from .env file in project root
 load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
@@ -28,7 +28,6 @@ MOCK_USER_SECRET_HASH = "$2b$12$YDgoJlHlpKxHRpum1b1rt.c06YscNeMhcMVaxH2wWNbsCsDo
 MOCK_USERS = [
     (1, "Torben", MOCK_USER_SECRET_HASH),
 ]
-ENV = where_am_i()
 
 # SQLite database path for local development
 SQLITE_DB_PATH = Path(__file__).parent.parent / "db.sqlite"

@@ -14,7 +14,7 @@ st.set_page_config(page_title="KI Korrekturleser", page_icon=":robot:", layout="
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
-from shared.helper import init_logging, where_am_i
+from shared.helper import ENV, init_logging
 from shared.helper_db import (
     db_select_user_from_geheimnis,
 )
@@ -25,8 +25,6 @@ from streamlit_app.helper_streamlit import (
 
 init_logging()
 logger = logging.getLogger(Path(__file__).stem)
-
-ENV = where_am_i()
 
 
 def login() -> None:

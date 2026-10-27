@@ -6,7 +6,7 @@ import logging
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import bcrypt
 from dotenv import load_dotenv
@@ -18,7 +18,9 @@ if TYPE_CHECKING:
 
 # to distinguish PROD vs. Local
 # do not move to config, to prevent circular dependencies
-PATH_ON_WEBSERVER = "/home/entorb/be/korrekturleser"
+ENV: Literal["PROD", "Local"] = (
+    "PROD" if Path("/var/www/virtual/entorb/").is_dir() else "Local"
+)
 
 # Load environment variables from .env file in project root
 load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
@@ -52,12 +54,6 @@ def verify_geheimnis(geheimnis: str, hashed_geheimnis: str) -> bool:
     return bcrypt.checkpw(geheimnis.encode("utf-8"), hashed_geheimnis.encode("utf-8"))
 
 
-@lru_cache(maxsize=1)
-def where_am_i() -> str:
-    """Return PROD or Local, depending on if the webserver dir is found."""
-    return "PROD" if Path(PATH_ON_WEBSERVER).is_dir() else "Local"
-
-
 def auto_login_for_local_dev(
     is_authenticated_fn: Callable[[], bool],
     login_fn: Callable[[int, str], None],
@@ -74,7 +70,7 @@ def auto_login_for_local_dev(
         user_name: User name to use for auto-login
 
     """
-    if where_am_i() != "PROD" and not is_authenticated_fn():
+    if ENV != "PROD" and not is_authenticated_fn():
         login_fn(user_id, user_name)
         logging.getLogger(__name__).info("Auto-login for local development")
 
@@ -93,7 +89,7 @@ def format_config_dataframe() -> pd.DataFrame:
     from shared.config import LLM_PROVIDER_DEFAULT  # noqa: PLC0415
 
     config_data = {
-        "ENV": where_am_i(),
+        "ENV": ENV,
         "LLM_PROVIDER_DEFAULT": LLM_PROVIDER_DEFAULT,
     }
     config_items = sorted([(k, str(v)) for k, v in config_data.items()])

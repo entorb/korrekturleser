@@ -2,24 +2,23 @@
 
 import logging
 
-import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sentry_sdk.integrations.logging import LoggingIntegration
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from fastapi_app.routers import auth, config, stats, text
-from shared.helper import init_logging, where_am_i
-
-ENV = where_am_i()
+from shared.helper import ENV, init_logging
 
 # Configure logging
 init_logging()
 logger = logging.getLogger(__name__)
 
 if ENV == "PROD":
+    import sentry_sdk
+    from sentry_sdk.integrations.logging import LoggingIntegration
+
     sentry_sdk.init(
         dsn="https://478915eebf07672bfe0d1fba879c3217@o4507139041525760.ingest.de.sentry.io/4512292150378576",
         integrations=[
