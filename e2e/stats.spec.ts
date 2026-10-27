@@ -2,14 +2,9 @@ import { expect, test } from "@playwright/test"
 
 import { login } from "./helpers.ts"
 
-test("shows usage statistics after processing", async ({ page }) => {
+// usage row seeded in e2e/global-setup.ts
+test("shows usage statistics", async ({ page }) => {
   await login(page)
-
-  await page.getByPlaceholder("Text hier eingeben...").fill("Hallo Welt")
-  await page.locator('button:has(i:has-text("auto_fix_high"))').click()
-  await expect(page.getByPlaceholder("KI-verbesserter Text erscheint hier...")).toHaveValue(
-    /Mocked/,
-  )
 
   await page.locator('button:has(i:has-text("bar_chart"))').click()
   await expect(page.getByText("Gesamt")).toBeVisible()
