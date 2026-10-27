@@ -10,14 +10,14 @@ echo "## Code Gen and Checks"
 echo "### Gen API code"
 ./scripts/gen_api_for_vue.sh
 
+echo "### Spelling check"
+./scripts/run_spelling.sh
+
 echo "### Config convert"
 uv run --no-build python scripts/config_convert.py
 
 echo "### Code checks"
 ./scripts/run_checks.sh
-
-echo "### Code checks"
-./scripts/run_spelling.sh
 
 echo "### E2E tests"
 ./scripts/run_e2e.sh

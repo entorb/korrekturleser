@@ -6,7 +6,8 @@ out=$(mktemp)
 trap 'rm -f "$out"' EXIT INT TERM
 
 status=0
-uv audit --preview-features audit >"$out" 2>&1 || status=$?
+# TODO: pyarrow PYSEC-2026-113 fixed in 23.0.1, prod does not support it yet; drop ignore once migrated
+uv audit --preview-features audit --ignore PYSEC-2026-113 >"$out" 2>&1 || status=$?
 
 # print output in good case only if more than 2 lines
 if [ $status -eq 0 ]; then

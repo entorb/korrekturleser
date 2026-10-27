@@ -20,7 +20,6 @@ lst = [
     or "google-genai" in x
     or "jwt" in x
     or "mistralai" in x
-    or "mysql" in x
     or "numpy" in x
     or "openai" in x
     or "pandas" in x
