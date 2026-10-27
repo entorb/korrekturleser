@@ -43,7 +43,6 @@ The application can be run locally with an SQLite database:
 
 - **Environment Detection**: Automatically detects if running locally or on production webserver
 - **SQLite Database**: Auto-creates `db.sqlite` when running locally
-  - Schema mirrors MySQL production database
   - Includes `user` and `history` tables with proper indexes
 - **Mock User**: Pre-populated with test user
   - Login with secret `test` (user: Torben, ID: 1)
@@ -110,7 +109,7 @@ All business logic is centralized in the shared layer, used by both Streamlit an
   - Frontend TypeScript types are auto-generated from these configurations
 
 - **[config.py](shared/config.py)**: Environment detection and LLM configuration
-  - `where_am_i()`: Detects PROD vs Local environment
+  - `ENV`: PROD or Local
   - LLM provider and model settings
 
 - **[llm_provider.py](shared/llm_provider.py)**: LLM abstraction layer
@@ -118,11 +117,10 @@ All business logic is centralized in the shared layer, used by both Streamlit an
   - `OllamaProvider`: Local development only
 
 - **[helper_db.py](shared/helper_db.py)**: Database operations with automatic environment detection
-  - Auto-detects local vs production environment
-  - **Production**: MySQL with connection pooling
-  - **Local**: SQLite (`db.sqlite`) auto-created with matching schema
+  - SQLite (`db.sqlite`, journal_mode=DELETE) on local and production, auto-created
+  - Mock user only created locally
   - **Mocked LLM**: Skips database writes when `LLM_PROVIDER == "Mocked"`
-  - User authentication with bcrypt (works with both databases)
+  - User authentication with bcrypt
   - Usage tracking and statistics (works with both databases)
 
 ### FastAPI Application (`fastapi_app/`)
@@ -215,31 +213,9 @@ see **Available Modes** (defined in [shared/helper_ai.py](shared/mode_configs.py
 
 ## Database Schema
 
-**Production**: MySQL database for login and usage stats.
+SQLite database (`db.sqlite`) for login and usage stats, auto-created on first run (see `init_sqlite_db` in [helper_db.py](shared/helper_db.py)).
 
-**Local Development**: SQLite database (`db.sqlite`) with identical schema, auto-created on first run.
-
-Schema (applies to both MySQL and SQLite):
-
-```sql
-CREATE TABLE `user` (
- `id` smallint(5) unsigned NOT NULL,
- `name` varchar(16) NOT NULL,
- `secret_hashed` varchar(60) NOT NULL COMMENT 'bcrypt hashed secret (60 chars)',
- PRIMARY KEY (`id`),
- UNIQUE KEY `idx_secret_hashed` (`secret_hashed`)
-);
-
-CREATE TABLE `history` (
- `date` date NOT NULL,
- `user_id` smallint(5) unsigned NOT NULL,
- `cnt_requests` smallint(5) unsigned NOT NULL,
- `cnt_tokens` mediumint(8) unsigned NOT NULL,
- UNIQUE KEY `unique_date_user` (`date`,`user_id`),
- KEY `idx_date` (`user_id`),
- KEY `idx_user_id` (`user_id`)
-);
-```
+Migration from former MySQL: `scripts/db_migrate_mysql_to_sqlite.py` (one-time, on prod).
 
 ## LLMs
 

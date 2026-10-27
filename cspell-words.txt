@@ -9,6 +9,7 @@ aufgabe
 ausführlichere
 ausgabe
 aussagen
+autouse
 beim
 belastbaren
 belege
@@ -41,6 +42,8 @@ entorb
 erscheint
 erstelle
 eslintcache
+executemany
+executescript
 factcheck
 faktencheck
 fehler
@@ -97,6 +100,7 @@ persönlichen
 pnpmpy
 prek
 prägnant
+pysec
 qube
 quellen
 rechtschreibung
