@@ -11,14 +11,12 @@ from fastapi_app.schemas import (
     LoginRequest,
     TokenResponse,
 )
-from shared.helper import where_am_i
+from shared.helper import ENV
 from shared.helper_db import (
     db_select_user_from_geheimnis,
 )
 
 logger = logging.getLogger(__name__)
-
-ENV = where_am_i()
 
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address, enabled=ENV == "PROD")

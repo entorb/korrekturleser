@@ -27,7 +27,7 @@ class TestAutoLoginForLocalDev:
         def fake_login(user_id: int, user_name: str) -> None:
             calls.append((user_id, user_name))
 
-        with patch("shared.helper.where_am_i", return_value="Local"):
+        with patch("shared.helper.ENV", "Local"):
             helper.auto_login_for_local_dev(
                 is_authenticated_fn=lambda: False,
                 login_fn=fake_login,
@@ -41,7 +41,7 @@ class TestAutoLoginForLocalDev:
         def fail_login(*_args, **_kwargs) -> None:
             pytest.fail("login called")
 
-        with patch("shared.helper.where_am_i", return_value="Local"):
+        with patch("shared.helper.ENV", "Local"):
             helper.auto_login_for_local_dev(
                 is_authenticated_fn=lambda: True,
                 login_fn=fail_login,
@@ -53,7 +53,7 @@ class TestAutoLoginForLocalDev:
         def fail_login(*_args, **_kwargs) -> None:
             pytest.fail("login called")
 
-        with patch("shared.helper.where_am_i", return_value="PROD"):
+        with patch("shared.helper.ENV", "PROD"):
             helper.auto_login_for_local_dev(
                 is_authenticated_fn=lambda: False,
                 login_fn=fail_login,
