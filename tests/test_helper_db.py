@@ -4,13 +4,11 @@ import datetime as dt
 import sqlite3
 from unittest.mock import MagicMock, patch
 
-import mysql.connector
 import pandas as pd
 import pytest
 
 from shared import helper_db
 from shared.helper_db import (
-    MOCK_USER_SECRET_HASH,
     db_insert_usage,
     db_select_usage_stats_daily,
     db_select_usage_stats_total,
@@ -63,30 +61,6 @@ class TestAuthentication:
         assert user_id == 0
         assert username == ""
 
-    @patch("shared.helper_db.ENV", "PROD")
-    @patch("shared.helper_db.db_select_rows")
-    def test_authentication_database_error(self, mock_db_select: MagicMock) -> None:
-        """Test that database errors are propagated."""
-        mock_db_select.side_effect = mysql.connector.Error("Connection failed")
-
-        with pytest.raises(mysql.connector.Error, match="Connection failed"):
-            db_select_user_from_geheimnis("test")
-
-    @patch("shared.helper_db.ENV", "PROD")
-    @patch("shared.helper_db.db_select_rows")
-    def test_authentication_prod_path(self, mock_db_select: MagicMock) -> None:
-        """Test production path fetches and verifies rows from MySQL."""
-        mock_db_select.return_value = [("1", "Torben", MOCK_USER_SECRET_HASH)]
-
-        user_id, username = db_select_user_from_geheimnis("test")
-
-        assert user_id == 1
-        assert username == "Torben"
-        mock_db_select.assert_called_once_with(
-            query="SELECT id, name, secret_hashed FROM user ORDER BY id",
-            param=(),
-        )
-
 
 class TestUsageTracking:
     """Test usage tracking functions."""
@@ -98,8 +72,8 @@ class TestUsageTracking:
 
     @patch("shared.helper_db.sqlite_connection")
     def test_insert_usage_skipped_when_llm_mocked(self, mock_sqlite: MagicMock) -> None:
-        """Test usage insert is skipped when default provider is 'Mocked'."""
-        with patch("shared.helper_db.LLM_PROVIDER_DEFAULT", "Mocked"):
+        """Test usage insert is skipped when default provider is 'Mock'."""
+        with patch("shared.helper_db.LLM_PROVIDER_DEFAULT", "Mock"):
             db_insert_usage(user_id=1, tokens=100)
         mock_sqlite.assert_not_called()
 
@@ -121,6 +95,7 @@ class TestUsageTracking:
         with pytest.raises(sqlite3.Error, match="write failed"):
             db_insert_usage(user_id=1, tokens=100)
 
+    @patch("shared.helper_db.LLM_PROVIDER_DEFAULT", "Mistral")
     @patch("shared.helper_db.sqlite_connection")
     def test_insert_usage_local_mode(self, mock_sqlite: MagicMock) -> None:
         """Test usage insert writes to SQLite in local mode."""
@@ -141,30 +116,6 @@ class TestUsageTracking:
         assert "INSERT INTO history" in query
         assert "ON CONFLICT" in query
         assert params[0] == dt.date.today().isoformat()  # noqa: DTZ011
-        assert params[1] == 1
-        assert params[2] == 100
-
-    @patch("shared.helper_db.ENV", "PROD")
-    @patch("shared.helper_db.db_connection")
-    def test_insert_usage_in_production(self, mock_connection: MagicMock) -> None:
-        """Test usage insert writes to MySQL in PROD mode."""
-        mock_con = MagicMock()
-        mock_cursor = MagicMock()
-        mock_con.cursor.return_value.__enter__.return_value = mock_cursor
-        mock_connection.return_value.__enter__.return_value = mock_con
-
-        db_insert_usage(user_id=1, tokens=100)
-
-        assert mock_cursor.execute.called
-        assert mock_con.commit.called
-
-        call_args = mock_cursor.execute.call_args
-        query = call_args[0][0]
-        params = call_args[0][1]
-
-        assert "INSERT INTO history" in query
-        assert "ON DUPLICATE KEY UPDATE" in query
-        assert params[0] == dt.date.today()  # noqa: DTZ011
         assert params[1] == 1
         assert params[2] == 100
 
@@ -258,6 +209,20 @@ class TestSQLiteDatabase:
         }
         assert {"user", "history"} <= tables
         assert con.execute("SELECT id, name FROM user").fetchone() == (1, "Torben")
+        con.close()
+
+    def test_init_sqlite_db_prod_no_mock_user(
+        self, tmp_path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """On PROD the mock user with known password is not inserted."""
+        db_path = tmp_path / "db.sqlite"
+        monkeypatch.setattr(helper_db, "SQLITE_DB_PATH", db_path)
+        monkeypatch.setattr(helper_db, "ENV", "PROD")
+
+        helper_db.init_sqlite_db()
+
+        con = sqlite3.connect(db_path)
+        assert con.execute("SELECT COUNT(*) FROM user").fetchone() == (0,)
         con.close()
 
     def test_init_sqlite_db_idempotent(
