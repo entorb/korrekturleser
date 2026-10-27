@@ -2,6 +2,9 @@
 set -e
 cd "$(dirname "$0")/.."
 
+# drop unused pages, also on test failure
+trap 'sqlite3 db-e2e.sqlite "VACUUM;"' EXIT
+
 # Playwright webServer starts FastAPI (Mock LLM) and Vite on its own.
 # The backend requires a .env with a JWT secret, so create one if missing.
 if [ ! -f .env ]; then
