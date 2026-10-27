@@ -25,4 +25,6 @@ coverage.xml
 cspell-words-missing.txt
 db*.sqlite
 db*.sqlite-journal
+db*.sqlite-shm
+db*.sqlite-wal
 requirements.txt
