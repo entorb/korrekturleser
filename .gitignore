@@ -23,5 +23,6 @@
 __pycache__/
 coverage.xml
 cspell-words-missing.txt
-db.sqlite
+db*.sqlite
+db*.sqlite-journal
 requirements.txt

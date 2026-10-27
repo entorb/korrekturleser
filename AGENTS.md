@@ -10,7 +10,7 @@ pnpm install             # JS deps
 cp .env.example .env     # set LLM_PROVIDERS=Mock for local
 ```
 
-Local DB auto-creates `db.sqlite` (user Torben, secret `test`, ID:1). Prod detection: check `/home/entorb/be/korrekturleser` exists.
+Local DB auto-creates `db.sqlite` (user Torben, secret `test`, ID:1).
 
 ## Run apps
 
@@ -66,7 +66,7 @@ If `scripts/run_spelling.sh` finds unknown words, these are written to `cspell-w
 
 ### Database
 
-Auto-detects PROD vs local. Local: SQLite (`db.sqlite`) mirrors MySQL schema. Prod: MySQL via `MySQLConnectionPool` (pool size=3). `LLM_PROVIDERS=Mock` skips all DB writes.
+SQLite (`db.sqlite`, journal_mode=DELETE) on local and PROD. Mock user only created on local. `LLM_PROVIDERS=Mock` skips all DB writes.
 
 ## Testing
 
