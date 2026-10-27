@@ -7,10 +7,19 @@ import os
 os.environ["LLM_PROVIDERS"] = "Mock"
 os.environ["LLM_MODEL"] = "random"
 
+from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 
 from fastapi_app.main import app
+from shared import helper_db
+
+
+@pytest.fixture(autouse=True)
+def _tmp_db(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Fresh SQLite DB per test, mock user 1 'Torben' (secret test)."""
+    monkeypatch.setattr(helper_db, "SQLITE_DB_PATH", tmp_path / "db.sqlite")
 
 
 @pytest.fixture(scope="session")
