@@ -109,7 +109,7 @@ All business logic is centralized in the shared layer, used by both Streamlit an
   - Frontend TypeScript types are auto-generated from these configurations
 
 - **[config.py](shared/config.py)**: Environment detection and LLM configuration
-  - `ENV`: PROD or Local
+  - `ENV`: PROD or Local, from env var `APP_ENV` (unset: PROD)
   - LLM provider and model settings
 
 - **[llm_provider.py](shared/llm_provider.py)**: LLM abstraction layer
