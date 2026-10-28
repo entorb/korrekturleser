@@ -6,6 +6,7 @@ import os
 # This ensures that shared.config loads with Mock LLM settings
 os.environ["LLM_PROVIDERS"] = "Mock"
 os.environ["LLM_MODEL"] = "random"
+os.environ.setdefault("APP_ENV", "Local")
 
 from pathlib import Path
 

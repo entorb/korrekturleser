@@ -16,14 +16,16 @@ if TYPE_CHECKING:
 
     import pandas as pd
 
-# to distinguish PROD vs. Local
-# do not move to config, to prevent circular dependencies
-ENV: Literal["PROD", "Local"] = (
-    "PROD" if Path("/var/www/virtual/entorb/").is_dir() else "Local"
-)
-
 # Load environment variables from .env file in project root
 load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
+
+# to distinguish PROD vs. Local, unset defaults to PROD: fail safe
+# do not move to config, to prevent circular dependencies
+_APP_ENV = os.environ.get("APP_ENV", "PROD")
+if _APP_ENV not in ("PROD", "Local"):
+    msg = f"Invalid APP_ENV: {_APP_ENV!r}, expected 'PROD' or 'Local'"
+    raise ValueError(msg)
+ENV: Literal["PROD", "Local"] = "PROD" if _APP_ENV == "PROD" else "Local"
 
 
 def init_logging() -> None:
