@@ -2,13 +2,15 @@
 
 import logging
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from mistralai.client import Mistral
-from mistralai.client.models.chatcompletionresponse import ChatCompletionResponse
 
 from .helper import my_get_env
 from .llm_provider import LLMProvider, retry_with_exponential_backoff
+
+if TYPE_CHECKING:
+    from mistralai.client.models.chatcompletionresponse import ChatCompletionResponse
 
 logger = logging.getLogger(Path(__file__).stem)
 

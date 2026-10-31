@@ -1,12 +1,15 @@
 """Tests for FastAPI statistics endpoints."""
 
 from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING
 from unittest.mock import MagicMock, patch
 
 import jwt
-from fastapi.testclient import TestClient
 
 from shared.helper import my_get_env
+
+if TYPE_CHECKING:
+    from fastapi.testclient import TestClient
 
 
 class TestUsageStats:

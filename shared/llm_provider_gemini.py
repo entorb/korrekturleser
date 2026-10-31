@@ -2,13 +2,16 @@
 
 import logging
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from google.genai import types as genai_types
-from google.genai.client import Client
-from google.genai.types import GenerateContentResponse
 
 from .helper import my_get_env
 from .llm_provider import LLMProvider, retry_with_exponential_backoff
+
+if TYPE_CHECKING:
+    from google.genai.client import Client
+    from google.genai.types import GenerateContentResponse
 
 logger = logging.getLogger(Path(__file__).stem)
 
