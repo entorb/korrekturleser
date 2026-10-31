@@ -67,7 +67,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 1  # latest only
 
-      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884  # v10.3.0
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e  # v10.3.2
         with:
           version-file: pyproject.toml
           enable-cache: true
@@ -235,7 +235,7 @@ jobs:
       - name: Prepare JS
         run: pnpm install --frozen-lockfile --ignore-scripts
 
-      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884  # v10.3.0
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e  # v10.3.2
         with:
           version-file: pyproject.toml
           enable-cache: true
