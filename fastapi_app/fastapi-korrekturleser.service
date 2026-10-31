@@ -1,0 +1,9 @@
+[Install]
+WantedBy=default.target
+
+[Service]
+Environment="APP_ENV=PROD"
+WorkingDirectory=/home/entorb8/be/korrekturleser
+ExecStart=/home/entorb8/.local/bin/gunicorn --config fastapi_app/gunicorn_conf.py
+Restart=always
+RestartSec=5

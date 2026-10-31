@@ -1,8 +1,8 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it, test } from "@playwright/test"
 
 import { login } from "./helpers.ts"
 
-test("processes text with the Mock provider", async ({ page }) => {
+it("processes text with the Mock provider", async ({ page }) => {
   await login(page)
 
   const input = page.getByPlaceholder("Text hier eingeben...")
@@ -12,13 +12,13 @@ test("processes text with the Mock provider", async ({ page }) => {
   await processButton.click()
 
   await expect(page.getByPlaceholder("KI-verbesserter Text erscheint hier...")).toHaveValue(
-    /Mocked Hallo Welt response/,
+    /Mocked Hallo Welt response/u,
   )
-  await expect(page.getByText(/LLM: Mock/)).toBeVisible()
+  await expect(page.getByText(/LLM: Mock/u)).toBeVisible()
   await expect(page.locator(".diff-container")).toBeVisible()
 })
 
-test("disables processing while input is empty", async ({ page }) => {
+it("disables processing while input is empty", async ({ page }) => {
   await login(page)
   await expect(page.locator('button:has(i:has-text("auto_fix_high"))')).toBeDisabled()
 })

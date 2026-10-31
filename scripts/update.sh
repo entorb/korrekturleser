@@ -34,12 +34,11 @@ PY
   echo "uv pinned to $UV_VER"
 
   echo "### Python Version"
-  # upgrade to latest available 3.11 patch, then pin the exact version
-  uv python upgrade 3.11
+  uv python upgrade 3.14
   UV_PY_VER=$(
     D=$(mktemp -d)
     cd "$D" || exit 1
-    "$(uv python find --no-project --managed-python 3.11)" -c "import sys; print('%d.%d.%d' % sys.version_info[:3])"
+    "$(uv python find --no-project --managed-python 3.14)" -c "import sys; print('%d.%d.%d' % sys.version_info[:3])"
     rm -rf "$D"
   )
   [ -n "$UV_PY_VER" ] || {

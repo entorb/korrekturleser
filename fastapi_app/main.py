@@ -1,6 +1,7 @@
 """FastAPI application main file."""
 
 import logging
+from typing import TYPE_CHECKING
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +11,9 @@ from slowapi.util import get_remote_address
 
 from fastapi_app.routers import auth, config, stats, text
 from shared.helper import ENV, init_logging
+
+if TYPE_CHECKING:
+    from starlette.types import ASGIApp, Receive, Scope, Send
 
 # Configure logging
 init_logging()
@@ -34,9 +38,26 @@ app = FastAPI(
     title="KI Korrekturleser API",
     description="AI-powered text correction and improvement API",
     version="0.1.0",
-    # same root for prod and def to make debugging easier
-    root_path="/be/korrekturleser",
 )
+
+
+class RootPathMiddleware:
+    """
+    Set root_path like deprecated FastAPI(root_path=...).
+
+    Not uvicorn --root-path: that prepends it to path, but proxy already keeps prefix.
+    """
+
+    def __init__(self, app: ASGIApp) -> None:  # noqa: D107
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:  # noqa: D102
+        # same root for prod and dev to make debugging easier
+        scope["root_path"] = "/be/korrekturleser"
+        await self.app(scope, receive, send)
+
+
+app.add_middleware(RootPathMiddleware)
 
 # Add rate limiter to app state
 app.state.limiter = limiter
