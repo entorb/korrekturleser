@@ -3,38 +3,35 @@ name = "korrekturleser"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.11,<3.12"
+requires-python = ">=3.14,<3.15"
 dependencies = [
-    "azure-identity~=1.26.0",
-    "bcrypt~=5.0.0",
-    "dotenv~=0.9.9",
-    "fastapi~=0.143.3",
-    "google-genai~=2.31.0",
-    "mistralai~=3.2.0",
-    "numpy==2.2.3",
-    "openai~=3.33.0",
-    "pandas==2.2.3",
-    "pyarrow==20.0.0",
-    "pydantic~=2.14.1",
-    "pyjwt~=2.15.1",
-    "sentry-sdk~=2.72.0",
-    "slowapi~=0.1.10",
-    "st-copy~=2.0.0",
-    "streamlit~=1.66.1",
+    "azure-identity>=1.26.0",
+    "bcrypt>=5.0.0",
+    "dotenv>=0.9.9",
+    "fastapi>=0.143.3",
+    "google-genai>=2.31.0",
+    "gunicorn>=26.2.0",
+    "mistralai>=3.2.0",
+    "openai>=3.33.0",
+    "pydantic>=2.14.1",
+    "pyjwt>=2.15.1",
+    "sentry-sdk>=2.72.0",
+    "slowapi>=0.1.10",
+    "st-copy>=2.0.0",
+    "streamlit>=1.66.1",
 ]
 
 [dependency-groups]
 dev = [
-    "httpx2~=2.15.1",
-    "ollama~=0.6.3",
-    "pyright~=1.1.414",
-    "pytest~=9.1.1",
-    "pytest-cov~=7.1.0",
-    "ruff~=0.17.1",
-    "tomli-w~=1.2.0",
-    "uvicorn~=0.54.0",
-    "vulture~=2.16",
-    "watchdog~=6.0.0",
+    "httpx2>=2.15.1",
+    "ollama>=0.6.3",
+    "pyright>=1.1.414",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.1",
+    "tomli-w>=1.2.0",
+    "uvicorn>=0.54.0",
+    "vulture>=2.16",
 ]
 
 [tool.pytest.ini_options]
@@ -50,11 +47,13 @@ omit = [".venv/*", "node_modules/*", "tests/*", "scripts/*"]
 exclude_lines = ["pragma: no cover", "if __name__ == \"__main__\":"]
 
 [tool.uv]
-required-version = "~=0.13.4"
+required-version = "~=0.13.6"
 exclude-newer = "7 days"
+
 # TODO: remove after 2026-10-26
 # TODO: remove streamlit after 2026-10-28
-exclude-newer-package = { certifi = false, streamlit = false }
+# TODO: remove pyasn1 after 2026-11-07 (GHSA fix in 0.6.5)
+exclude-newer-package = { certifi = false, streamlit = false, pyasn1 = false }
 
 [tool.pyright]
 include = ["fastapi_app", "shared", "streamlit_app"]
