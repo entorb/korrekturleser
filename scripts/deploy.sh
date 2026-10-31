@@ -24,23 +24,23 @@ echo "### E2E tests"
 
 echo "## Frontend Build and Transfer"
 pnpm run build
-rsync -rhv --delete --no-perms dist/ entorb@entorb.net:html/korrekturleser-vue/
+rsync -rhv --delete --no-perms dist/ entorb8@mab.uberspace.de:html/korrekturleser-vue/
 
 echo "## Backend"
-# rsync -uz .streamlit/config-prod.toml entorb@entorb.net:korrekturleser/.streamlit/config.toml
+# rsync -uz .streamlit/config-prod.toml entorb8@mab.uberspace.de:korrekturleser/.streamlit/config.toml
 echo "### Transfer shared"
 uv run --no-build python scripts/gen_requirements.py
-rsync -hvz --no-perms requirements.txt entorb@entorb.net:be/korrekturleser/
+rsync -hvz --no-perms requirements.txt entorb8@mab.uberspace.de:be/korrekturleser/
 # DO NOT sync the .env secret file any more
-# rsync -uz pyproject.toml entorb@entorb.net:korrekturleser/pyproject.toml
-rsync -rhvz --delete --delete-excluded --no-perms --exclude __pycache__ shared/ entorb@entorb.net:be/korrekturleser/shared/
+# rsync -uz pyproject.toml entorb8@mab.uberspace.de:korrekturleser/pyproject.toml
+rsync -rhvz --delete --delete-excluded --no-perms --exclude __pycache__ shared/ entorb8@mab.uberspace.de:be/korrekturleser/shared/
 echo "### Transfer fastapi"
-rsync -rhvz --delete --delete-excluded --no-perms --exclude __pycache__ fastapi_app/ entorb@entorb.net:be/korrekturleser/fastapi_app/
+rsync -rhvz --delete --delete-excluded --no-perms --exclude __pycache__ fastapi_app/ entorb8@mab.uberspace.de:be/korrekturleser/fastapi_app/
 
 echo "### Install packages"
-ssh entorb@entorb.net "pip3.11 install --user -r be/korrekturleser/requirements.txt > /dev/null"
+ssh entorb8@mab.uberspace.de "python3.14 -m pip install --user -r be/korrekturleser/requirements.txt > /dev/null"
 
 echo "### Restart fastapi"
-ssh entorb@entorb.net "supervisorctl restart fastapi-korrekturleser"
+ssh entorb8@mab.uberspace.de "systemctl --user restart fastapi-korrekturleser"
 
 echo "## DONE"

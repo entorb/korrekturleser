@@ -1,9 +1,12 @@
 """Tests for FastAPI text improvement endpoints."""
 
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
-from fastapi.testclient import TestClient
+
+if TYPE_CHECKING:
+    from fastapi.testclient import TestClient
 
 
 class _FakeProvider:

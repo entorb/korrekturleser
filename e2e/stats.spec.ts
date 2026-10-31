@@ -1,9 +1,9 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
 import { login } from "./helpers.ts"
 
 // usage row seeded in e2e/global-setup.ts
-test("shows usage statistics", async ({ page }) => {
+it("shows usage statistics", async ({ page }) => {
   await login(page)
 
   await page.locator('button:has(i:has-text("bar_chart"))').click()

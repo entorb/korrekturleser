@@ -1,13 +1,16 @@
 """Tests for FastAPI authentication endpoints."""
 
 from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING
 
 import jwt
-from fastapi.testclient import TestClient
 
 from fastapi_app.helper_fastapi import create_access_token
 from fastapi_app.routers import auth
 from shared.helper import my_get_env
+
+if TYPE_CHECKING:
+    from fastapi.testclient import TestClient
 
 
 class TestAuthEndpoints:

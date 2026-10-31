@@ -2,16 +2,19 @@
 
 import logging
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from azure.identity import (
     DefaultAzureCredential,
     get_bearer_token_provider,
 )
 from openai import AzureOpenAI
-from openai.types.chat.chat_completion import ChatCompletion
 
 from .helper import my_get_env
 from .llm_provider import LLMProvider, retry_with_exponential_backoff
+
+if TYPE_CHECKING:
+    from openai.types.chat.chat_completion import ChatCompletion
 
 logger = logging.getLogger(Path(__file__).stem)
 

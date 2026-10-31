@@ -4,15 +4,18 @@ import datetime as dt
 import logging
 import os
 import sqlite3
-from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pandas as pd
 from dotenv import load_dotenv
 
 from .config import LLM_PROVIDER_DEFAULT
 from .helper import ENV, verify_geheimnis
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 # Load environment variables from .env file in project root
 load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
@@ -82,7 +85,7 @@ def init_sqlite_db() -> None:
 
 
 @contextmanager
-def sqlite_connection() -> Generator[sqlite3.Connection, None, None]:
+def sqlite_connection() -> Generator[sqlite3.Connection]:
     """
     Context manager for SQLite database connections.
 

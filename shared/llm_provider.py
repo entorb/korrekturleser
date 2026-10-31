@@ -2,16 +2,16 @@
 
 import logging
 import time
-from collections.abc import Callable
 from pathlib import Path
-from typing import TypeVar
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 logger = logging.getLogger(Path(__file__).stem)
 
-T = TypeVar("T")
 
-
-def retry_with_exponential_backoff(
+def retry_with_exponential_backoff[T](
     func: Callable[..., T],
     max_retries: int = 3,
     initial_wait: int = 1,

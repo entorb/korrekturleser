@@ -8,13 +8,17 @@ os.environ["LLM_PROVIDERS"] = "Mock"
 os.environ["LLM_MODEL"] = "random"
 os.environ.setdefault("APP_ENV", "Local")
 
-from pathlib import Path
+
+from typing import TYPE_CHECKING
 
 import pytest
 from fastapi.testclient import TestClient
 
 from fastapi_app.main import app
 from shared import helper_db
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @pytest.fixture(autouse=True)
