@@ -14,11 +14,11 @@ Local DB auto-creates `db.sqlite` (user Torben, secret `test`, ID:1).
 
 ## Run apps
 
-| App | Script | URL |
-| --- | ------ | --- |
+| App                | Script                     | URL                                        |
+| ------------------ | -------------------------- | ------------------------------------------ |
 | Streamlit (V1 PoC) | `scripts/run_streamlit.sh` | `localhost:8503/korrekturleser-streamlit/` |
-| FastAPI (V2 BE) | `scripts/run_fastapi.sh` | `localhost:9002` |
-| Vue.js (V2 FE) | `scripts/run_vue.sh` | `localhost:5173/korrekturleser-vue/` |
+| FastAPI (V2 BE)    | `scripts/run_fastapi.sh`   | `localhost:9002`                           |
+| Vue.js (V2 FE)     | `scripts/run_vue.sh`       | `localhost:5173/korrekturleser-vue/`       |
 
 ## API code generation
 
@@ -70,12 +70,12 @@ SQLite (`db.sqlite`, journal_mode=DELETE) on local and PROD. Mock user only crea
 
 ## Testing
 
-| Stack | Command | Notes |
-| ----- | ------- | ----- |
-| Python | `scripts/chk_py_test.sh` | `tests/conftest.py` sets `LLM_PROVIDERS=Mock` + `LLM_MODEL=random` before imports |
-| Python + coverage | `run_py_test_cov.sh` | |
-| Vue | `scripts/chk_js_test.sh` | vitest, jsdom, `vue_app/__tests__/` |
-| Vue + coverage | `run_js_test_cov.sh` | |
+| Stack             | Command                  | Notes                                                                             |
+| ----------------- | ------------------------ | --------------------------------------------------------------------------------- |
+| Python            | `scripts/chk_py_test.sh` | `tests/conftest.py` sets `LLM_PROVIDERS=Mock` + `LLM_MODEL=random` before imports |
+| Python + coverage | `run_py_test_cov.sh`     |                                                                                   |
+| Vue               | `scripts/chk_js_test.sh` | vitest, jsdom, `vue_app/__tests__/`                                               |
+| Vue + coverage    | `run_js_test_cov.sh`     |                                                                                   |
 
 Python tests: FastAPI `TestClient`, session-scoped fixtures (`client`, `auth_token`, `auth_headers`).
 

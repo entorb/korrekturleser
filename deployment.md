@@ -7,7 +7,7 @@
 (I chose not to use venv to save space on webserver at the cost of project interdependency.)
 
 ```sh
-pip3.11 install --user gunicorn uvloop httptools
+pip3.13 install --user gunicorn uvloop httptools
 
 less ~/etc/services.d/korrekturleser-fastapi.ini
 

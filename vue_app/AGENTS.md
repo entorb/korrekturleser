@@ -8,7 +8,7 @@ Modern Vue 3 + TypeScript 2025 best practices. ESLint and Biome handle formattin
 
 ```typescript
 // ✅ DO
-store.inputText = 'new value'
+store.inputText = "new value"
 
 // ❌ DON'T
 function setInputText(text: string) {
@@ -19,12 +19,12 @@ function setInputText(text: string) {
 **Return minimal interface:**
 
 ```typescript
-export const useTextStore = defineStore('text', () => {
-  const inputText = ref('')
-  const outputText = ref('')
+export const useTextStore = defineStore("text", () => {
+  const inputText = ref("")
+  const outputText = ref("")
 
   function clearOutput() {
-    outputText.value = ''
+    outputText.value = ""
     error.value = null
   }
 
@@ -42,11 +42,11 @@ try {
   const response = await api.text.improveTextApiTextPost({ text })
   textStore.outputText = response.text_ai
 } catch (err) {
-  textStore.error = err instanceof Error ? err.message : 'Operation failed'
+  textStore.error = err instanceof Error ? err.message : "Operation failed"
 }
 
 // ❌ DON'T
-console.error('Failed:', err) // No logging in catch
+console.error("Failed:", err) // No logging in catch
 ```
 
 ## Nullability
