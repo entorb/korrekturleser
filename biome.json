@@ -1,0 +1,147 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      "!**/*.d.ts",
+      "!package.json",
+      "!public",
+      "!scripts",
+      "!**/*.md",
+      "!**/*.yaml",
+      "!**/*.yml"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 100,
+    "attributePosition": "multiline"
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "semicolons": "asNeeded"
+    }
+  },
+  "html": {
+    "experimentalFullSupportEnabled": true,
+    "formatter": {
+      "selfCloseVoidElements": "always"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "all",
+      "complexity": {
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": {
+            "maxAllowedComplexity": 15
+          }
+        },
+        "noExcessiveLinesPerFunction": "off",
+        "noVoid": "off",
+        "useLiteralKeys": "off"
+      },
+      "correctness": {
+        "noUnresolvedImports": "off"
+      },
+      "nursery": {
+        "noFloatingPromises": "warn",
+        "noMisusedPromises": "warn"
+      },
+      "performance": {
+        "useTopLevelRegex": "off",
+        "useVueVapor": "off"
+      },
+      "security": {
+        "noGlobalEval": "error",
+        "noSecrets": "off"
+      },
+      "style": {
+        "noDefaultExport": "off",
+        "noHexColors": "off",
+        "noMagicNumbers": "off",
+        "noTernary": "off",
+        "useBlockStatements": "off",
+        "useExportsLast": "off",
+        "useNamingConvention": "off",
+        "useImportsFirst": "error"
+      },
+      "suspicious": {
+        "noEqualsToNull": "off",
+        "noConsole": "off"
+      }
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.spec.ts", "**/*.test.ts", "**/__tests__/**"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["*.config.ts", "*.config.js", "*.config.mts", "*.config.mjs"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noNodejsModules": "off"
+          },
+          "style": {
+            "noProcessEnv": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.vue"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useHookAtTopLevel": "off",
+            "useQwikValidLexicalScope": "off"
+          },
+          "suspicious": {
+            "noEmptySource": "off"
+          },
+          "style": {
+            "useFilenamingConvention": "off",
+            "noRestrictedGlobals": "off"
+          },
+          "complexity": {
+            "noImportantStyles": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/api/**"],
+      "linter": {
+        "enabled": false
+      }
+    }
+  ]
+}
