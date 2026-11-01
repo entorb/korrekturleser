@@ -1,4 +1,4 @@
-# How to deploy to Uberspace / entorb.net
+# How to deploy to Uberspace U8 / entorb.net
 
 ## FastAPI Backend
 
@@ -6,22 +6,23 @@
 
 (I chose not to use venv to save space on webserver at the cost of project interdependency.)
 
-```sh
-pip3.11 install --user gunicorn uvloop httptools
+`python3.14 -m pip install --user gunicorn`
 
-less ~/etc/services.d/korrekturleser-fastapi.ini
+### Backend Service
 
-[program:korrekturleser-fastapi]
-directory=%(ENV_HOME)s/be/korrekturleser
-command=/home/entorb/.local/bin/gunicorn --config %(ENV_HOME)s/be/korrekturleser/fastapi_app/gunicorn_conf.py
-loglevel=info
-# `startsecs` is set by Uberspace monitoring team, to prevent a broken service from looping
-startsecs=30
-```
-
-### Register backend
+see [fastapi-korrekturleser.service](fastapi_app/fastapi-korrekturleser.service)
 
 ```sh
+# update services
+systemctl --user daemon-reload
+# restart
+systemctl --user restart fastapi-korrekturleser
+# status
+systemctl --user status streamlit-stats
+# logs
+journalctl --user -u streamlit-stats -f
+# register new backend
+uberspace web backend add /be/korrekturleser port 9002
+# verify
 uberspace web backend list
-uberspace web backend set be/korrekturleser --http --port 9002
 ```
