@@ -20,7 +20,7 @@ chdir = app_path
 # Especially important for AI apps with potentially slow LLM calls
 workers = 2
 
-worker_class = "uvicorn.workers.UvicornWorker"
+worker_class = "uvicorn_worker.UvicornWorker"
 
 # Timeouts (in seconds)
 # - timeout: Maximum time for a request to complete

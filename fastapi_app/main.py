@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
 
 from fastapi_app.routers import auth, config, stats, text
+from fastapi_app.routers.auth import limiter
 from shared.helper import ENV, init_logging
 
 if TYPE_CHECKING:
@@ -29,9 +29,6 @@ if ENV == "PROD":
             LoggingIntegration(capture_sentry_logs=True),
         ],
     )
-
-# Create rate limiter (disabled during testing)
-limiter = Limiter(key_func=get_remote_address, enabled=(ENV == "PROD"))
 
 # Create FastAPI app
 app = FastAPI(
@@ -63,7 +60,7 @@ app.add_middleware(RootPathMiddleware)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore
 
-# Configure CORS
+# Configure CORS, Bearer token auth, no cookies -> no allow_credentials
 if ENV == "PROD":
     origins = ["https://entorb.net"]
 else:
@@ -75,7 +72,6 @@ else:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )

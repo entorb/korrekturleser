@@ -1,10 +1,8 @@
 """Shared helper functions for both Streamlit and FastAPI apps."""
 
-from __future__ import annotations
-
 import logging
 import os
-from functools import lru_cache
+from functools import cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
@@ -40,7 +38,7 @@ def init_logging() -> None:
     logging.getLogger("tornado").setLevel(logging.WARNING)
 
 
-@lru_cache(maxsize=1)
+@cache
 def my_get_env(key: str) -> str:
     """Get environment variable, throw exception if not set."""
     value = os.getenv(key)
