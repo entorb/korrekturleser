@@ -67,6 +67,7 @@ hier
 htmlcov
 immer
 insbesondere
+journalctl
 keine
 knip
 kommentare
