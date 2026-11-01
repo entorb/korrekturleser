@@ -1,6 +1,7 @@
 """FastAPI dependencies for authentication and authorization."""
 
 from datetime import UTC, datetime, timedelta
+from typing import Annotated, Any
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -12,7 +13,9 @@ from shared.config import FASTAPI_JWT_SECRET_KEY, JWT_ALGORITHM, JWT_EXPIRE_HOUR
 security = HTTPBearer()
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
+def create_access_token(
+    data: dict[str, Any], expires_delta: timedelta | None = None
+) -> str:
     """Create a JWT access token."""
     to_encode = data.copy()
     if expires_delta:
@@ -25,8 +28,8 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     return encoded_jwt
 
 
-def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),  # noqa: B008
+async def get_current_user(
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
 ) -> UserInfoInternal:
     """
     Validate JWT token and return current user information.
