@@ -67,6 +67,7 @@ hier
 htmlcov
 immer
 insbesondere
+journalctl
 keine
 knip
 kommentare
@@ -113,6 +114,7 @@ seriöse
 slowapi
 smallint
 sonarcloud
+sonarqube
 sprache
 startsecs
 statistik
