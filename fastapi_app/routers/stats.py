@@ -26,7 +26,7 @@ router = APIRouter()
     "/",
     responses={500: {"description": "Failed to fetch usage statistics"}},
 )
-async def get_all_stats(
+def get_all_stats(
     current_user: Annotated[UserInfoInternal, Depends(get_current_user)],
 ) -> UsageStatsResponse:
     """
@@ -65,5 +65,5 @@ async def get_all_stats(
         logger.exception("Error fetching usage stats")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to fetch usage statistics: {e!s}",
+            detail="Failed to fetch usage statistics",
         ) from e

@@ -16,7 +16,7 @@ router = APIRouter()
 
 
 @router.get("/")
-async def get_config(
+def get_config(
     _: Annotated[UserInfoInternal, Depends(get_current_user)],
     provider: str | None = None,
 ) -> ConfigResponse:

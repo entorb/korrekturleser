@@ -24,7 +24,7 @@ limiter = Limiter(key_func=get_remote_address, enabled=ENV == "PROD")
 
 @router.post("/login")
 @limiter.limit("5/minute")
-async def login(request: Request, login_request: LoginRequest) -> TokenResponse:  # noqa: ARG001
+def login(request: Request, login_request: LoginRequest) -> TokenResponse:  # noqa: ARG001
     """
     Authenticate user with secret and return JWT token.
 

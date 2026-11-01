@@ -33,7 +33,7 @@ router = APIRouter()
         500: {"description": "LLM service not configured or processing failed"},
     },
 )
-async def improve_text(
+def improve_text(
     request: TextRequest,
     current_user: Annotated[UserInfoInternal, Depends(get_current_user)],
 ) -> TextResponse:
