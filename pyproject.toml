@@ -19,6 +19,7 @@ dependencies = [
     "slowapi>=0.1.10",
     "st-copy>=2.0.0",
     "streamlit>=1.66.1",
+    "uvicorn-worker>=0.4.0",
 ]
 
 [dependency-groups]
