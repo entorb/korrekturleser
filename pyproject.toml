@@ -10,19 +10,18 @@ dependencies = [
     "dotenv>=0.9.9",
     "fastapi>=0.143.3",
     "google-genai>=2.31.0",
-    "gunicorn>=26.2.0",
     "mistralai>=3.2.0",
     "openai>=3.33.0",
     "pydantic>=2.14.1",
     "pyjwt>=2.15.1",
     "sentry-sdk>=2.72.0",
     "slowapi>=0.1.10",
-    "st-copy>=2.0.0",
-    "streamlit>=1.66.1",
-    "uvicorn-worker>=0.4.0",
+    "uvicorn>=0.54.0",
 ]
 
 [dependency-groups]
+# local only, not deployed to PROD (requirements.txt is from [project].dependencies)
+streamlit = ["st-copy>=2.0.0", "streamlit>=1.66.1"]
 dev = [
     "httpx2>=2.16.0",
     "ollama>=0.6.3",
@@ -31,7 +30,6 @@ dev = [
     "pytest-cov>=7.1.0",
     "ruff>=0.17.2",
     "tomli-w>=1.2.0",
-    "uvicorn>=0.54.0",
     "vulture>=2.16",
 ]
 
@@ -50,6 +48,7 @@ exclude_lines = ["pragma: no cover", "if __name__ == \"__main__\":"]
 [tool.uv]
 required-version = "~=0.13.6"
 exclude-newer = "7 days"
+default-groups = ["dev", "streamlit"]
 
 # TODO: remove after 2026-10-26
 # TODO: remove streamlit after 2026-10-28
@@ -62,5 +61,5 @@ include = ["fastapi_app", "shared", "streamlit_app"]
 [tool.vulture]
 ignore_decorators = ["@app.get", "@router.get", "@router.post"]
 paths = ["fastapi_app", "shared", "streamlit_app"]
-exclude = ["fastapi_app/gunicorn_conf.py", "fastapi_app/schemas.py"]
+exclude = ["fastapi_app/schemas.py"]
 ignore_names = ["CSS_HEADER", "LOGGER", "MOCK_USERS", "TextMode", "visible"]
