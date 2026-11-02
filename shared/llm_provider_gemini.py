@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from google.genai import types as genai_types
 
 from .helper import my_get_env
-from .llm_provider import LLMProvider, retry_with_exponential_backoff
+from .llm_provider import LLM_TIMEOUT_S, LLMProvider, retry_with_exponential_backoff
 
 if TYPE_CHECKING:
     from google.genai.client import Client
@@ -28,7 +28,10 @@ def get_gemini_client() -> Client:
     from google import genai  # noqa: PLC0415
 
     api_key = my_get_env("GEMINI_API_KEY")
-    return genai.Client(api_key=api_key)
+    return genai.Client(
+        api_key=api_key,
+        http_options=genai_types.HttpOptions(timeout=LLM_TIMEOUT_S * 1000),
+    )
 
 
 class GeminiProvider(LLMProvider):

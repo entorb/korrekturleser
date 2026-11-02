@@ -5,13 +5,12 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from fastapi_app.helper_fastapi import get_current_user
+from fastapi_app.helper_fastapi import get_current_user, select_provider
 from fastapi_app.schemas import (
     TextRequest,
     TextResponse,
     UserInfoInternal,
 )
-from shared.config import LLM_PROVIDER_DEFAULT
 from shared.helper_db import db_insert_usage
 from shared.llm_provider import get_llm_provider
 from shared.mode_configs import MODE_CONFIGS
@@ -26,7 +25,7 @@ router = APIRouter()
     responses={
         400: {
             "description": (
-                "Invalid request: empty text, unknown mode, or missing "
+                "Invalid request: empty text, unknown mode or provider, or missing "
                 "custom_instruction"
             )
         },
@@ -65,11 +64,11 @@ def improve_text(
         len(request.text),
     )
 
+    selected_provider = select_provider(request.provider)
+
     try:
         # Get LLM provider with explicit error handling
         try:
-            # Use provider from request, or default to default provider
-            selected_provider = request.provider or LLM_PROVIDER_DEFAULT
             llm_provider = get_llm_provider(selected_provider)
             models = llm_provider.get_models()
             # Use model from request, or default to first available

@@ -8,9 +8,23 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from fastapi_app.schemas import UserInfoInternal
-from shared.config import FASTAPI_JWT_SECRET_KEY, JWT_ALGORITHM, JWT_EXPIRE_HOURS
+from shared.config import (
+    FASTAPI_JWT_SECRET_KEY,
+    JWT_ALGORITHM,
+    JWT_EXPIRE_HOURS,
+    LLM_PROVIDER_DEFAULT,
+    LLM_PROVIDERS,
+)
 
 security = HTTPBearer()
+
+
+def select_provider(provider: str | None) -> str:
+    """Return requested provider or default; 400 if not enabled (no SDK import)."""
+    selected = provider or LLM_PROVIDER_DEFAULT
+    if selected not in LLM_PROVIDERS:
+        raise HTTPException(status_code=400, detail="Unknown provider")
+    return selected
 
 
 def create_access_token(
