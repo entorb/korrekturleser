@@ -21,13 +21,19 @@ logger = logging.getLogger(__name__)
 
 if ENV == "PROD":
     import sentry_sdk
+    from sentry_sdk.integrations.fastapi import FastApiIntegration
     from sentry_sdk.integrations.logging import LoggingIntegration
+    from sentry_sdk.integrations.starlette import StarletteIntegration
 
     sentry_sdk.init(
         dsn="https://478915eebf07672bfe0d1fba879c3217@o4507139041525760.ingest.de.sentry.io/4512292150378576",
         integrations=[
             LoggingIntegration(capture_sentry_logs=True),
+            StarletteIntegration(),
+            FastApiIntegration(),
         ],
+        # auto integrations import every installed SDK (openai, genai, ...): +50MB RAM
+        auto_enabling_integrations=False,
     )
 
 # Create FastAPI app

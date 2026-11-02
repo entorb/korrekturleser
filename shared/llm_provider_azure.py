@@ -11,7 +11,7 @@ from azure.identity import (
 from openai import AzureOpenAI
 
 from .helper import my_get_env
-from .llm_provider import LLMProvider, retry_with_exponential_backoff
+from .llm_provider import LLM_TIMEOUT_S, LLMProvider, retry_with_exponential_backoff
 
 if TYPE_CHECKING:
     from openai.types.chat.chat_completion import ChatCompletion
@@ -34,6 +34,8 @@ def get_openai_client_default_azure_creds() -> AzureOpenAI:
         azure_ad_token_provider=get_bearer_token_provider(
             DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
         ),
+        timeout=LLM_TIMEOUT_S,
+        max_retries=0,  # own retry_with_exponential_backoff
     )
 
 

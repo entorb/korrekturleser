@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from openai import OpenAI
 
 from .helper import my_get_env
-from .llm_provider import LLMProvider, retry_with_exponential_backoff
+from .llm_provider import LLM_TIMEOUT_S, LLMProvider, retry_with_exponential_backoff
 
 if TYPE_CHECKING:
     from openai.types.chat.chat_completion import ChatCompletion
@@ -24,7 +24,11 @@ MODELS = [
 
 def get_openai_client() -> OpenAI:
     """Create and return an OpenAI client."""
-    return OpenAI(api_key=my_get_env("OPENAI_API_KEY"))
+    return OpenAI(
+        api_key=my_get_env("OPENAI_API_KEY"),
+        timeout=LLM_TIMEOUT_S,
+        max_retries=0,  # own retry_with_exponential_backoff
+    )
 
 
 class OpenAIProvider(LLMProvider):
