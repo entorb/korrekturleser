@@ -10,6 +10,9 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(Path(__file__).stem)
 
+# per HTTP request, ~3 min worst case with 3 retries; plain uvicorn has no own timeout
+LLM_TIMEOUT_S = 60
+
 
 def retry_with_exponential_backoff[T](
     func: Callable[..., T],

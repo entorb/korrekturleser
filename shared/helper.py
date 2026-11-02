@@ -12,8 +12,6 @@ from dotenv import load_dotenv
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    import pandas as pd
-
 # Load environment variables from .env file in project root
 load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
@@ -74,17 +72,15 @@ def auto_login_for_local_dev(
         logging.getLogger(__name__).info("Auto-login for local development")
 
 
-def format_config_dataframe() -> pd.DataFrame:
+def format_config_dataframe() -> list[dict]:
     """
-    Create DataFrame with config information (ENV, LLM_PROVIDER, LLM_MODEL).
+    Create rows with config information (ENV, LLM_PROVIDER, LLM_MODEL).
 
     Returns:
-        DataFrame with columns 'key' and 'value'
+        Rows with keys 'key' and 'value'
 
     """
     # Local import to avoid circular dependency
-    import pandas as pd  # noqa: PLC0415
-
     from shared.config import LLM_PROVIDER_DEFAULT  # noqa: PLC0415
 
     config_data = {
@@ -92,22 +88,19 @@ def format_config_dataframe() -> pd.DataFrame:
         "LLM_PROVIDER_DEFAULT": LLM_PROVIDER_DEFAULT,
     }
     config_items = sorted([(k, str(v)) for k, v in config_data.items()])
-    return pd.DataFrame(config_items, columns=pd.Index(["key", "value"]))
+    return [{"key": k, "value": v} for k, v in config_items]
 
 
-def format_session_dataframe(session_dict: dict) -> pd.DataFrame:
+def format_session_dataframe(session_dict: dict) -> list[dict]:
     """
-    Create DataFrame from session data dictionary.
+    Create rows from session data dictionary.
 
     Args:
         session_dict: Dictionary with session data (keys and values)
 
     Returns:
-        DataFrame with columns 'key' and 'value', sorted by key
+        Rows with keys 'key' and 'value', sorted by key
 
     """
-    # Local import to avoid circular dependency
-    import pandas as pd  # noqa: PLC0415
-
     session_items = sorted([(k, str(v)) for k, v in session_dict.items()])
-    return pd.DataFrame(session_items, columns=pd.Index(["key", "value"]))
+    return [{"key": k, "value": v} for k, v in session_items]

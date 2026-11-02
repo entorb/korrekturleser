@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 from mistralai.client import Mistral
 
 from .helper import my_get_env
-from .llm_provider import LLMProvider, retry_with_exponential_backoff
+from .llm_provider import LLM_TIMEOUT_S, LLMProvider, retry_with_exponential_backoff
 
 if TYPE_CHECKING:
     from mistralai.client.models.chatcompletionresponse import ChatCompletionResponse
@@ -23,7 +23,9 @@ MODELS = [
 
 def get_mistral_client() -> Mistral:
     """Create and return an Mistral client."""
-    return Mistral(api_key=my_get_env("MISTRAL_API_KEY"))
+    return Mistral(
+        api_key=my_get_env("MISTRAL_API_KEY"), timeout_ms=LLM_TIMEOUT_S * 1000
+    )
 
 
 class MistralProvider(LLMProvider):

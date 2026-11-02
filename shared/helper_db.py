@@ -8,7 +8,6 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import pandas as pd
 from dotenv import load_dotenv
 
 from .config import LLM_PROVIDER_DEFAULT
@@ -184,7 +183,7 @@ def db_insert_usage(user_id: int, tokens: int) -> None:
 # queries for stats page
 
 
-def _select_stats(sql: str, user_id: int, col_names: pd.Index) -> pd.DataFrame:
+def _select_stats(sql: str, user_id: int, col_names: list[str]) -> list[dict]:
     """Run stats query; user 1 (admin) sees all users."""
     try:
         with sqlite_connection() as con:
@@ -197,12 +196,10 @@ def _select_stats(sql: str, user_id: int, col_names: pd.Index) -> pd.DataFrame:
     except sqlite3.Error:
         logger.exception("SQLite error during stats query")
         raise
-    if not res:
-        return pd.DataFrame(columns=col_names)
-    return pd.DataFrame(res, columns=col_names)
+    return [dict(zip(col_names, row, strict=True)) for row in res]
 
 
-def db_select_usage_stats_total(user_id: int) -> pd.DataFrame:
+def db_select_usage_stats_total(user_id: int) -> list[dict]:
     """SELECT user_name, sum(cnt_requests), sum(cnt_tokens)."""
     sql = """
 SELECT u.name, SUM(h.cnt_requests) AS cnt_requests, SUM(h.cnt_tokens) AS cnt_tokens
@@ -212,12 +209,10 @@ WHERE u.id = ?
 GROUP BY u.name
 ORDER BY cnt_tokens DESC, u.name ASC
 """
-    return _select_stats(
-        sql, user_id, pd.Index(["user_name", "cnt_requests", "cnt_tokens"])
-    )
+    return _select_stats(sql, user_id, ["user_name", "cnt_requests", "cnt_tokens"])
 
 
-def db_select_usage_stats_daily(user_id: int) -> pd.DataFrame:
+def db_select_usage_stats_daily(user_id: int) -> list[dict]:
     """SELECT date, user_name, cnt_requests, cnt_tokens."""
     sql = """
 SELECT h.date, u.name, h.cnt_requests, h.cnt_tokens
@@ -228,10 +223,10 @@ ORDER BY h.date DESC, u.name ASC
 LIMIT 100
 """
     return _select_stats(
-        sql, user_id, pd.Index(["date", "user_name", "cnt_requests", "cnt_tokens"])
+        sql, user_id, ["date", "user_name", "cnt_requests", "cnt_tokens"]
     )
 
 
 if __name__ == "__main__":
     res = db_select_usage_stats_total(1)
-    print(res.to_csv())
+    print(res)

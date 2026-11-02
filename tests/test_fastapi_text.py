@@ -359,6 +359,21 @@ class TestErrorHandling:
         assert data["mode"] == "custom"
         assert "text_ai" in data
 
+    def test_improve_unknown_provider_returns_400(
+        self, client: TestClient, auth_headers: dict[str, str]
+    ) -> None:
+        """A provider not in LLM_PROVIDERS is rejected before loading its SDK."""
+        response = client.post(
+            "/api/text",
+            json={"text": "Test text", "mode": "correct", "provider": "OpenAI"},
+            headers=auth_headers,
+        )
+        assert response.status_code == 400
+        response = client.get(
+            "/api/config/", params={"provider": "OpenAI"}, headers=auth_headers
+        )
+        assert response.status_code == 400
+
     def test_improve_provider_failure_returns_500(
         self, client: TestClient, auth_headers: dict[str, str]
     ) -> None:

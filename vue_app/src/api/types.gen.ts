@@ -287,6 +287,10 @@ export type GetConfigApiConfigGetData = {
 
 export type GetConfigApiConfigGetErrors = {
   /**
+   * Unknown provider
+   */
+  400: unknown
+  /**
    * Validation Error
    */
   422: HttpValidationError
@@ -314,7 +318,7 @@ export type ImproveTextApiTextPostData = {
 
 export type ImproveTextApiTextPostErrors = {
   /**
-   * Invalid request: empty text, unknown mode, or missing custom_instruction
+   * Invalid request: empty text, unknown mode or provider, or missing custom_instruction
    */
   400: unknown
   /**

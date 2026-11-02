@@ -46,16 +46,12 @@ def get_all_stats(
     try:
         # Get daily statistics as list of rows
         # Admin gets all users, non-admin gets only their own data
-        daily_df = db_select_usage_stats_daily(user_id=current_user.user_id)
-        daily_stats = [
-            DailyUsage.model_validate(row.to_dict()) for _, row in daily_df.iterrows()
-        ]
+        daily_rows = db_select_usage_stats_daily(user_id=current_user.user_id)
+        daily_stats = [DailyUsage.model_validate(row) for row in daily_rows]
 
         # Get total statistics as list of rows
-        total_df = db_select_usage_stats_total(user_id=current_user.user_id)
-        total_stats = [
-            TotalUsage.model_validate(row.to_dict()) for _, row in total_df.iterrows()
-        ]
+        total_rows = db_select_usage_stats_total(user_id=current_user.user_id)
+        total_stats = [TotalUsage.model_validate(row) for row in total_rows]
 
         logger.debug("User %s accessed usage statistics", current_user.user_name)
 

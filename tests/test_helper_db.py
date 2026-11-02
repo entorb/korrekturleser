@@ -4,7 +4,6 @@ import datetime as dt
 import sqlite3
 from unittest.mock import MagicMock, patch
 
-import pandas as pd
 import pytest
 
 from shared import helper_db
@@ -125,7 +124,7 @@ class TestUsageStats:
 
     @patch("shared.helper_db.sqlite_connection")
     def test_stats_total_returns_dataframe(self, mock_sqlite: MagicMock) -> None:
-        """Test stats query returns DataFrame from SQLite in local mode."""
+        """Test stats query returns rows from SQLite in local mode."""
         mock_con = MagicMock()
         mock_cursor = MagicMock()
         mock_cursor.fetchall.return_value = [("Torben", 10, 5000)]
@@ -134,16 +133,16 @@ class TestUsageStats:
 
         df = db_select_usage_stats_total(user_id=1)
 
-        assert isinstance(df, pd.DataFrame)
+        assert isinstance(df, list)
         assert len(df) == 1
-        assert list(df.columns) == ["user_name", "cnt_requests", "cnt_tokens"]
-        assert df.iloc[0]["user_name"] == "Torben"
-        assert df.iloc[0]["cnt_requests"] == 10
-        assert df.iloc[0]["cnt_tokens"] == 5000
+        assert all(list(r) == ["user_name", "cnt_requests", "cnt_tokens"] for r in df)
+        assert df[0]["user_name"] == "Torben"
+        assert df[0]["cnt_requests"] == 10
+        assert df[0]["cnt_tokens"] == 5000
 
     @patch("shared.helper_db.sqlite_connection")
     def test_stats_total_empty_result(self, mock_sqlite: MagicMock) -> None:
-        """Test stats query returns empty DataFrame when no data."""
+        """Test stats query returns empty list when no data."""
         mock_con = MagicMock()
         mock_cursor = MagicMock()
         mock_cursor.fetchall.return_value = []
@@ -152,13 +151,13 @@ class TestUsageStats:
 
         df = db_select_usage_stats_total(user_id=1)
 
-        assert isinstance(df, pd.DataFrame)
+        assert isinstance(df, list)
         assert len(df) == 0
-        assert list(df.columns) == ["user_name", "cnt_requests", "cnt_tokens"]
+        assert all(list(r) == ["user_name", "cnt_requests", "cnt_tokens"] for r in df)
 
     @patch("shared.helper_db.sqlite_connection")
     def test_stats_daily_returns_dataframe(self, mock_sqlite: MagicMock) -> None:
-        """Test daily stats returns DataFrame from SQLite in local mode."""
+        """Test daily stats returns rows from SQLite in local mode."""
         mock_con = MagicMock()
         mock_cursor = MagicMock()
         mock_cursor.fetchall.return_value = [("2025-12-01", "Torben", 5, 2500)]
@@ -167,15 +166,17 @@ class TestUsageStats:
 
         df = db_select_usage_stats_daily(user_id=1)
 
-        assert isinstance(df, pd.DataFrame)
+        assert isinstance(df, list)
         assert len(df) == 1
-        assert list(df.columns) == ["date", "user_name", "cnt_requests", "cnt_tokens"]
-        assert df.iloc[0]["date"] == "2025-12-01"
-        assert df.iloc[0]["user_name"] == "Torben"
+        assert all(
+            list(r) == ["date", "user_name", "cnt_requests", "cnt_tokens"] for r in df
+        )
+        assert df[0]["date"] == "2025-12-01"
+        assert df[0]["user_name"] == "Torben"
 
     @patch("shared.helper_db.sqlite_connection")
     def test_stats_daily_empty_result(self, mock_sqlite: MagicMock) -> None:
-        """Test daily stats returns empty DataFrame when no data."""
+        """Test daily stats returns empty list when no data."""
         mock_con = MagicMock()
         mock_cursor = MagicMock()
         mock_cursor.fetchall.return_value = []
@@ -184,9 +185,11 @@ class TestUsageStats:
 
         df = db_select_usage_stats_daily(user_id=1)
 
-        assert isinstance(df, pd.DataFrame)
+        assert isinstance(df, list)
         assert len(df) == 0
-        assert list(df.columns) == ["date", "user_name", "cnt_requests", "cnt_tokens"]
+        assert all(
+            list(r) == ["date", "user_name", "cnt_requests", "cnt_tokens"] for r in df
+        )
 
 
 class TestSQLiteDatabase:
@@ -260,14 +263,14 @@ class TestSQLiteDatabase:
         helper_db.db_insert_usage(user_id=1, tokens=50)
 
         total = db_select_usage_stats_total(user_id=1)
-        assert total.iloc[0]["user_name"] == "Torben"
-        assert total.iloc[0]["cnt_requests"] == 2
-        assert total.iloc[0]["cnt_tokens"] == 150
+        assert total[0]["user_name"] == "Torben"
+        assert total[0]["cnt_requests"] == 2
+        assert total[0]["cnt_tokens"] == 150
 
         daily = db_select_usage_stats_daily(user_id=1)
         assert len(daily) == 1
-        assert daily.iloc[0]["date"] == dt.date.today().isoformat()  # noqa: DTZ011
-        assert daily.iloc[0]["cnt_requests"] == 2
+        assert daily[0]["date"] == dt.date.today().isoformat()  # noqa: DTZ011
+        assert daily[0]["cnt_requests"] == 2
 
     def test_sqlite_connection_error_reraises(
         self, tmp_path, monkeypatch: pytest.MonkeyPatch

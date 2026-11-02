@@ -3,9 +3,9 @@
 import logging
 from pathlib import Path
 
-from ollama import ChatResponse, chat  # uv add --dev ollama
+from ollama import ChatResponse, Client  # uv add --dev ollama
 
-from .llm_provider import LLMProvider, retry_with_exponential_backoff
+from .llm_provider import LLM_TIMEOUT_S, LLMProvider, retry_with_exponential_backoff
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -32,7 +32,7 @@ class OllamaProvider(LLMProvider):
         self.check_model_valid(model)
 
         def _api_call() -> ChatResponse:
-            response = chat(
+            response = Client(timeout=LLM_TIMEOUT_S).chat(
                 model=model,
                 stream=False,
                 messages=[
