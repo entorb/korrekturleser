@@ -5,11 +5,11 @@ cd "$(dirname "$0")/.."
 # Download SonarCloud open issues as JSON.
 
 api=https://sonarcloud.io/api/issues/search
-component=""
-if [ -z "$component" ]; then
-  component=$(sed -n 's/^sonar\.projectKey=//p' sonar-project.properties 2>/dev/null || true)
-fi
-component=${component:-entorb_todo}
+component=$(sed -n 's/^sonar\.projectKey=//p' sonar-project.properties .sonarcloud.properties 2>/dev/null | head -n1)
+[ -n "$component" ] || {
+  echo "sonar.projectKey missing in sonar-project.properties / .sonarcloud.properties" >&2
+  exit 1
+}
 
 mkdir -p tmp
 out=tmp/sonar.json
