@@ -54,7 +54,9 @@
         "useLiteralKeys": "off"
       },
       "correctness": {
-        "noUnresolvedImports": "off"
+        "noUnresolvedImports": "off",
+        "useHookAtTopLevel": "off",
+        "noComponentHookFactories": "off"
       },
       "nursery": {
         "noFloatingPromises": "warn",
@@ -121,7 +123,6 @@
       "linter": {
         "rules": {
           "correctness": {
-            "useHookAtTopLevel": "off",
             "useQwikValidLexicalScope": "off"
           },
           "suspicious": {
