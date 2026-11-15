@@ -106,7 +106,7 @@
       }
     },
     {
-      "includes": ["*.config.ts", "*.config.js", "*.config.mts", "*.config.mjs"],
+      "includes": ["*.config.ts", "*.config.js", "*.config.mts", "*.config.mjs", "e2e/**"],
       "linter": {
         "rules": {
           "correctness": {

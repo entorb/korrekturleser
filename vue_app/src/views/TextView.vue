@@ -340,15 +340,15 @@ function handleLogout() {
   </q-page-container>
 </template>
 
-<style>
+<style scoped>
 /* Markdown links */
-.markdown-content a {
+.markdown-content :deep(a) {
   color: var(--q-primary);
   text-decoration: underline;
   overflow-wrap: anywhere;
 }
 
-.markdown-content a:hover {
+.markdown-content :deep(a:hover) {
   text-decoration: none;
 }
 
@@ -372,7 +372,7 @@ function handleLogout() {
 }
 
 /* Code lines: full width and proper wrapping */
-.diff-container .d2h-code-side-line {
+.diff-container :deep(.d2h-code-side-line) {
   width: 100% !important;
   max-width: 100% !important;
   padding: 2px 4px !important;
@@ -382,13 +382,13 @@ function handleLogout() {
 }
 
 /* Table cells: full width */
-.diff-container .d2h-code-side-line td {
+.diff-container :deep(.d2h-code-side-line td) {
   width: 100% !important;
 }
 
 /* Text wrapping for code content */
-.d2h-code-line-ctn,
-.d2h-code-line {
+.diff-container :deep(.d2h-code-line-ctn),
+.diff-container :deep(.d2h-code-line) {
   white-space: pre-wrap !important;
   word-break: break-all !important;
 }

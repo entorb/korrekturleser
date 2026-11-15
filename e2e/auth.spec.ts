@@ -1,4 +1,4 @@
-import { expect, test as it, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
 import { login } from "./helpers.ts"
 
