@@ -138,7 +138,6 @@ echo "## Git"
 if [ -n "$(git status --porcelain)" ]; then
   echo "### git push"
   git add pnpm-lock.yaml uv.lock
-  git diff --staged --quiet || git commit -m "chore(deps): Lock" -- pnpm-lock.yaml uv.lock
 
   FILES="package.json pyproject.toml pnpm-workspace.yaml biome.json .pre-commit-config.yaml .nvmrc .python-version vue_app/src/api vue_app/src/config/modes.ts"
   # shellcheck disable=SC2086
