@@ -31,6 +31,11 @@
       "dependencyDashboardApproval": false
     },
     {
+      "description": "keep Python at 3.14 (requires-python, .python-version, CI)",
+      "matchPackageNames": ["python"],
+      "allowedVersions": "<3.15"
+    },
+    {
       "groupName": "github-actions",
       "matchManagers": ["github-actions"],
       "enabled": true,
@@ -61,12 +66,10 @@
       "matchManagers": ["npm"],
       "matchPackageNames": [
         "@biomejs/biome",
-        "@cypress/**",
         "@eslint/**",
         "@playwright/**",
         "@typescript-eslint/**",
         "@vitest/**",
-        "cypress",
         "eslint-plugin-*",
         "eslint",
         "knip",
