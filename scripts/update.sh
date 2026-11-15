@@ -49,7 +49,7 @@ PY
   echo "python pinned to $UV_PY_VER"
 
   echo "### Node and PNPM Versions"
-  brew upgrade node@24
+  brew upgrade node@26
   # pnpm not from brew: self-update ignores the project cooldown, so pick the newest release
   # that is >= 7 days old here; in a pinned project it only bumps packageManager
   PNPM_COOLED=$(
