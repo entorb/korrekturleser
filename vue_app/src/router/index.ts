@@ -32,7 +32,7 @@ function lazyLoad(loader: () => Promise<unknown>) {
       ) {
         // Prevent infinite reload loops
         const key = "chunk-reload"
-        if (!sessionStorage.getItem(key)) {
+        if (sessionStorage.getItem(key) == null) {
           sessionStorage.setItem(key, "1")
           globalThis.location.reload()
           // Return a never-resolving promise so the router doesn't
@@ -55,19 +55,19 @@ const router = createRouter({
     {
       path: "/",
       name: "text",
-      component: lazyLoad(() => import("@/views/TextView.vue")),
+      component: lazyLoad(async () => import("@/views/TextView.vue")),
       meta: { requiresAuth: true },
     },
     {
       path: "/login",
       name: "login",
-      component: lazyLoad(() => import("@/views/LoginView.vue")),
+      component: lazyLoad(async () => import("@/views/LoginView.vue")),
       meta: { requiresAuth: false },
     },
     {
       path: "/stats",
       name: "stats",
-      component: lazyLoad(() => import("@/views/StatsView.vue")),
+      component: lazyLoad(async () => import("@/views/StatsView.vue")),
       meta: { requiresAuth: true },
     },
   ],

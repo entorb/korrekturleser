@@ -8,7 +8,7 @@ import { type ComputedRef, computed } from "vue"
 const renderer = {
   link(this: RendererThis, { href, title, tokens }: Tokens.Link) {
     const text = this.parser.parseInline(tokens)
-    const titleAttr = title ? ` title="${title}"` : ""
+    const titleAttr = title != null && title !== "" ? ` title="${title}"` : ""
     return `<a href="${href}" target="_blank" rel="noopener noreferrer"${titleAttr}>${text}</a>`
   },
 }
@@ -26,7 +26,7 @@ export function useMarkdown(
       (typeof renderValue === "string" && renderValue.trim().length > 0) ||
       (typeof renderValue === "number" && renderValue !== 0)
 
-    return shouldShow ? marked.parse(text()) : ""
+    return shouldShow ? marked.parse(text(), { async: false }) : ""
   })
 
   return { markdownHtml }

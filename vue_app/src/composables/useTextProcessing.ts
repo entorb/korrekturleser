@@ -16,7 +16,7 @@ export function useTextProcessing() {
 
   const showDiff = computed(
     () =>
-      textStore.outputText &&
+      textStore.outputText !== "" &&
       (textStore.selectedMode === "correct" ||
         textStore.selectedMode === "improve" ||
         textStore.selectedMode === "custom"),
@@ -42,7 +42,7 @@ export function useTextProcessing() {
   function handleResult(result: TextResponse) {
     textStore.outputText = result.text_ai
     textStore.lastResult = result
-    textStore.instruction = result.instruction || ""
+    textStore.instruction = result.instruction
 
     if (showDiff.value) {
       textStore.diffHtml = generateDiff(`${textStore.inputText}\n\n`, `${result.text_ai}\n\n`)

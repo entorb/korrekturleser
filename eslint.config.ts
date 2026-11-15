@@ -76,24 +76,21 @@ export default [
       ],
       // '@typescript-eslint/no-explicit-any' — covered by Biome noExplicitAny
       // '@typescript-eslint/no-non-null-assertion' — covered by Biome noNonNullAssertion
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
-      ],
+      "@typescript-eslint/no-unused-vars": "off", // covered by Biome noUnusedVariables
       // Code quality
       "@typescript-eslint/array-type": ["error", { default: "array-simple" }],
-      "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
+      // '@typescript-eslint/consistent-type-definitions' — covered by Biome useConsistentTypeDefinitions
       // General best practices
-      "array-callback-return": "error",
-      eqeqeq: ["error", "always", { null: "ignore" }],
+      // 'array-callback-return' — covered by Biome useIterableCallbackReturn
+      // 'eqeqeq' — covered by Biome noDoubleEquals
       "no-console": ["warn", { allow: ["warn", "error"] }],
       // 'no-constructor-return' — covered by Biome noConstructorReturn
       // 'no-debugger' — covered by Biome noDebugger
-      "no-else-return": ["error", { allowElseIf: false }],
-      "no-lonely-if": "error",
+      // 'no-else-return' — covered by Biome noUselessElse
+      // 'no-lonely-if' — covered by Biome useCollapsedElseIf
       "no-promise-executor-return": "error",
       // 'no-var' — covered by Biome (recommended)
-      "object-shorthand": ["error", "always"],
+      // 'object-shorthand' — covered by Biome useConsistentObjectDefinitions
       // 'prefer-arrow-callback' — covered by Biome useArrowFunction
       // 'prefer-const' — covered by Biome useConst
       "prefer-destructuring": [
@@ -106,7 +103,7 @@ export default [
       // 'prefer-template' — covered by Biome useTemplate
       "require-atomic-updates": "error",
       // SonarJS
-      "sonarjs/cognitive-complexity": ["warn", 20],
+      "sonarjs/cognitive-complexity": "off", // covered by Biome noExcessiveCognitiveComplexity (15)
       "sonarjs/no-commented-code": "off", // Slow rule (~56% of lint time) — caught by SonarCloud in CI
       "sonarjs/no-duplicate-string": ["warn", { threshold: 4 }],
       "sonarjs/no-identical-functions": "warn",
@@ -116,9 +113,9 @@ export default [
   },
 
   // TypeScript files with type-aware linting (requires tsconfig project)
-  // Note: Each app has its own tsconfig.app.json — ESLint resolves the nearest one via tsconfigRootDir
   {
-    files: ["apps/*/src/**/*.{ts,mts,tsx}", "packages/shared/src/**/*.{ts,mts,tsx}"],
+    files: ["vue_app/src/**/*.{ts,mts,tsx}"],
+    ignores: ["**/*.{test,spec}.{ts,tsx}", "vue_app/src/**/__tests__/**"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -160,8 +157,6 @@ export default [
   },
 
   // Vue files - use spread syntax to properly apply Vue configs
-  ...pluginVue.configs["flat/essential"],
-  ...pluginVue.configs["flat/strongly-recommended"],
   ...pluginVue.configs["flat/recommended"],
 
   // Vue files with TypeScript support and custom rules
@@ -192,7 +187,7 @@ export default [
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
       // SonarJS
-      "sonarjs/cognitive-complexity": ["warn", 20],
+      "sonarjs/cognitive-complexity": "off", // covered by Biome noExcessiveCognitiveComplexity (15)
       "sonarjs/no-commented-code": "off", // Slow rule — caught by SonarCloud in CI
       "sonarjs/no-duplicate-string": ["warn", { threshold: 4 }],
       "sonarjs/no-identical-functions": "warn",
@@ -292,11 +287,7 @@ export default [
 
   // Vue composables - relax some rules
   {
-    files: [
-      "apps/*/src/composables/**/*.ts",
-      "packages/shared/src/composables/**/*.ts",
-      "vue_app/src/composables/**/*.ts",
-    ],
+    files: ["vue_app/src/composables/**/*.ts"],
     rules: {
       "require-atomic-updates": "off", // False positives in Vue composables with async/await
     },
@@ -336,7 +327,7 @@ export default [
 
   // Vitest test files - relaxed rules
   {
-    files: ["**/*.{test,spec}.{js,ts,jsx,tsx}", "apps/**/__tests__/**/*.{js,ts,jsx,tsx}"],
+    files: ["**/*.{test,spec}.{js,ts,jsx,tsx}", "vue_app/**/__tests__/**/*.{js,ts,jsx,tsx}"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {

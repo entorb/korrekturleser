@@ -45,7 +45,7 @@ client.setConfig({
 
 // Token rejected by server (e.g. signed with a rotated secret): drop it and
 // reload, so the router guard redirects to login
-client.instance.interceptors.response.use(undefined, (error: unknown) => {
+client.instance.interceptors.response.use(undefined, async (error: unknown) => {
   if (isAxiosError(error) && error.response?.status === 401 && tokenManager.get() != null) {
     tokenManager.clear()
     globalThis.location.reload()

@@ -33,10 +33,10 @@
     }
   },
   "html": {
-    "experimentalFullSupportEnabled": true,
     "formatter": {
       "selfCloseVoidElements": "always"
-    }
+    },
+    "experimentalFullSupportEnabled": true
   },
   "linter": {
     "enabled": true,
